@@ -1,31 +1,26 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { StyleSheet, View, Text } from 'react-native';
-import MusoraTemplates from 'react-native-musora-templates';
+import {
+  authenticate,
+  utils,
+  Catalogue,
+  Profile
+} from 'react-native-musora-templates';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
+  const [authenticated, setAuthenticated] = useState(false);
 
-  React.useEffect(() => {
-    MusoraTemplates.multiply(3, 7).then(setResult);
+  useEffect(() => {
+    utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
+    utils.brand = 'drumeo';
+
+    authenticate()
+      .then(({ token }) => {
+        if (token) setAuthenticated(true);
+      })
+      .catch(() => {});
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <Text>Result: {result}</Text>
-    </View>
-  );
+  return <>{authenticated && <Catalogue scene='home' />}</>;
+  // return <>{authenticated && <Profile whatever='home' />}</>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
-  },
-});

@@ -1,5 +1,6 @@
-export default {
-  multiply(a: number, b: number) {
-    return Promise.resolve(a * b);
-  },
-};
+export * from './utils';
+
+export * from './services/exporter';
+
+export * from './catalogue/Catalogue';
+export * from './profile/Profile';

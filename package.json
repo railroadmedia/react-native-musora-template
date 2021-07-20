@@ -130,11 +130,13 @@
     "lib/"
   ],
   "prettier": {
-    "quoteProps": "consistent",
+    "bracketSpacing": true,
     "singleQuote": true,
-    "tabWidth": 2,
-    "trailingComma": "es5",
-    "useTabs": false
+    "jsxBracketSameLine": false,
+    "trailingComma": "none",
+    "semi": true,
+    "arrowParens": "avoid",
+    "jsxSingleQuote": true
   },
   "react-native-builder-bob": {
     "source": "src",
@@ -149,5 +151,8 @@
         }
       ]
     ]
+  },
+  "dependencies": {
+    "react-native-keychain": "^7.0.0"
   }
 }
