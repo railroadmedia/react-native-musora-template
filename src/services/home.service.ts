@@ -1,5 +1,5 @@
 import { call } from './auth.service';
-import type { Args } from './Args';
+import type { Args } from './interfaces';
 
 export const homeService = {
   getMethod: function ({ signal }: Args) {
@@ -16,6 +16,14 @@ export const homeService = {
   getInProgress: function ({ page, filters, sort, signal }: Args) {
     return call({
       url: `/musora-api/in-progress?included_types[]=coach-stream&included_types[]=learning-path-lesson&included_types[]=student-focus&included_types[]=course&included_types[]=song&included_types[]=play-along&included_types[]=shows&included_types[]=pack-bundle-lesson&included_types[]=semester-pack-lesson&brand=drumeo&limit=40&sort=${
+        sort || '-published_on'
+      }&page=${page || 1}${filters || ''}`,
+      signal
+    });
+  },
+  getNew: function ({ page, filters, sort, signal }: Args) {
+    return call({
+      url: `/musora-api/all?brand=drumeo&statuses[]=published&limit=40&included_types[]=student-focus&included_types[]=course&included_types[]=play-along&included_types[]=song&included_types[]=shows&show_in_new_feed=1&sort=${
         sort || '-published_on'
       }&page=${page || 1}${filters || ''}`,
       signal

@@ -1,6 +1,6 @@
 import { call } from './auth.service';
 
-import type { Args } from './Args';
+import type { Args } from './interfaces';
 
 export const coursesService = {
   getAll: function ({ page, filters, sort, signal }: Args) {
@@ -16,6 +16,14 @@ export const coursesService = {
       url: `/musora-api/in-progress?included_types[]=course&brand=drumeo&limit=40&sort=${
         sort || '-published_on'
       }&page=${page || 1}${filters || ''}`,
+      signal
+    });
+  },
+  getNew: function ({ page, filters, sort, signal }: Args) {
+    return call({
+      url: `/musora-api/all?included_types[]=course&brand=drumeo&limit=40&sort=${
+        sort || '-published_on'
+      }&page=${page || 1}&statuses[]=published${filters || ''}`,
       signal
     });
   }

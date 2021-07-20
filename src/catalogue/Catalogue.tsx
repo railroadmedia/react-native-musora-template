@@ -11,6 +11,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   let page = 1;
 
   const [all, setAll] = useState<{} | undefined>([]);
+  const [newContent, setNewContent] = useState<{} | undefined>([]);
   const [method, setMethod] = useState<{} | undefined>();
   const [inProgress, setInProgress] = useState<{} | undefined>([]);
 
@@ -19,12 +20,14 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     Promise.all([
       p.getMethod?.({}),
       p.getAll?.({ page }),
-      p.getInProgress?.({ page })
-    ]).then(([method, all, inProgress]) => {
-      console.log(method, all, inProgress);
+      p.getInProgress?.({ page }),
+      p.getNew?.({ page })
+    ]).then(([method, all, inProgress, newContent]) => {
+      console.log(method, all, inProgress, newContent);
       setMethod(method);
       setAll(all);
       setInProgress(inProgress);
+      setNewContent(newContent);
     });
   }, []);
 

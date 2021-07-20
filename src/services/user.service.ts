@@ -1,6 +1,6 @@
 import { call } from './auth.service';
 
-import type { Args } from './Args';
+import type { Args } from './interfaces';
 
 export const userService = {
   getUserDetails: function ({ signal }: Args) {
