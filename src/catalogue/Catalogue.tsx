@@ -1,7 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import React, { useContext, useEffect, useReducer } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+
+import { ThemeContext } from '../context/ThemeContext';
+import { CardsContext } from '../context/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
+import { ADD_COMBINED, catalogueReducer } from './reducer';
 
 interface Props {
   scene: string;
@@ -10,30 +14,39 @@ interface Props {
 export const Catalogue: React.FC<Props> = ({ scene }) => {
   let page = 1;
 
-  const [all, setAll] = useState<{} | undefined>([]);
-  const [newContent, setNewContent] = useState<{} | undefined>([]);
-  const [method, setMethod] = useState<{} | undefined>();
-  const [inProgress, setInProgress] = useState<{} | undefined>([]);
+  const { cards, addCards, updateCard } = useContext(CardsContext);
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+  const [catalogue, dispatch] = useReducer(catalogueReducer, {});
 
   useEffect(() => {
-    let p = provider[scene];
-    Promise.all([
-      p.getMethod?.({}),
-      p.getAll?.({ page }),
-      p.getInProgress?.({ page }),
-      p.getNew?.({ page })
-    ]).then(([method, all, inProgress, newContent]) => {
-      console.log(method, all, inProgress, newContent);
-      setMethod(method);
-      setAll(all);
-      setInProgress(inProgress);
-      setNewContent(newContent);
-    });
+    provider[scene]
+      .getCache?.()
+      .then(cache => dispatch({ type: ADD_COMBINED, scene, ...cache }));
+    provider[scene]
+      .getCombined?.({ page })
+      .then(([all, newContent, inProgress, method]) => {
+        console.log(all);
+        addCards(all?.data);
+        dispatch({
+          type: ADD_COMBINED,
+          scene,
+          method,
+          all: all?.data,
+          inProgress: inProgress?.data,
+          newContent: newContent?.data
+        });
+      });
   }, []);
-
+  console.log(scene, cards, theme, catalogue);
   return (
     <View style={styles.container}>
-      <Text>catalogue</Text>
+      <TouchableOpacity onPress={() => toggleTheme()}>
+        <Text style={{ padding: 20, margin: 20, backgroundColor: 'red' }}>
+          SS
+        </Text>
+      </TouchableOpacity>
+      <Text>{scene} catalogue</Text>
     </View>
   );
 };

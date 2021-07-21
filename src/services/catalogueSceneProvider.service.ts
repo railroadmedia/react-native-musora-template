@@ -4,7 +4,7 @@ import { coursesService } from './courses.service';
 import type { Args } from './interfaces';
 
 interface ProviderMethod {
-  ({}: Args): Promise<{}>;
+  ({}: Args): Promise<{ data?: [] }>;
 }
 
 interface Scene {
@@ -12,6 +12,13 @@ interface Scene {
   getAll?: ProviderMethod;
   getInProgress?: ProviderMethod;
   getNew?: ProviderMethod;
+  getCombined?: ({}: Args) => Promise<{ data?: [] }[]>;
+  getCache?: () => Promise<{
+    all?: [];
+    inProgress?: [];
+    newContent?: [];
+    method?: {};
+  }>;
 }
 
 interface Provider {

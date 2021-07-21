@@ -24,7 +24,7 @@ interface Call {
     method?: string;
     signal?: AbortSignal;
     body?: {};
-  }): Promise<{ title?: string; message?: string }>;
+  }): Promise<{ title?: string; message?: string; data?: [] }>;
 }
 
 const authenticate: Auth = async function (email, password, purchases) {

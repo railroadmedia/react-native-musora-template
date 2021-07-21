@@ -1,4 +1,6 @@
 import { call } from './auth.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import type { Args } from './interfaces';
 
 export const homeService = {
@@ -28,5 +30,16 @@ export const homeService = {
       }&page=${page || 1}${filters || ''}`,
       signal
     });
+  },
+  getCombined: function (params: Args) {
+    return Promise.all([
+      this.getAll(params),
+      this.getNew(params),
+      this.getInProgress(params),
+      this.getMethod(params)
+    ]);
+  },
+  getCache: async function () {
+    return JSON.parse((await AsyncStorage.getItem('@home')) || '');
   }
 };
