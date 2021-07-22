@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import {
+  NavigationContainer,
+  NavigationContainerRef
+} from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import {
   authenticate,
@@ -9,9 +14,15 @@ import {
   State
 } from 'react-native-musora-templates';
 
+const Stack = createStackNavigator();
+
+const navigationRef = React.createRef<NavigationContainerRef>();
+
+let sceneOptions = {
+  headerShown: false
+};
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
-  const [scene, setScene] = useState('home');
 
   useEffect(() => {
     utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
@@ -27,35 +38,37 @@ export default function App() {
   return (
     <State>
       {authenticated && (
-        <>
-          {scene === 'home' && (
-            <View style={{ flex: 1 }}>
-              <Catalogue scene='home' />
-            </View>
-          )}
-          {scene === 'courses' && (
-            <View style={{ flex: 1 }}>
-              <Catalogue scene='courses' />
-            </View>
-          )}
-          {scene === 'profile' && (
-            <View style={{ flex: 1 }}>
-              <Profile whatever='home' />
-            </View>
-          )}
-          <View style={{ flexDirection: 'row' }}>
-            <TouchableOpacity onPress={() => setScene('home')}>
-              <Text style={{ padding: 10 }}>Home</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setScene('courses')}>
-              <Text style={{ padding: 10 }}>Courses</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setScene('profile')}>
-              <Text style={{ padding: 10 }}>Profile</Text>
-            </TouchableOpacity>
-          </View>
-        </>
+        <NavigationContainer ref={navigationRef}>
+          <Stack.Navigator>
+            <Stack.Screen name='home' options={sceneOptions}>
+              {props => <Catalogue {...props} scene='home' />}
+            </Stack.Screen>
+            <Stack.Screen name='courses' options={sceneOptions}>
+              {props => <Catalogue {...props} scene='courses' />}
+            </Stack.Screen>
+            <Stack.Screen name='profile' options={sceneOptions}>
+              {props => <Profile whatever='home' />}
+            </Stack.Screen>
+          </Stack.Navigator>
+        </NavigationContainer>
       )}
+      <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity
+          onPress={() => navigationRef.current?.navigate('home')}
+        >
+          <Text style={{ padding: 10 }}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigationRef.current?.navigate('courses')}
+        >
+          <Text style={{ padding: 10 }}>Courses</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigationRef.current?.navigate('profile')}
+        >
+          <Text style={{ padding: 10 }}>Profile</Text>
+        </TouchableOpacity>
+      </View>
     </State>
   );
 }
