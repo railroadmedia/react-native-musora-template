@@ -1,3 +1,5 @@
+import * as svgs from './images/svgs';
+
 interface UtilsInterface {
   rootUrl: string;
   brand: string;
@@ -6,6 +8,7 @@ interface UtilsInterface {
     title: string;
     message: string;
   };
+  // headerSvgBrand: () => Function
 }
 class Utils implements UtilsInterface {
   brand = '';
@@ -35,6 +38,19 @@ class Utils implements UtilsInterface {
   get serverDownError() {
     return this._serverDown[this.brand];
   }
+
+  // get headerSvgBrand() {
+  //   switch (this.brand) {
+  //     case 'pianote':
+  //       return svgs.pianoteHeader;
+  //     case 'quitareo':
+  //       return svgs.guitareoHeader;
+  //     case 'singeo':
+  //       return svgs.singeoHeader;
+  //     default:
+  //       return svgs.drumeoHeader;
+  //   }
+  // }
 }
 
 export let utils = new Utils();

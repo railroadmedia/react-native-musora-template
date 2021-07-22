@@ -5,13 +5,15 @@ import {
   NavigationContainerRef
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {
   authenticate,
   utils,
   Catalogue,
   Profile,
-  State
+  State,
+  Header
 } from 'react-native-musora-templates';
 
 const Stack = createStackNavigator();
@@ -38,37 +40,40 @@ export default function App() {
   return (
     <State>
       {authenticated && (
-        <NavigationContainer ref={navigationRef}>
-          <Stack.Navigator>
-            <Stack.Screen name='home' options={sceneOptions}>
-              {props => <Catalogue {...props} scene='home' />}
-            </Stack.Screen>
-            <Stack.Screen name='courses' options={sceneOptions}>
-              {props => <Catalogue {...props} scene='courses' />}
-            </Stack.Screen>
-            <Stack.Screen name='profile' options={sceneOptions}>
-              {props => <Profile whatever='home' />}
-            </Stack.Screen>
-          </Stack.Navigator>
-        </NavigationContainer>
+        <SafeAreaProvider>
+          <Header />
+          <NavigationContainer ref={navigationRef}>
+            <Stack.Navigator>
+              <Stack.Screen name='home' options={sceneOptions}>
+                {props => <Catalogue {...props} scene='home' />}
+              </Stack.Screen>
+              <Stack.Screen name='courses' options={sceneOptions}>
+                {props => <Catalogue {...props} scene='courses' />}
+              </Stack.Screen>
+              <Stack.Screen name='profile' options={sceneOptions}>
+                {props => <Profile whatever='home' />}
+              </Stack.Screen>
+            </Stack.Navigator>
+          </NavigationContainer>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity
+              onPress={() => navigationRef.current?.navigate('home')}
+            >
+              <Text style={{ padding: 10 }}>Home</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigationRef.current?.navigate('courses')}
+            >
+              <Text style={{ padding: 10 }}>Courses</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => navigationRef.current?.navigate('profile')}
+            >
+              <Text style={{ padding: 10 }}>Profile</Text>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaProvider>
       )}
-      <View style={{ flexDirection: 'row' }}>
-        <TouchableOpacity
-          onPress={() => navigationRef.current?.navigate('home')}
-        >
-          <Text style={{ padding: 10 }}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigationRef.current?.navigate('courses')}
-        >
-          <Text style={{ padding: 10 }}>Courses</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigationRef.current?.navigate('profile')}
-        >
-          <Text style={{ padding: 10 }}>Profile</Text>
-        </TouchableOpacity>
-      </View>
     </State>
   );
 }

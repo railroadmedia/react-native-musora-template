@@ -16,8 +16,6 @@ interface Props {
 }
 
 export const Catalogue: React.FC<Props> = ({ scene }) => {
-  let page = 1;
-
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { cards, addCards, addCardsAndCache, updateCard } =
     useContext(CardsContext);
@@ -26,13 +24,14 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const page = useRef(1);
 
   useEffect(() => {
     provider[scene].getCache?.().then(cache => {
       if (isMounted.current) dispatch({ type: ADD_COMBINED, scene, ...cache });
     });
     provider[scene]
-      .getCombined?.({ page, signal: abortC.current.signal })
+      .getCombined?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, method]) => {
         console.log(all);
         if (isMounted.current) {
