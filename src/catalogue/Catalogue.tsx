@@ -1,15 +1,15 @@
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer, useRef } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 
-import { ThemeContext } from '../context/ThemeContext';
-import { CardsContext } from '../context/CardsContext';
+import { ThemeContext } from '../state/ThemeContext';
+import { CardsContext } from '../state/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
 import {
   ADD_COMBINED,
   ADD_COMBINED_AND_CACHE,
   catalogueReducer
-} from './reducer';
+} from '../state/catalogue/reducer';
 
 interface Props {
   scene: string;
@@ -18,40 +18,47 @@ interface Props {
 export const Catalogue: React.FC<Props> = ({ scene }) => {
   let page = 1;
 
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const { cards, addCards, addCardsAndCache, updateCard } =
     useContext(CardsContext);
-  const { theme, toggleTheme } = useContext(ThemeContext);
 
   const [catalogue, dispatch] = useReducer(catalogueReducer, {});
 
+  const isMounted = useRef(true);
+  const abortC = useRef(new AbortController());
+
   useEffect(() => {
+    provider[scene].getCache?.().then(cache => {
+      if (isMounted.current) dispatch({ type: ADD_COMBINED, scene, ...cache });
+    });
     provider[scene]
-      .getCache?.()
-      .then(cache => dispatch({ type: ADD_COMBINED, scene, ...cache }));
-    provider[scene]
-      .getCombined?.({ page })
+      .getCombined?.({ page, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, method]) => {
         console.log(all);
-        addCardsAndCache(all?.data);
-        dispatch({
-          type: ADD_COMBINED_AND_CACHE,
-          scene,
-          method,
-          all: all?.data,
-          inProgress: inProgress?.data,
-          newContent: newContent?.data
-        });
+        if (isMounted.current) {
+          addCardsAndCache(all?.data);
+          dispatch({
+            type: ADD_COMBINED_AND_CACHE,
+            scene,
+            method,
+            all: all?.data,
+            inProgress: inProgress?.data,
+            newContent: newContent?.data
+          });
+        }
       });
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
   }, []);
   console.log(scene, cards, theme, catalogue);
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => toggleTheme()}>
-        <Text style={{ padding: 20, margin: 20, backgroundColor: 'red' }}>
-          SS
-        </Text>
+        <Text style={{ padding: 20, backgroundColor: 'red' }}>SS</Text>
       </TouchableOpacity>
-      <Text>{scene} catalogue</Text>
+      <Text style={{ fontWeight: '900', fontSize: 20 }}>{scene} catalogue</Text>
     </View>
   );
 };

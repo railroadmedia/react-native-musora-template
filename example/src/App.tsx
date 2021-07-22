@@ -43,15 +43,17 @@ export default function App() {
               <Profile whatever='home' />
             </View>
           )}
-          <TouchableOpacity onPress={() => setScene('home')}>
-            <Text style={{ padding: 10 }}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setScene('courses')}>
-            <Text style={{ padding: 10 }}>Courses</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setScene('profile')}>
-            <Text style={{ padding: 10 }}>Profile</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row' }}>
+            <TouchableOpacity onPress={() => setScene('home')}>
+              <Text style={{ padding: 10 }}>Home</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setScene('courses')}>
+              <Text style={{ padding: 10 }}>Courses</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setScene('profile')}>
+              <Text style={{ padding: 10 }}>Profile</Text>
+            </TouchableOpacity>
+          </View>
         </>
       )}
     </State>

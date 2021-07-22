@@ -5,4 +5,4 @@ export * from './services/exporter';
 export * from './catalogue/Catalogue';
 export * from './profile/Profile';
 
-export * from './context/State';
+export * from './state/Store';
