@@ -7,18 +7,26 @@ interface ProviderMethod {
   ({}: Args): Promise<{ data?: [] }>;
 }
 
-interface Scene {
-  getMethod?: ProviderMethod;
-  getAll?: ProviderMethod;
-  getInProgress?: ProviderMethod;
-  getNew?: ProviderMethod;
-  getCombined?: ({}: Args) => Promise<{ data?: [] }[]>;
-  getCache?: () => Promise<{
+interface ProviderMethodCombined {
+  ({}: Args): Promise<{ data?: [] }[]>;
+}
+
+interface ProviderMethodCache {
+  (): Promise<{
     all?: [];
     inProgress?: [];
     newContent?: [];
     method?: {};
   }>;
+}
+
+interface Scene {
+  getMethod?: ProviderMethod;
+  getAll?: ProviderMethod;
+  getInProgress?: ProviderMethod;
+  getNew?: ProviderMethod;
+  getCombined?: ProviderMethodCombined;
+  getCache?: ProviderMethodCache;
 }
 
 interface Provider {

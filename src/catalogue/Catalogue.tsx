@@ -5,7 +5,11 @@ import { ThemeContext } from '../context/ThemeContext';
 import { CardsContext } from '../context/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
-import { ADD_COMBINED, catalogueReducer } from './reducer';
+import {
+  ADD_COMBINED,
+  ADD_COMBINED_AND_CACHE,
+  catalogueReducer
+} from './reducer';
 
 interface Props {
   scene: string;
@@ -14,7 +18,8 @@ interface Props {
 export const Catalogue: React.FC<Props> = ({ scene }) => {
   let page = 1;
 
-  const { cards, addCards, updateCard } = useContext(CardsContext);
+  const { cards, addCards, addCardsAndCache, updateCard } =
+    useContext(CardsContext);
   const { theme, toggleTheme } = useContext(ThemeContext);
 
   const [catalogue, dispatch] = useReducer(catalogueReducer, {});
@@ -27,9 +32,9 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       .getCombined?.({ page })
       .then(([all, newContent, inProgress, method]) => {
         console.log(all);
-        addCards(all?.data);
+        addCardsAndCache(all?.data);
         dispatch({
-          type: ADD_COMBINED,
+          type: ADD_COMBINED_AND_CACHE,
           scene,
           method,
           all: all?.data,

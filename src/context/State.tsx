@@ -5,23 +5,34 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CardsContext } from './CardsContext';
 import { ThemeContext } from './ThemeContext';
 
-import { cardsReducer, ADD_CARDS, UPDATE_CARD } from './cardsReducer';
+import {
+  cardsReducer,
+  ADD_CARDS,
+  UPDATE_CARD,
+  ADD_CARDS_AND_CACHE
+} from './cardsReducer';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
   const [cards, dispatch] = useReducer(cardsReducer, {});
 
   useEffect(() => {
-    AsyncStorage.getItem('@theme').then(theme => {
-      if (theme !== null) setTheme(theme);
-      else setTheme('light');
-    });
+    AsyncStorage.multiGet(['@theme', '@cards']).then(
+      ([[_, theme], [__, cards]]) => {
+        if (cards) addCards(Object.values(JSON.parse(cards)));
+        if (theme !== null) setTheme(theme);
+        else setTheme('light');
+      }
+    );
   }, []);
 
-  const addCards = (cards: { id: number }[]) => {
+  const addCards = (cards?: { id: number }[]) => {
     dispatch({ type: ADD_CARDS, cards });
   };
-  const updateCard = (card: { id: number }) => {
+  const addCardsAndCache = (cards?: { id: number }[]) => {
+    dispatch({ type: ADD_CARDS_AND_CACHE, cards });
+  };
+  const updateCard = (card?: { id: number }) => {
     dispatch({ type: UPDATE_CARD, card });
   };
 
@@ -32,7 +43,9 @@ export const State: React.FC = props => {
   };
 
   return (
-    <CardsContext.Provider value={{ cards, addCards, updateCard }}>
+    <CardsContext.Provider
+      value={{ cards, addCards, updateCard, addCardsAndCache }}
+    >
       <ThemeContext.Provider value={{ theme, toggleTheme }}>
         {!!theme && props.children}
       </ThemeContext.Provider>

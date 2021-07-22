@@ -5,7 +5,7 @@ export interface Reducer {
   ): {};
 }
 export interface AddCards {
-  (state: {}, cards: { id: number }[]): {};
+  (state: {}, cards: { id: number }[], cache?: boolean): {};
 }
 export interface UpdateCard {
   (state: {}, card: { id: number }): {};
@@ -15,8 +15,9 @@ export interface ToggleTheme {
 }
 export interface CardsContext {
   cards: {};
-  addCards: (cards: { id: number }[]) => void;
-  updateCard: (card: { id: number }) => void;
+  addCards: (cards?: { id: number }[]) => void;
+  addCardsAndCache: (cards?: { id: number }[]) => void;
+  updateCard: (card?: { id: number }) => void;
 }
 export interface ThemeContext {
   theme: string;

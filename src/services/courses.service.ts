@@ -1,3 +1,5 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { call } from './auth.service';
 
 import type { Args } from './interfaces';
@@ -26,5 +28,15 @@ export const coursesService = {
       }&page=${page || 1}&statuses[]=published${filters || ''}`,
       signal
     });
+  },
+  getCombined: function (params: Args) {
+    return Promise.all([
+      this.getAll(params),
+      this.getNew(params),
+      this.getInProgress(params)
+    ]);
+  },
+  getCache: async function () {
+    return JSON.parse((await AsyncStorage.getItem('@courses')) || '');
   }
 };
