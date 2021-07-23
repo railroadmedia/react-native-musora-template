@@ -55,7 +55,9 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => toggleTheme()}>
-        <Text style={{ padding: 20, backgroundColor: 'red' }}>SS</Text>
+        <Text style={{ padding: 20, backgroundColor: 'red' }}>
+          change theme
+        </Text>
       </TouchableOpacity>
       <Text style={{ fontWeight: '900', fontSize: 20 }}>{scene} catalogue</Text>
     </View>
