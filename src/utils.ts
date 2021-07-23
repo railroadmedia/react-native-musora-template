@@ -1,18 +1,21 @@
+import { Platform } from 'react-native';
 import * as svgs from './images/svgs';
 
 interface UtilsInterface {
   rootUrl: string;
   brand: string;
   color: string;
+  isiOS: boolean;
   serverDownError: {
     title: string;
     message: string;
   };
-  // headerSvgBrand: () => Function
+  headerSvgBrand: ({ width, height, fill }: svgs.Props) => JSX.Element;
 }
 class Utils implements UtilsInterface {
   brand = '';
   rootUrl = '';
+  isiOS = Platform.OS === 'ios';
 
   private _color: { [brand: string]: '#0b76db' | '#fb1b2f' } = {
     drumeo: '#0b76db',
@@ -39,18 +42,18 @@ class Utils implements UtilsInterface {
     return this._serverDown[this.brand];
   }
 
-  // get headerSvgBrand() {
-  //   switch (this.brand) {
-  //     case 'pianote':
-  //       return svgs.pianoteHeader;
-  //     case 'quitareo':
-  //       return svgs.guitareoHeader;
-  //     case 'singeo':
-  //       return svgs.singeoHeader;
-  //     default:
-  //       return svgs.drumeoHeader;
-  //   }
-  // }
+  get headerSvgBrand() {
+    switch (this.brand) {
+      case 'pianote':
+        return svgs.pianoteHeader;
+      case 'quitareo':
+        return svgs.guitareoHeader;
+      case 'singeo':
+        return svgs.singeoHeader;
+      default:
+        return svgs.drumeoHeader;
+    }
+  }
 }
 
 export let utils = new Utils();

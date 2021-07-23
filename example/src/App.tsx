@@ -42,7 +42,11 @@ export default function App() {
       <State>
         {authenticated && (
           <>
-            <Header />
+            <Header
+              onLogoPress={() => navigationRef.current?.navigate('home')}
+              onDownloadsPress={() => {}}
+              onMyListPress={() => {}}
+            />
             <NavigationContainer ref={navigationRef}>
               <Stack.Navigator>
                 <Stack.Screen name='home' options={sceneOptions}>

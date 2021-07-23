@@ -12,6 +12,8 @@ import {
   ADD_CARDS_AND_CACHE
 } from './cardsReducer';
 
+import { LIGHT, DARK } from '../themeStyles';
+
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
   const [cards, dispatch] = useReducer(cardsReducer, {});
@@ -21,7 +23,7 @@ export const State: React.FC = props => {
       ([[_, theme], [__, cards]]) => {
         if (cards) addCards(Object.values(JSON.parse(cards)));
         if (theme !== null) setTheme(theme);
-        else setTheme('light');
+        else setTheme(LIGHT);
       }
     );
   }, []);
@@ -37,7 +39,7 @@ export const State: React.FC = props => {
   };
 
   const toggleTheme = () => {
-    let newTheme = theme === 'dark' ? 'light' : 'dark';
+    let newTheme = theme === DARK ? LIGHT : DARK;
     AsyncStorage.setItem('@theme', newTheme);
     setTheme(newTheme);
   };
