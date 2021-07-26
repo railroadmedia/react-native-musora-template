@@ -11,8 +11,7 @@ export const Profile: React.FC<Props> = ({ whatever }) => {
   const [user, setUser] = useState<{} | undefined>({});
 
   useEffect(() => {
-    userService.getUserDetails({}).then(user => {
-      console.log(user);
+    userService.getUserDetails().then(user => {
       setUser(user);
     });
   }, []);

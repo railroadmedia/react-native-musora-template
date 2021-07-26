@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import {
   NavigationContainer,
   NavigationContainerRef
 } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationOptions
+} from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {
@@ -16,13 +19,34 @@ import {
   Header
 } from 'react-native-musora-templates';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator(),
+  navigationRef = React.createRef<NavigationContainerRef>(),
+  stackOptions = {
+    header: (props: any) => {
+      const opacity = Animated.add(
+        props.scene.progress.current,
+        props.scene.progress.next || 0
+      ).interpolate({
+        inputRange: [0, 1, 2],
+        outputRange: [1, 1, 0]
+      });
+      return (
+        <Animated.View
+          style={{
+            opacity
+          }}
+        >
+          <Header
+            onLogoPress={() => navigationRef.current?.navigate('home')}
+            onDownloadsPress={() => {}}
+            onMyListPress={() => {}}
+            onProfilePress={() => {}}
+          />
+        </Animated.View>
+      );
+    }
+  };
 
-const navigationRef = React.createRef<NavigationContainerRef>();
-
-let sceneOptions = {
-  headerShown: false
-};
 export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
 
@@ -31,8 +55,8 @@ export default function App() {
     utils.brand = 'drumeo';
 
     authenticate()
-      .then(({ token }) => {
-        if (token) setAuthenticated(true);
+      .then(auth => {
+        if (auth?.token) setAuthenticated(true);
       })
       .catch(() => {});
   }, []);
@@ -42,21 +66,16 @@ export default function App() {
       <State>
         {authenticated && (
           <>
-            <Header
-              onLogoPress={() => navigationRef.current?.navigate('home')}
-              onDownloadsPress={() => {}}
-              onMyListPress={() => {}}
-            />
             <NavigationContainer ref={navigationRef}>
-              <Stack.Navigator>
-                <Stack.Screen name='home' options={sceneOptions}>
+              <Stack.Navigator screenOptions={stackOptions}>
+                <Stack.Screen name='home'>
                   {props => <Catalogue {...props} scene='home' />}
                 </Stack.Screen>
-                <Stack.Screen name='courses' options={sceneOptions}>
+                <Stack.Screen name='courses'>
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
-                <Stack.Screen name='profile' options={sceneOptions}>
-                  {props => <Profile {...props} whatever='home' />}
+                <Stack.Screen name='profile' options={{ headerShown: false }}>
+                  {props => <Profile {...props} whatever='whatever' />}
                 </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>

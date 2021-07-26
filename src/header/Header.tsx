@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useReducer, useRef } from 'react';
-import { StyleSheet, View, StatusBar } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  StatusBar,
+  TouchableOpacity,
+  Image
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { utils } from '../utils';
@@ -8,18 +14,22 @@ import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/ThemeContext';
 
 import { downloadsHeader, myListHeader } from '../images/svgs';
+import { UserContext } from '../state/UserContext';
 
 interface Props {
   onLogoPress: Function;
   onDownloadsPress: Function;
   onMyListPress: Function;
+  onProfilePress: Function;
 }
 export const Header: React.FC<Props> = ({
   onLogoPress,
   onDownloadsPress,
-  onMyListPress
+  onMyListPress,
+  onProfilePress
 }) => {
   const { theme } = useContext(ThemeContext);
+  const { user } = useContext(UserContext);
   let styles = setStyles(theme);
 
   const isMounted = useRef(true);
@@ -40,7 +50,7 @@ export const Header: React.FC<Props> = ({
       />
       <View style={{ flex: 1 }}>
         {utils.headerSvgBrand({
-          height: 25,
+          height: 30,
           fill: utils.color,
           onPress: onLogoPress
         })}
@@ -48,15 +58,25 @@ export const Header: React.FC<Props> = ({
       {downloadsHeader({
         height: 20,
         fill: themeStyles[theme].iconColor,
-        marginHorizontal: 10,
+        paddingHorizontal: 10,
         onPress: onDownloadsPress
       })}
       {myListHeader({
         height: 20,
         fill: themeStyles[theme].iconColor,
-        marginHorizontal: 10,
+        paddingHorizontal: 10,
         onPress: onMyListPress
       })}
+      <TouchableOpacity
+        style={{ paddingLeft: 10 }}
+        onPress={() => onProfilePress()}
+      >
+        <Image
+          source={{ uri: user.avatarUrl || utils.fallbackAvatar }}
+          resizeMode={'cover'}
+          style={{ height: 35, aspectRatio: 1, borderRadius: 20 }}
+        />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };

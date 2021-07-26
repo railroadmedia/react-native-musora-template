@@ -33,7 +33,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     provider[scene]
       .getCombined?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, method]) => {
-        console.log(all);
         if (isMounted.current) {
           addCardsAndCache(all?.data);
           dispatch({
@@ -51,7 +50,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       abortC.current.abort();
     };
   }, []);
-  console.log(scene, cards, theme, catalogue);
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => toggleTheme()}>

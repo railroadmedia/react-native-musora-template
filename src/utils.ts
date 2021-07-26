@@ -6,6 +6,7 @@ interface UtilsInterface {
   brand: string;
   color: string;
   isiOS: boolean;
+  fallbackAvatar: string;
   serverDownError: {
     title: string;
     message: string;
@@ -16,6 +17,8 @@ class Utils implements UtilsInterface {
   brand = '';
   rootUrl = '';
   isiOS = Platform.OS === 'ios';
+  fallbackAvatar =
+    'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
 
   private _color: { [brand: string]: '#0b76db' | '#fb1b2f' } = {
     drumeo: '#0b76db',

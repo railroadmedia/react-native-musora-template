@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { Reducer, AddCards, UpdateCard } from './interfaces';
+import type { CardsReducer, AddCards, UpdateCard } from './interfaces';
 
 export const ADD_CARDS = 'ADD_CARDS';
 export const ADD_CARDS_AND_CACHE = 'ADD_CARDS_AND_CACHE';
@@ -19,7 +19,7 @@ const updateCard: UpdateCard = (state, card) => {
   return newState;
 };
 
-export const cardsReducer: Reducer = (state, { type, cards, card }) => {
+export const cardsReducer: CardsReducer = (state, { type, cards, card }) => {
   switch (type) {
     case ADD_CARDS:
       return cards ? addCards(state, cards) : state;
