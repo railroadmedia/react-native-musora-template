@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -84,7 +84,7 @@ export const Header: React.FC<Props> = ({
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     safeAreaContainer: {
-      padding: 10,
+      padding: 5,
       backgroundColor: current.background,
       flexDirection: 'row',
       alignItems: 'center'

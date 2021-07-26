@@ -4,9 +4,17 @@ import { Path, Svg } from 'react-native-svg';
 
 export interface Props {
   margin?: string | number;
+  marginLeft?: string | number;
+  marginRight?: string | number;
+  marginTop?: string | number;
+  marginBottom?: string | number;
   marginHorizontal?: string | number;
   marginVertical?: string | number;
   padding?: string | number;
+  paddingLeft?: string | number;
+  paddingRight?: string | number;
+  paddingTop?: string | number;
+  paddingBottom?: string | number;
   paddingHorizontal?: string | number;
   paddingVertical?: string | number;
   onPress?: Function;
@@ -15,11 +23,19 @@ export interface Props {
   fill?: string;
 }
 
-export const myListHeader = ({
+export const backHeaderBtn = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -32,7 +48,64 @@ export const myListHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
+      marginHorizontal,
+      marginVertical,
+      paddingHorizontal,
+      paddingVertical
+    }}
+  >
+    <Svg viewBox='0 0 9 14' style={{ width, height, aspectRatio: 9 / 14 }}>
+      <Path
+        d='M0.5781259357757569,6.484393581748009 C0.296875935775757,6.765643581748009 0.296875935775757,7.234393581748009 0.5781259357757569,7.515643581748009 L6.640623935775757,13.609393581748009 C6.953123935775757,13.890593581748009 7.421873935775757,13.890593581748009 7.703123935775757,13.609393581748009 L8.421873935775757,12.890593581748009 C8.703123935775757,12.609393581748009 8.703123935775757,12.140593581748009 8.421873935775757,11.828193581748009 L3.609373935775757,6.984393581748009 L8.421873935775757,2.1718935817480087 C8.703123935775757,1.8593935817480087 8.703123935775757,1.3906435817480087 8.421873935775757,1.1093935817480087 L7.703123935775757,0.3906435817480088 C7.421873935775757,0.10939358174800873 6.953123935775757,0.10939358174800873 6.640623935775757,0.3906435817480088 L0.5781259357757569,6.484393581748009 z'
+        fill={fill}
+      />
+    </Svg>
+  </TouchableOpacity>
+);
+backHeaderBtn.getAspectRatio = () => 9 / 14;
+export const myListHeader = ({
+  margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
+  marginHorizontal,
+  marginVertical,
+  padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
+  paddingHorizontal,
+  paddingVertical,
+  onPress,
+  width,
+  height,
+  fill
+}: Props) => (
+  <TouchableOpacity
+    onPress={() => onPress?.()}
+    disabled={!onPress}
+    style={{
+      padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
+      margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,
@@ -51,9 +124,17 @@ export const myListHeader = ({
 );
 export const downloadsHeader = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -66,7 +147,15 @@ export const downloadsHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,
@@ -85,9 +174,17 @@ export const downloadsHeader = ({
 );
 export const drumeoHeader = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -100,7 +197,15 @@ export const drumeoHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,
@@ -143,9 +248,17 @@ export const drumeoHeader = ({
 );
 export const pianoteHeader = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -158,7 +271,15 @@ export const pianoteHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,
@@ -184,9 +305,17 @@ export const pianoteHeader = ({
 );
 export const guitareoHeader = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -199,7 +328,15 @@ export const guitareoHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,
@@ -218,9 +355,17 @@ export const guitareoHeader = ({
 );
 export const singeoHeader = ({
   margin,
+  marginLeft,
+  marginRight,
+  marginTop,
+  marginBottom,
   marginHorizontal,
   marginVertical,
   padding,
+  paddingLeft,
+  paddingRight,
+  paddingTop,
+  paddingBottom,
   paddingHorizontal,
   paddingVertical,
   onPress,
@@ -233,7 +378,15 @@ export const singeoHeader = ({
     disabled={!onPress}
     style={{
       padding,
+      paddingLeft,
+      paddingRight,
+      paddingTop,
+      paddingBottom,
       margin,
+      marginLeft,
+      marginRight,
+      marginTop,
+      marginBottom,
       marginHorizontal,
       marginVertical,
       paddingHorizontal,

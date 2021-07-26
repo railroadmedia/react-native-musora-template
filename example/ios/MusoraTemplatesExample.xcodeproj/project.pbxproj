@@ -7,27 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		054EF0A60B0D4DBBAB34B4F5 /* RobotoCondensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3165A65AD35E4124BEF77E82 /* RobotoCondensed-Italic.ttf */; };
+		0FE7F2A833C10C8BC2251599 /* libPods-MusoraTemplatesExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		7760B224391E78F17EF64CF6 /* libPods-MusoraTemplatesExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D3EECC6E5DB1DBB1BECD9B93 /* libPods-MusoraTemplatesExample.a */; };
+		1E740351FAD8458491F42634 /* OpenSans-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2480A374727541279B38CFF2 /* OpenSans-ExtraBold.ttf */; };
+		32CEBB6602C544AFAF06339A /* OpenSans-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 43F522A48CC043B98A2E8721 /* OpenSans-Light.ttf */; };
+		403D057765014BDEAC9DEF85 /* RobotoCondensed-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 537094BE9C4D4B8C9A85F731 /* RobotoCondensed-Light.ttf */; };
+		4B60330D41514639A82F12F1 /* RobotoCondensed-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 21C7FBA6AB9F4A9F90DA9458 /* RobotoCondensed-Bold.ttf */; };
+		4C2EC3537E8F406099A93808 /* OpenSans.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F452179853D486DBC034B50 /* OpenSans.ttf */; };
+		7CE9F092779246C5879E5933 /* OpenSans-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 977BD270FE654DB68F47D6E1 /* OpenSans-BoldItalic.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8271C6B3B89F40338F256605 /* OpenSans-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F54321ABF92454393DBA0C5 /* OpenSans-Italic.ttf */; };
+		967FF98C3FDF421BA923838C /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 927046A379E64234B005BEE5 /* OpenSans-Bold.ttf */; };
+		97A8075C698A43339999F418 /* OpenSans-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0CB0FC06245B4855A8509893 /* OpenSans-SemiboldItalic.ttf */; };
+		9C052600BAC5417DB42BF8F5 /* OpenSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C08318B99B2041F7BE375840 /* OpenSans-LightItalic.ttf */; };
+		AF61ED4D987543269CC60C87 /* RobotoCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EA1CB4106EBD4FCAB3B96D70 /* RobotoCondensed-Regular.ttf */; };
+		C11720BD8F5D41E0B5D60554 /* RobotoCondensed-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C4CB5430690744E5A7630B24 /* RobotoCondensed-LightItalic.ttf */; };
+		CE781AD10E4C4E8F87B9B91A /* OpenSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F42053F41BF4112B9554B74 /* OpenSans-ExtraBoldItalic.ttf */; };
+		D9DFD6D911394DF8ADC07331 /* OpenSans-Semibold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE0445EF494F411EAA03C80F /* OpenSans-Semibold.ttf */; };
+		DA0692A5F5604F8F85036F97 /* RobotoCondensed-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 35F0DF5F08D442358A05B4B8 /* RobotoCondensed-BoldItalic.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		0CB0FC06245B4855A8509893 /* OpenSans-SemiboldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-SemiboldItalic.ttf"; path = "../assets/fonts/OpenSans-SemiboldItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* MusoraTemplatesExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusoraTemplatesExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MusoraTemplatesExample/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = MusoraTemplatesExample/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = MusoraTemplatesExample/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = MusoraTemplatesExample/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = MusoraTemplatesExample/main.m; sourceTree = "<group>"; };
-		170F2C20034CC494310F2D30 /* Pods-MusoraTemplatesExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.release.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.release.xcconfig"; sourceTree = "<group>"; };
-		571FE09B5B08FD628493C7FD /* Pods-MusoraTemplatesExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.debug.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.debug.xcconfig"; sourceTree = "<group>"; };
+		1F54321ABF92454393DBA0C5 /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Italic.ttf"; path = "../assets/fonts/OpenSans-Italic.ttf"; sourceTree = "<group>"; };
+		21C7FBA6AB9F4A9F90DA9458 /* RobotoCondensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Bold.ttf"; path = "../assets/fonts/RobotoCondensed-Bold.ttf"; sourceTree = "<group>"; };
+		2480A374727541279B38CFF2 /* OpenSans-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-ExtraBold.ttf"; path = "../assets/fonts/OpenSans-ExtraBold.ttf"; sourceTree = "<group>"; };
+		2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.debug.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.debug.xcconfig"; sourceTree = "<group>"; };
+		3165A65AD35E4124BEF77E82 /* RobotoCondensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Italic.ttf"; path = "../assets/fonts/RobotoCondensed-Italic.ttf"; sourceTree = "<group>"; };
+		35F0DF5F08D442358A05B4B8 /* RobotoCondensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-BoldItalic.ttf"; path = "../assets/fonts/RobotoCondensed-BoldItalic.ttf"; sourceTree = "<group>"; };
+		3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusoraTemplatesExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		43F522A48CC043B98A2E8721 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Light.ttf"; path = "../assets/fonts/OpenSans-Light.ttf"; sourceTree = "<group>"; };
+		537094BE9C4D4B8C9A85F731 /* RobotoCondensed-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Light.ttf"; path = "../assets/fonts/RobotoCondensed-Light.ttf"; sourceTree = "<group>"; };
+		5F42053F41BF4112B9554B74 /* OpenSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/OpenSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
+		5F452179853D486DBC034B50 /* OpenSans.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = OpenSans.ttf; path = ../assets/fonts/OpenSans.ttf; sourceTree = "<group>"; };
+		739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.release.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MusoraTemplatesExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		D3EECC6E5DB1DBB1BECD9B93 /* libPods-MusoraTemplatesExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusoraTemplatesExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		927046A379E64234B005BEE5 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Bold.ttf"; path = "../assets/fonts/OpenSans-Bold.ttf"; sourceTree = "<group>"; };
+		977BD270FE654DB68F47D6E1 /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-BoldItalic.ttf"; path = "../assets/fonts/OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
+		C08318B99B2041F7BE375840 /* OpenSans-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-LightItalic.ttf"; path = "../assets/fonts/OpenSans-LightItalic.ttf"; sourceTree = "<group>"; };
+		C4CB5430690744E5A7630B24 /* RobotoCondensed-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-LightItalic.ttf"; path = "../assets/fonts/RobotoCondensed-LightItalic.ttf"; sourceTree = "<group>"; };
+		EA1CB4106EBD4FCAB3B96D70 /* RobotoCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Regular.ttf"; path = "../assets/fonts/RobotoCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		FE0445EF494F411EAA03C80F /* OpenSans-Semibold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Semibold.ttf"; path = "../assets/fonts/OpenSans-Semibold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7760B224391E78F17EF64CF6 /* libPods-MusoraTemplatesExample.a in Frameworks */,
+				0FE7F2A833C10C8BC2251599 /* libPods-MusoraTemplatesExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -61,7 +93,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				D3EECC6E5DB1DBB1BECD9B93 /* libPods-MusoraTemplatesExample.a */,
+				3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -69,8 +101,8 @@
 		6B9684456A2045ADE5A6E47E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				571FE09B5B08FD628493C7FD /* Pods-MusoraTemplatesExample.debug.xcconfig */,
-				170F2C20034CC494310F2D30 /* Pods-MusoraTemplatesExample.release.xcconfig */,
+				2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */,
+				739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -90,6 +122,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				6B9684456A2045ADE5A6E47E /* Pods */,
+				A2233D7DE52B473C932E29AE /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -104,6 +137,30 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		A2233D7DE52B473C932E29AE /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				927046A379E64234B005BEE5 /* OpenSans-Bold.ttf */,
+				977BD270FE654DB68F47D6E1 /* OpenSans-BoldItalic.ttf */,
+				2480A374727541279B38CFF2 /* OpenSans-ExtraBold.ttf */,
+				5F42053F41BF4112B9554B74 /* OpenSans-ExtraBoldItalic.ttf */,
+				1F54321ABF92454393DBA0C5 /* OpenSans-Italic.ttf */,
+				43F522A48CC043B98A2E8721 /* OpenSans-Light.ttf */,
+				C08318B99B2041F7BE375840 /* OpenSans-LightItalic.ttf */,
+				FE0445EF494F411EAA03C80F /* OpenSans-Semibold.ttf */,
+				0CB0FC06245B4855A8509893 /* OpenSans-SemiboldItalic.ttf */,
+				5F452179853D486DBC034B50 /* OpenSans.ttf */,
+				21C7FBA6AB9F4A9F90DA9458 /* RobotoCondensed-Bold.ttf */,
+				35F0DF5F08D442358A05B4B8 /* RobotoCondensed-BoldItalic.ttf */,
+				3165A65AD35E4124BEF77E82 /* RobotoCondensed-Italic.ttf */,
+				537094BE9C4D4B8C9A85F731 /* RobotoCondensed-Light.ttf */,
+				C4CB5430690744E5A7630B24 /* RobotoCondensed-LightItalic.ttf */,
+				EA1CB4106EBD4FCAB3B96D70 /* RobotoCondensed-Regular.ttf */,
+			);
+			name = Resources;
+			path = "";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -111,14 +168,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MusoraTemplatesExample" */;
 			buildPhases = (
-				D6721E5E1EF1C83BA0C5F4D9 /* [CP] Check Pods Manifest.lock */,
+				15E42F0A2230AFEBEC44B4B3 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				4B085C6C6A6D73A218BAF37C /* [CP] Embed Pods Frameworks */,
-				43549F94A4A550B2233AFB65 /* [CP] Copy Pods Resources */,
+				E0686D0A207CE43A83D4F2E1 /* [CP] Embed Pods Frameworks */,
+				54085EA830C05EE79FF19B65 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -168,6 +225,22 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				967FF98C3FDF421BA923838C /* OpenSans-Bold.ttf in Resources */,
+				7CE9F092779246C5879E5933 /* OpenSans-BoldItalic.ttf in Resources */,
+				1E740351FAD8458491F42634 /* OpenSans-ExtraBold.ttf in Resources */,
+				CE781AD10E4C4E8F87B9B91A /* OpenSans-ExtraBoldItalic.ttf in Resources */,
+				8271C6B3B89F40338F256605 /* OpenSans-Italic.ttf in Resources */,
+				32CEBB6602C544AFAF06339A /* OpenSans-Light.ttf in Resources */,
+				9C052600BAC5417DB42BF8F5 /* OpenSans-LightItalic.ttf in Resources */,
+				D9DFD6D911394DF8ADC07331 /* OpenSans-Semibold.ttf in Resources */,
+				97A8075C698A43339999F418 /* OpenSans-SemiboldItalic.ttf in Resources */,
+				4C2EC3537E8F406099A93808 /* OpenSans.ttf in Resources */,
+				4B60330D41514639A82F12F1 /* RobotoCondensed-Bold.ttf in Resources */,
+				DA0692A5F5604F8F85036F97 /* RobotoCondensed-BoldItalic.ttf in Resources */,
+				054EF0A60B0D4DBBAB34B4F5 /* RobotoCondensed-Italic.ttf in Resources */,
+				403D057765014BDEAC9DEF85 /* RobotoCondensed-Light.ttf in Resources */,
+				C11720BD8F5D41E0B5D60554 /* RobotoCondensed-LightItalic.ttf in Resources */,
+				AF61ED4D987543269CC60C87 /* RobotoCondensed-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -188,43 +261,7 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		43549F94A4A550B2233AFB65 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		4B085C6C6A6D73A218BAF37C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D6721E5E1EF1C83BA0C5F4D9 /* [CP] Check Pods Manifest.lock */ = {
+		15E42F0A2230AFEBEC44B4B3 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -244,6 +281,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		54085EA830C05EE79FF19B65 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E0686D0A207CE43A83D4F2E1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -282,7 +355,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 571FE09B5B08FD628493C7FD /* Pods-MusoraTemplatesExample.debug.xcconfig */;
+			baseConfigurationReference = 2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -306,7 +379,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 170F2C20034CC494310F2D30 /* Pods-MusoraTemplatesExample.release.xcconfig */;
+			baseConfigurationReference = 739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
