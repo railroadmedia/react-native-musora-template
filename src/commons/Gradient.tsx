@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
@@ -16,9 +16,13 @@ export const Gradient: React.FC<Props> = ({
   verticalStripes,
   children
 }) => {
+  const [parentWidth, setParentwidth] = useState(0);
   return (
-    <View style={{ width, height }}>
-      <Svg style={{ width: '100%', height: '100%', position: 'absolute' }}>
+    <View
+      style={{ width, height }}
+      onLayout={({ nativeEvent: { layout } }) => setParentwidth(layout.width)}
+    >
+      <Svg style={{ width: '100%', height: '100%' }} key={parentWidth}>
         <Defs>
           <LinearGradient
             id='gradient'
