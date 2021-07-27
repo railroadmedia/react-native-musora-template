@@ -30,7 +30,12 @@ export interface ThemeContext {
   toggleTheme: () => void;
 }
 export interface UserContext {
-  user: { avatarUrl?: string };
+  user: {
+    avatarUrl?: string;
+    display_name?: string;
+    totalXp: string;
+    xpRank: string;
+  };
   updateUser: (user: {}) => void;
   updateUserAndCache: (user: {}) => void;
 }

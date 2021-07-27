@@ -5,13 +5,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/ThemeContext';
 
-import { backHeaderBtn } from '../images/svgs';
+import { backHeaderBtn, backHeaderSettings } from '../images/svgs';
 
 interface Props {
   onBack: Function;
   title: string;
+  transparent?: boolean;
+  onSettings?: Function;
 }
-export const BackHeader: React.FC<Props> = ({ onBack, title }) => {
+export const BackHeader: React.FC<Props> = ({
+  onBack,
+  title,
+  transparent,
+  onSettings
+}) => {
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
@@ -26,19 +33,34 @@ export const BackHeader: React.FC<Props> = ({ onBack, title }) => {
   }, [theme]);
 
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
+    <SafeAreaView
+      style={[
+        styles.safeAreaContainer,
+        transparent ? { backgroundColor: 'transparent' } : {}
+      ]}
+    >
       <StatusBar
         backgroundColor={themeStyles[theme].background}
         barStyle={theme === DARK ? 'light-content' : 'dark-content'}
       />
-      {backHeaderBtn({
-        height: 20,
-        paddingVertical: 7.5,
-        paddingRight: 20,
-        onPress: () => onBack(),
-        fill: themeStyles[theme].headerNavColor
-      })}
-      <Text style={styles.title}>{title}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={styles.title}>{title}</Text>
+        {backHeaderBtn({
+          height: 20,
+          paddingVertical: 7.5,
+          paddingRight: 20,
+          onPress: () => onBack(),
+          fill: themeStyles[theme].headerNavColor
+        })}
+        {!!onSettings &&
+          backHeaderSettings({
+            height: 20,
+            paddingVertical: 7.5,
+            paddingLeft: 20,
+            onPress: () => onSettings,
+            fill: themeStyles[theme].headerNavColor
+          })}
+      </View>
     </SafeAreaView>
   );
 };
@@ -48,17 +70,17 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     safeAreaContainer: {
       padding: 5,
       backgroundColor: current.background,
-      flexDirection: 'row',
-      alignItems: 'center'
+      justifyContent: 'center'
     },
     title: {
       color: current.textColor,
-      textAlign: 'center',
-      flex: 1,
-      marginRight: backHeaderBtn.getAspectRatio() * 20 + 20,
       fontFamily: 'OpenSans',
       fontSize: 25,
       fontWeight: '800',
-      textTransform: 'capitalize'
+      textTransform: 'capitalize',
+      position: 'absolute',
+      alignSelf: 'center',
+      width: '100%',
+      textAlign: 'center'
     }
   });

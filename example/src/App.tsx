@@ -14,7 +14,9 @@ import {
   Profile,
   State,
   Header,
-  BackHeader
+  BackHeader,
+  MyList,
+  Downloads
 } from 'react-native-musora-templates';
 
 const Stack = createStackNavigator(),
@@ -22,6 +24,10 @@ const Stack = createStackNavigator(),
   stackOptions = {
     header: (props: any) => {
       const isMainHeader = props.scene.route.name.match(/^(home|courses)$/);
+      const isBackNavHeaderTransparent =
+        props.scene.route.name.match(/^(profile)$/);
+      const backNavHeaderHasSettings =
+        props.scene.route.name.match(/^(profile)$/);
       const opacity = Animated.add(
         props.scene.progress.current,
         props.scene.progress.next || 0
@@ -34,14 +40,18 @@ const Stack = createStackNavigator(),
           {isMainHeader ? (
             <Header
               onLogoPress={() => navigationRef.current?.navigate('home')}
-              onDownloadsPress={() => {}}
-              onMyListPress={() => {}}
-              onProfilePress={() => {}}
+              onDownloadsPress={() =>
+                navigationRef.current?.navigate('downloads')
+              }
+              onMyListPress={() => navigationRef.current?.navigate('myList')}
+              onProfilePress={() => navigationRef.current?.navigate('profile')}
             />
           ) : (
             <BackHeader
               onBack={() => navigationRef.current?.goBack()}
               title={props.scene.route.name}
+              transparent={isBackNavHeaderTransparent}
+              onSettings={backNavHeaderHasSettings ? () => {} : undefined}
             />
           )}
         </Animated.View>
@@ -76,10 +86,22 @@ export default function App() {
                 <Stack.Screen name='courses'>
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
-                <Stack.Screen name='profile'>
+                <Stack.Screen name='myList'>
+                  {props => <MyList {...props} whatever='whatever' />}
+                </Stack.Screen>
+                <Stack.Screen name='downloads'>
+                  {props => <Downloads {...props} whatever='whatever' />}
+                </Stack.Screen>
+                <Stack.Screen
+                  name='profile'
+                  options={{ headerTransparent: true }}
+                >
                   {props => <Profile {...props} whatever='whatever' />}
                 </Stack.Screen>
-                <Stack.Screen name='songs' options={{ headerShown: false }}>
+                <Stack.Screen
+                  name='noHeaderScene'
+                  options={{ headerShown: false }}
+                >
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
               </Stack.Navigator>
@@ -96,14 +118,9 @@ export default function App() {
                 <Text style={{ padding: 10 }}>Courses</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => navigationRef.current?.navigate('profile')}
+                onPress={() => navigationRef.current?.navigate('noHeaderScene')}
               >
-                <Text style={{ padding: 10 }}>Profile</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigationRef.current?.navigate('songs')}
-              >
-                <Text style={{ padding: 10 }}>Songs</Text>
+                <Text style={{ padding: 10 }}>No header scene</Text>
               </TouchableOpacity>
             </View>
           </>
