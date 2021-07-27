@@ -63,8 +63,8 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
-    utils.brand = 'drumeo';
+    utils.rootUrl = 'https://staging.pianote.com';
+    utils.brand = 'pianote';
 
     authenticate()
       .then(auth => {
@@ -96,7 +96,7 @@ export default function App() {
                   name='profile'
                   options={{ headerTransparent: true }}
                 >
-                  {props => <Profile {...props} whatever='whatever' />}
+                  {props => <Profile {...props} />}
                 </Stack.Screen>
                 <Stack.Screen
                   name='noHeaderScene'

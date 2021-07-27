@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { Defs, LinearGradient, Path, Rect, Stop, Svg } from 'react-native-svg';
 
-interface Props {
+export interface Props {
   margin?: string | number;
   marginLeft?: string | number;
   marginRight?: string | number;

@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useRef, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,32 +6,47 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
-  ScrollView
+  FlatList,
+  RefreshControl
 } from 'react-native';
 import { Gradient } from '../commons/Gradient';
+import { userService } from '../services/user.service';
 import { ThemeContext } from '../state/ThemeContext';
 
 import { UserContext } from '../state/UserContext';
 import { themeStyles, DARK } from '../themeStyles';
 import { utils } from '../utils';
+import { Notification, NotificationProps } from './Notification';
 
-interface Props {
-  whatever: string;
-}
+interface Props {}
 
-export const Profile: React.FC<Props> = ({ whatever }) => {
+export const Profile: React.FC<Props> = () => {
+  const flatListRef = useRef(null);
+  const page = useRef(1);
+  const abortC = useRef(new AbortController());
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
-
   const { user } = useContext(UserContext);
-  console.log(user);
+  let [state, setState] = useState<{
+    refreshing: boolean;
+    notifications: NotificationProps[];
+  }>({
+    refreshing: false,
+    notifications: []
+  });
+
+  useEffect(() => {
+    userService
+      .getNotifications({ signal: abortC.current.signal, page: page.current })
+      .then(({ data }) => setState({ ...state, notifications: data || [] }));
+  }, []);
 
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
 
-  return (
-    <ScrollView style={styles.container}>
+  const renderFLHeader = () => (
+    <>
       <ImageBackground
         blurRadius={35}
         source={{ uri: user.avatarUrl || utils.fallbackAvatar }}
@@ -65,7 +80,42 @@ export const Profile: React.FC<Props> = ({ whatever }) => {
         <Text style={styles.xpValue}>{user.totalXp}</Text>
         <Text style={styles.xpValue}>{user.xpRank}</Text>
       </View>
-    </ScrollView>
+      <Text style={styles.notificationsHeader}>Notifications</Text>
+    </>
+  );
+
+  const renderFLRefreshControl = () => (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={state.refreshing}
+    />
+  );
+
+  const renderFLItem = ({ item }: { item: NotificationProps }) => {
+    return <Notification {...item} />;
+  };
+
+  const refresh = () => {};
+
+  return (
+    <FlatList
+      windowSize={10}
+      data={state.notifications}
+      style={styles.container}
+      initialNumToRender={10}
+      maxToRenderPerBatch={10}
+      removeClippedSubviews={true}
+      keyboardShouldPersistTaps='handled'
+      renderItem={renderFLItem}
+      keyExtractor={({ id }) => id.toString()}
+      ref={flatListRef}
+      refreshControl={renderFLRefreshControl()}
+      ListEmptyComponent={<Text style={{}}>You don't follow any threads</Text>}
+      ListHeaderComponent={renderFLHeader()}
+    />
   );
 };
 
@@ -94,7 +144,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     displayName: {
       color: current.textColor,
-      fontSize: 25,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans',
       fontWeight: '700'
     },
@@ -124,7 +174,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       fontFamily: 'OpenSans',
       fontWeight: '600',
-      fontSize: 16
+      fontSize: utils.figmaFontSizeScaler(12)
     },
     xpValueContainer: {
       flexDirection: 'row',
@@ -139,6 +189,14 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Regular',
       fontWeight: '700',
-      fontSize: 28
+      fontSize: utils.figmaFontSizeScaler(24)
+    },
+    notificationsHeader: {
+      color: current.textColor,
+      fontFamily: 'OpenSans',
+      fontWeight: '700',
+      fontSize: utils.figmaFontSizeScaler(20),
+      marginTop: 40,
+      padding: 5
     }
   });

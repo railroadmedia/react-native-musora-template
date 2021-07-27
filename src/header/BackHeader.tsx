@@ -6,6 +6,7 @@ import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/ThemeContext';
 
 import { backHeaderBtn, backHeaderSettings } from '../images/svgs';
+import { utils } from '../utils';
 
 interface Props {
   onBack: Function;
@@ -75,7 +76,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     title: {
       color: current.textColor,
       fontFamily: 'OpenSans',
-      fontSize: 25,
+      fontSize: utils.figmaFontSizeScaler(16),
       fontWeight: '800',
       textTransform: 'capitalize',
       position: 'absolute',

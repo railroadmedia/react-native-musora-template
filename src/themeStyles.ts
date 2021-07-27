@@ -8,6 +8,7 @@ interface Themes {
     textColor?: string;
     iconColor?: string;
     headerNavColor?: string;
+    contrastBackground?: string;
   };
 }
 export const themeStyles: Themes = {
@@ -15,13 +16,15 @@ export const themeStyles: Themes = {
     background: 'white',
     textColor: 'black',
     iconColor: 'black',
-    headerNavColor: 'black'
+    headerNavColor: 'black',
+    contrastBackground: 'grey'
   },
   [DARK]: {
     background: '#00101D',
     textColor: 'white',
     iconColor: '#445F74',
-    headerNavColor: 'white'
+    headerNavColor: 'white',
+    contrastBackground: '#081825'
   },
   [OTHER]: {}
 };

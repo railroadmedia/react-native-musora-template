@@ -11,6 +11,7 @@ interface UtilsInterface {
     title: string;
     message: string;
   };
+  figmaFontSizeScaler: (fontSize: number) => number;
   headerSvgBrand: ({ width, height, fill }: svgs.Props) => JSX.Element;
 }
 class Utils implements UtilsInterface {
@@ -56,6 +57,10 @@ class Utils implements UtilsInterface {
       default:
         return svgs.drumeoHeader;
     }
+  }
+
+  figmaFontSizeScaler(fontSize: number) {
+    return fontSize * 1.2;
   }
 }
 
