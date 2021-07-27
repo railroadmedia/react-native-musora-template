@@ -248,36 +248,3 @@ export const singeoHeader = (props: Props) =>
       </Svg>
     )
   });
-interface Gradient {
-  width: number | string;
-  height: number | string;
-  colors: string[];
-  verticalStripes?: boolean;
-}
-export const Gradient = ({
-  width,
-  height,
-  colors,
-  verticalStripes
-}: Gradient) => (
-  <Svg style={{ width, height }}>
-    <Defs>
-      <LinearGradient
-        id='gradient'
-        x1='0'
-        x2={verticalStripes ? 1 : 0}
-        y1='0'
-        y2={verticalStripes ? 0 : 1}
-      >
-        {colors.map((c, i) => (
-          <Stop
-            offset={`${(100 / (colors.length - 1)) * i}%`}
-            stopColor={c}
-            stopOpacity={c === 'transparent' ? 0 : 1}
-          />
-        ))}
-      </LinearGradient>
-    </Defs>
-    <Rect width={width} height={height} fill='url(#gradient)' />
-  </Svg>
-);

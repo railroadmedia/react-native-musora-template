@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ScrollView
 } from 'react-native';
-import { Gradient } from '../images/svgs';
+import { Gradient } from '../commons/Gradient';
 import { ThemeContext } from '../state/ThemeContext';
 
 import { UserContext } from '../state/UserContext';
@@ -40,11 +40,11 @@ export const Profile: React.FC<Props> = ({ whatever }) => {
       >
         <View style={styles.avatarBackground}>
           <View style={styles.gradient}>
-            {Gradient({
-              width: '100%',
-              height: '100%',
-              colors: ['transparent', themeStyles[theme].background || '']
-            })}
+            <Gradient
+              width='100%'
+              height='100%'
+              colors={['transparent', themeStyles[theme].background || '']}
+            />
           </View>
           <Image
             source={{ uri: user.avatarUrl || utils.fallbackAvatar }}
