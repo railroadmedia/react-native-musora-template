@@ -50,21 +50,18 @@ export const Header: React.FC<Props> = ({
       />
       <View style={{ flex: 1 }}>
         {utils.headerSvgBrand({
-          height: 30,
-          fill: utils.color,
+          icon: { height: 30, fill: utils.color },
           onPress: onLogoPress
         })}
       </View>
       {downloadsHeader({
-        height: 20,
-        fill: themeStyles[theme].iconColor,
-        paddingHorizontal: 10,
+        icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
+        container: { paddingHorizontal: 10 },
         onPress: onDownloadsPress
       })}
       {myListHeader({
-        height: 20,
-        fill: themeStyles[theme].iconColor,
-        paddingHorizontal: 10,
+        icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
+        container: { paddingHorizontal: 10 },
         onPress: onMyListPress
       })}
       <TouchableOpacity

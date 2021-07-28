@@ -12,7 +12,9 @@ interface UtilsInterface {
     message: string;
   };
   figmaFontSizeScaler: (fontSize: number) => number;
-  headerSvgBrand: ({ width, height, fill }: svgs.Props) => JSX.Element;
+  headerSvgBrand: ({
+    icon: { width, height, fill }
+  }: svgs.Props) => JSX.Element;
 }
 class Utils implements UtilsInterface {
   brand = '';

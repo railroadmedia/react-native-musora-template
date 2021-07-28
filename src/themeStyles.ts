@@ -9,22 +9,23 @@ interface Themes {
     iconColor?: string;
     headerNavColor?: string;
     contrastBackground?: string;
+    contrastTextColor?: string;
   };
 }
 export const themeStyles: Themes = {
   [LIGHT]: {
     background: 'white',
     textColor: 'black',
-    iconColor: 'black',
     headerNavColor: 'black',
-    contrastBackground: 'grey'
+    contrastBackground: 'grey',
+    contrastTextColor: 'darkgrey'
   },
   [DARK]: {
     background: '#00101D',
     textColor: 'white',
-    iconColor: '#445F74',
     headerNavColor: 'white',
-    contrastBackground: '#081825'
+    contrastBackground: '#081825',
+    contrastTextColor: '#445F74'
   },
   [OTHER]: {}
 };

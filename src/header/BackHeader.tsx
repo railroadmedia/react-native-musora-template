@@ -47,19 +47,18 @@ export const BackHeader: React.FC<Props> = ({
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.title}>{title}</Text>
         {backHeaderBtn({
-          height: 20,
-          paddingVertical: 7.5,
-          paddingRight: 20,
-          onPress: () => onBack(),
-          fill: themeStyles[theme].headerNavColor
+          icon: { height: 20, fill: themeStyles[theme].headerNavColor },
+          container: {
+            paddingVertical: 7.5,
+            paddingRight: 20
+          },
+          onPress: () => onBack()
         })}
         {!!onSettings &&
           backHeaderSettings({
-            height: 20,
-            paddingVertical: 7.5,
-            paddingLeft: 20,
-            onPress: () => onSettings,
-            fill: themeStyles[theme].headerNavColor
+            icon: { height: 20, fill: themeStyles[theme].headerNavColor },
+            container: { paddingVertical: 7.5, paddingLeft: 20 },
+            onPress: () => onSettings
           })}
       </View>
     </SafeAreaView>
