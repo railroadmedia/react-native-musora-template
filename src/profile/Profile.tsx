@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useReducer,
-  useRef,
-  useState
-} from 'react';
+import React, { useContext, useEffect, useReducer, useRef } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -24,13 +18,13 @@ import { userService } from '../services/user.service';
 import { ThemeContext } from '../state/ThemeContext';
 import { UserContext } from '../state/UserContext';
 
-import { UPDATE_USER_AND_CACHE, userReducer } from '../state/userReducer';
-
 import { themeStyles, DARK } from '../themeStyles';
 
 import { utils } from '../utils';
 
 import { Notification, NotificationProps } from './Notification';
+
+import { profileReducer, SET_PROFILE, UPDATE_PROFILE } from './profileReducer';
 
 interface Props {}
 
@@ -39,22 +33,16 @@ export const Profile: React.FC<Props> = () => {
   const page = useRef(1);
   const abortC = useRef(new AbortController());
 
+  const { user: cachedUser, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
 
-  const [user, dispatchUser] = useReducer(
-    userReducer,
-    useContext(UserContext).user
-  );
-
-  let [state, setState] = useState<{
-    refreshing: boolean;
-    loadingMore: boolean;
-    notifications: NotificationProps[];
-  }>({
-    refreshing: true,
-    loadingMore: true,
-    notifications: []
-  });
+  const [{ notifications, user, loadingMore, refreshing }, dispatchProfile] =
+    useReducer(profileReducer, {
+      user: cachedUser,
+      notifications: [],
+      loadingMore: true,
+      refreshing: true
+    });
 
   let styles = setStyles(theme);
 
@@ -79,12 +67,13 @@ export const Profile: React.FC<Props> = () => {
       })
     ]).then(([userDetails, { data }]) => {
       if (isMounted.current) {
-        dispatchUser({ type: UPDATE_USER_AND_CACHE, user: userDetails });
-        setState({
-          ...state,
-          notifications: data || [],
+        updateUserAndCache(userDetails);
+        dispatchProfile({
+          type: SET_PROFILE,
           loadingMore: false,
-          refreshing: false
+          refreshing: false,
+          user: userDetails,
+          notifications: data || []
         });
       }
     });
@@ -95,11 +84,11 @@ export const Profile: React.FC<Props> = () => {
       .getNotifications({ signal: abortC.current.signal, page: page.current++ })
       .then(({ data } = {}) => {
         if (isMounted.current)
-          setState({
-            ...state,
-            notifications: data || [],
+          dispatchProfile({
+            type: UPDATE_PROFILE,
             loadingMore: false,
-            refreshing: false
+            refreshing: false,
+            notifications: data || []
           });
       });
 
@@ -107,7 +96,7 @@ export const Profile: React.FC<Props> = () => {
     <>
       <ImageBackground
         blurRadius={35}
-        source={{ uri: user.avatarUrl || utils.fallbackAvatar }}
+        source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
         resizeMode={'cover'}
         style={styles.imageBackground}
       >
@@ -120,11 +109,11 @@ export const Profile: React.FC<Props> = () => {
             />
           </View>
           <Image
-            source={{ uri: user.avatarUrl || utils.fallbackAvatar }}
+            source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
             resizeMode={'cover'}
             style={styles.avatar}
           />
-          <Text style={styles.displayName}>{user.display_name}</Text>
+          <Text style={styles.displayName}>{user?.display_name}</Text>
           <TouchableOpacity style={styles.editProfileTOpacity}>
             <Text style={styles.editProfileTxt}>EDIT PROFILE</Text>
           </TouchableOpacity>
@@ -135,8 +124,8 @@ export const Profile: React.FC<Props> = () => {
         <Text style={styles.xpLabel}>{utils.brand} METHOD</Text>
       </View>
       <View style={styles.xpValueContainer}>
-        <Text style={styles.xpValue}>{user.totalXp}</Text>
-        <Text style={styles.xpValue}>{user.xpRank}</Text>
+        <Text style={styles.xpValue}>{user?.totalXp}</Text>
+        <Text style={styles.xpValue}>{user?.xpRank}</Text>
       </View>
       <Text style={styles.notificationsHeader}>Notifications</Text>
     </>
@@ -148,7 +137,7 @@ export const Profile: React.FC<Props> = () => {
       tintColor={utils.color}
       progressBackgroundColor={utils.color}
       onRefresh={refresh}
-      refreshing={state.refreshing}
+      refreshing={!!refreshing}
     />
   );
 
@@ -160,7 +149,7 @@ export const Profile: React.FC<Props> = () => {
     <ActivityIndicator
       size='small'
       color={utils.color}
-      animating={state.loadingMore}
+      animating={loadingMore}
       style={{ padding: 15 }}
     />
   );
@@ -170,12 +159,13 @@ export const Profile: React.FC<Props> = () => {
   );
 
   const refresh = () => {
-    setState({ ...state, refreshing: true });
+    page.current = 1;
+    dispatchProfile({ type: UPDATE_PROFILE, refreshing: true });
     getProfile();
   };
 
   const loadMore = () => {
-    setState({ ...state, loadingMore: true });
+    dispatchProfile({ type: UPDATE_PROFILE, loadingMore: true });
     getNotifications();
   };
 
@@ -183,7 +173,7 @@ export const Profile: React.FC<Props> = () => {
     <FlatList
       showsVerticalScrollIndicator={false}
       windowSize={10}
-      data={state.notifications}
+      data={notifications}
       style={styles.container}
       initialNumToRender={10}
       maxToRenderPerBatch={10}

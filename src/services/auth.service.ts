@@ -63,8 +63,6 @@ const authenticate: Auth = async function (email, password, purchases) {
 };
 
 const call: Call = async function ({ url, method, signal, body }) {
-  console.log(utils.rootUrl + url);
-
   try {
     let response = await fetch(utils.rootUrl + url, {
       method: method || 'GET',
