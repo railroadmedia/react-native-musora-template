@@ -5,7 +5,10 @@ export interface CardsReducer {
   ): {};
 }
 export interface UserReducer {
-  (state: {}, action: { type: string; user?: {} }): {};
+  (
+    state: {},
+    action: { type: string; user?: UserContext['user'] }
+  ): UserContext['user'];
 }
 export interface AddCards {
   (state: {}, cards: { id: number }[], cache?: boolean): {};
@@ -14,7 +17,7 @@ export interface UpdateCard {
   (state: {}, card: { id: number }): {};
 }
 export interface UpdateUser {
-  (state: {}, user: {}, cache?: boolean): {};
+  (state: {}, user: UserContext['user'], cache?: boolean): UserContext['user'];
 }
 export interface ToggleTheme {
   (theme: string): string;
@@ -33,9 +36,9 @@ export interface UserContext {
   user: {
     avatarUrl?: string;
     display_name?: string;
-    totalXp: string;
-    xpRank: string;
+    totalXp?: string;
+    xpRank?: string;
   };
-  updateUser: (user: {}) => void;
-  updateUserAndCache: (user: {}) => void;
+  updateUser: (user: UserContext['user']) => void;
+  updateUserAndCache: (user: UserContext['user']) => void;
 }

@@ -4,6 +4,8 @@ import {
   resetGenericPassword
 } from 'react-native-keychain';
 
+import type { UserContext } from '../state/interfaces';
+
 import { utils } from '../utils';
 
 let token = '';
@@ -24,7 +26,9 @@ interface Call {
     method?: string;
     signal?: AbortSignal;
     body?: {};
-  }): Promise<{ title?: string; message?: string; data?: [] }>;
+  }): Promise<
+    { title?: string; message?: string; data?: [] } & UserContext['user']
+  >;
 }
 
 const authenticate: Auth = async function (email, password, purchases) {
@@ -59,6 +63,8 @@ const authenticate: Auth = async function (email, password, purchases) {
 };
 
 const call: Call = async function ({ url, method, signal, body }) {
+  console.log(utils.rootUrl + url);
+
   try {
     let response = await fetch(utils.rootUrl + url, {
       method: method || 'GET',

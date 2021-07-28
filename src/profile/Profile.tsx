@@ -1,49 +1,107 @@
-import React, { useEffect, useContext, useRef, useState } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  ImageBackground,
-  Image,
-  TouchableOpacity,
+  ActivityIndicator,
   FlatList,
-  RefreshControl
+  Image,
+  ImageBackground,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { Gradient } from '../commons/Gradient';
-import { userService } from '../services/user.service';
-import { ThemeContext } from '../state/ThemeContext';
 
+import { Gradient } from '../commons/Gradient';
+
+import { userService } from '../services/user.service';
+
+import { ThemeContext } from '../state/ThemeContext';
 import { UserContext } from '../state/UserContext';
+
+import { UPDATE_USER_AND_CACHE, userReducer } from '../state/userReducer';
+
 import { themeStyles, DARK } from '../themeStyles';
+
 import { utils } from '../utils';
+
 import { Notification, NotificationProps } from './Notification';
 
 interface Props {}
 
 export const Profile: React.FC<Props> = () => {
-  const flatListRef = useRef(null);
+  const isMounted = useRef(true);
   const page = useRef(1);
   const abortC = useRef(new AbortController());
+
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-  const { user } = useContext(UserContext);
+
+  const [user, dispatchUser] = useReducer(
+    userReducer,
+    useContext(UserContext).user
+  );
+
   let [state, setState] = useState<{
     refreshing: boolean;
+    loadingMore: boolean;
     notifications: NotificationProps[];
   }>({
-    refreshing: false,
+    refreshing: true,
+    loadingMore: true,
     notifications: []
   });
 
+  let styles = setStyles(theme);
+
   useEffect(() => {
-    userService
-      .getNotifications({ signal: abortC.current.signal, page: page.current })
-      .then(({ data }) => setState({ ...state, notifications: data || [] }));
+    getProfile();
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
   }, []);
 
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
+
+  const getProfile = () => {
+    Promise.all([
+      userService.getUserDetails(),
+      userService.getNotifications({
+        signal: abortC.current.signal,
+        page: page.current++
+      })
+    ]).then(([userDetails, { data }]) => {
+      if (isMounted.current) {
+        dispatchUser({ type: UPDATE_USER_AND_CACHE, user: userDetails });
+        setState({
+          ...state,
+          notifications: data || [],
+          loadingMore: false,
+          refreshing: false
+        });
+      }
+    });
+  };
+
+  const getNotifications = () =>
+    userService
+      .getNotifications({ signal: abortC.current.signal, page: page.current++ })
+      .then(({ data } = {}) => {
+        if (isMounted.current)
+          setState({
+            ...state,
+            notifications: data || [],
+            loadingMore: false,
+            refreshing: false
+          });
+      });
 
   const renderFLHeader = () => (
     <>
@@ -94,14 +152,36 @@ export const Profile: React.FC<Props> = () => {
     />
   );
 
-  const renderFLItem = ({ item }: { item: NotificationProps }) => {
-    return <Notification {...item} />;
+  const renderFLItem = ({ item }: { item: NotificationProps }) => (
+    <Notification {...item} />
+  );
+
+  const renderFLFooter = () => (
+    <ActivityIndicator
+      size='small'
+      color={utils.color}
+      animating={state.loadingMore}
+      style={{ padding: 15 }}
+    />
+  );
+
+  const renderFLEmptyComponent = () => (
+    <Text style={styles.emptyText}>You don't have any notifications</Text>
+  );
+
+  const refresh = () => {
+    setState({ ...state, refreshing: true });
+    getProfile();
   };
 
-  const refresh = () => {};
+  const loadMore = () => {
+    setState({ ...state, loadingMore: true });
+    getNotifications();
+  };
 
   return (
     <FlatList
+      showsVerticalScrollIndicator={false}
       windowSize={10}
       data={state.notifications}
       style={styles.container}
@@ -111,10 +191,12 @@ export const Profile: React.FC<Props> = () => {
       keyboardShouldPersistTaps='handled'
       renderItem={renderFLItem}
       keyExtractor={({ id }) => id.toString()}
-      ref={flatListRef}
       refreshControl={renderFLRefreshControl()}
-      ListEmptyComponent={<Text style={{}}>You don't follow any threads</Text>}
+      ListEmptyComponent={renderFLEmptyComponent()}
       ListHeaderComponent={renderFLHeader()}
+      ListFooterComponent={renderFLFooter()}
+      onEndReached={loadMore}
+      onEndReachedThreshold={0.01}
     />
   );
 };
@@ -163,7 +245,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     xpLabelContainer: {
       flexDirection: 'row',
-      borderTopColor: '#002039',
+      borderTopColor: current.borderColor,
       borderTopWidth: 1,
       paddingVertical: 20
     },
@@ -178,7 +260,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     xpValueContainer: {
       flexDirection: 'row',
-      borderBottomColor: '#002039',
+      borderBottomColor: current.borderColor,
       borderBottomWidth: 1,
       paddingBottom: 20
     },
@@ -197,6 +279,11 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontWeight: '700',
       fontSize: utils.figmaFontSizeScaler(20),
       marginTop: 40,
+      padding: 5
+    },
+    emptyText: {
+      color: current.textColor,
+      fontFamily: 'OpenSans',
       padding: 5
     }
   });
