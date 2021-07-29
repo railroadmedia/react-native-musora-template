@@ -15,6 +15,7 @@ import { ThemeContext } from '../state/ThemeContext';
 
 import { downloads, myList } from '../images/svgs';
 import { UserContext } from '../state/UserContext';
+import { HeaderContext } from '../state/Headercontext';
 
 interface Props {
   onLogoPress: Function;
@@ -28,6 +29,7 @@ export const Header: React.FC<Props> = ({
   onMyListPress,
   onProfilePress
 }) => {
+  const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
   let styles = setStyles(theme);
@@ -43,7 +45,13 @@ export const Header: React.FC<Props> = ({
   }, [theme]);
 
   return (
-    <SafeAreaView style={styles.safeAreaContainer}>
+    <SafeAreaView
+      style={styles.safeAreaContainer}
+      edges={['top']}
+      onLayout={({ nativeEvent }) =>
+        updateHeaderNavHeight(nativeEvent.layout.height)
+      }
+    >
       <StatusBar
         backgroundColor={themeStyles[theme].background}
         barStyle={theme === DARK ? 'light-content' : 'dark-content'}

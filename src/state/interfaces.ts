@@ -42,3 +42,7 @@ export interface UserContext {
   updateUser: (user: UserContext['user']) => void;
   updateUserAndCache: (user: UserContext['user']) => void;
 }
+export interface HeaderContext {
+  headerNavHeight: number;
+  updateHeaderNavHeight: (height: number) => void;
+}

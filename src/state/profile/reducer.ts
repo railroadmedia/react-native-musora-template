@@ -1,31 +1,7 @@
-import type { UserContext } from '../state/interfaces';
-import type { NotificationProps } from './Notification';
+import type { ProfileReducer, UpdateNotif, UpdateUser } from './interfaces';
 
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SET_PROFILE = 'SET_PROFILE';
-
-interface UpdateUser {
-  (state: UserContext['user'] | undefined, user?: UserContext['user']): {
-    user: UserContext['user'];
-  };
-}
-interface UpdateNotif {
-  (
-    state: NotificationProps[] | undefined,
-    notifications?: NotificationProps[]
-  ): {
-    notifications: NotificationProps[];
-  };
-}
-interface NewState {
-  loadingMore?: boolean;
-  refreshing?: boolean;
-  notifications?: NotificationProps[];
-  user?: UserContext['user'];
-}
-interface ProfileReducer {
-  (state: NewState, action: { type: string } & NewState): NewState;
-}
 
 const updateUser: UpdateUser = (state, user) => ({
   user: { ...state, ...user }

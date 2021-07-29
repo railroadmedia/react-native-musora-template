@@ -1,9 +1,15 @@
-import React, { useContext, useEffect, useReducer, useRef } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import {
   ActivityIndicator,
+  Animated,
   FlatList,
   Image,
-  ImageBackground,
   RefreshControl,
   StyleSheet,
   Text,
@@ -17,14 +23,19 @@ import { userService } from '../services/user.service';
 
 import { ThemeContext } from '../state/ThemeContext';
 import { UserContext } from '../state/UserContext';
+import { HeaderContext } from '../state/Headercontext';
 
-import { themeStyles, DARK } from '../themeStyles';
+import { themeStyles } from '../themeStyles';
 
 import { utils } from '../utils';
 
 import { Notification, NotificationProps } from './Notification';
 
-import { profileReducer, SET_PROFILE, UPDATE_PROFILE } from './profileReducer';
+import {
+  profileReducer,
+  SET_PROFILE,
+  UPDATE_PROFILE
+} from '../state/profile/reducer';
 
 interface Props {}
 
@@ -32,7 +43,11 @@ export const Profile: React.FC<Props> = () => {
   const isMounted = useRef(true);
   const page = useRef(1);
   const abortC = useRef(new AbortController());
+  const scrollY = useRef(new Animated.Value(0));
 
+  const [flHeaderHeight, setFLHeaderHeight] = useState(0);
+
+  const { headerNavHeight } = useContext(HeaderContext);
   const { user: cachedUser, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
 
@@ -47,6 +62,9 @@ export const Profile: React.FC<Props> = () => {
   let styles = setStyles(theme);
 
   useEffect(() => {
+    isMounted.current = true;
+    page.current = 1;
+    abortC.current = new AbortController();
     getProfile();
     return () => {
       isMounted.current = false;
@@ -92,33 +110,78 @@ export const Profile: React.FC<Props> = () => {
           });
       });
 
-  const renderFLHeader = () => (
-    <>
-      <ImageBackground
-        blurRadius={35}
+  const renderStickyHeader = () => (
+    <View style={styles.stickyHeaderContainer}>
+      <Animated.Image
+        blurRadius={10}
         source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
         resizeMode={'cover'}
-        style={styles.imageBackground}
+        style={{
+          height: flHeaderHeight + headerNavHeight,
+          width: '100%',
+          position: 'absolute',
+          transform: [
+            {
+              scale: scrollY.current.interpolate({
+                inputRange: [-1000, 0],
+                outputRange: [10, 1],
+                extrapolate: 'clamp'
+              })
+            }
+          ]
+        }}
+      />
+      <Animated.View
+        style={{
+          position: 'absolute',
+          height: flHeaderHeight + headerNavHeight,
+          width: '100%',
+          backgroundColor: themeStyles[theme].background,
+          transform: [
+            {
+              scale: scrollY.current.interpolate({
+                inputRange: [-1000, 0],
+                outputRange: [10, 1],
+                extrapolate: 'clamp'
+              })
+            }
+          ],
+          opacity: scrollY.current.interpolate({
+            inputRange: [0, flHeaderHeight],
+            outputRange: [0.5, 1]
+          })
+        }}
+      />
+    </View>
+  );
+
+  const renderFLHeader = () => (
+    <>
+      <View
+        style={{ alignItems: 'center' }}
+        onLayout={({
+          nativeEvent: {
+            layout: { height }
+          }
+        }) => setFLHeaderHeight(height)}
       >
-        <View style={styles.avatarBackground}>
-          <View style={styles.gradient}>
-            <Gradient
-              width='100%'
-              height='100%'
-              colors={['transparent', themeStyles[theme].background || '']}
-            />
-          </View>
-          <Image
-            source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
-            resizeMode={'cover'}
-            style={styles.avatar}
+        <View style={styles.gradient}>
+          <Gradient
+            width='100%'
+            height='100%'
+            colors={['transparent', themeStyles[theme].background || '']}
           />
-          <Text style={styles.displayName}>{user?.display_name}</Text>
-          <TouchableOpacity style={styles.editProfileTOpacity}>
-            <Text style={styles.editProfileTxt}>EDIT PROFILE</Text>
-          </TouchableOpacity>
         </View>
-      </ImageBackground>
+        <Image
+          source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
+          resizeMode={'cover'}
+          style={styles.avatar}
+        />
+        <Text style={styles.displayName}>{user?.display_name}</Text>
+        <TouchableOpacity style={styles.editProfileTOpacity}>
+          <Text style={styles.editProfileTxt}>EDIT PROFILE</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.xpLabelContainer}>
         <Text style={styles.xpLabel}>XP</Text>
         <Text style={styles.xpLabel}>{utils.brand} METHOD</Text>
@@ -142,7 +205,9 @@ export const Profile: React.FC<Props> = () => {
   );
 
   const renderFLItem = ({ item }: { item: NotificationProps }) => (
-    <Notification {...item} />
+    <View style={{ backgroundColor: themeStyles[theme].background }}>
+      <Notification {...item} />
+    </View>
   );
 
   const renderFLFooter = () => (
@@ -170,49 +235,56 @@ export const Profile: React.FC<Props> = () => {
   };
 
   return (
-    <FlatList
-      showsVerticalScrollIndicator={false}
-      windowSize={10}
-      data={notifications}
-      style={styles.container}
-      initialNumToRender={10}
-      maxToRenderPerBatch={10}
-      removeClippedSubviews={true}
-      keyboardShouldPersistTaps='handled'
-      renderItem={renderFLItem}
-      keyExtractor={({ id }) => id.toString()}
-      refreshControl={renderFLRefreshControl()}
-      ListEmptyComponent={renderFLEmptyComponent()}
-      ListHeaderComponent={renderFLHeader()}
-      ListFooterComponent={renderFLFooter()}
-      onEndReached={loadMore}
-      onEndReachedThreshold={0.01}
-    />
+    <>
+      {renderStickyHeader()}
+      <FlatList
+        scrollEventThrottle={1}
+        onScroll={({ nativeEvent }) =>
+          Animated.timing(scrollY.current, {
+            toValue: nativeEvent.contentOffset.y,
+            duration: 0,
+            useNativeDriver: true
+          }).start()
+        }
+        showsVerticalScrollIndicator={false}
+        windowSize={10}
+        data={notifications}
+        style={{ flex: 1, marginTop: headerNavHeight }}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        removeClippedSubviews={true}
+        keyboardShouldPersistTaps='handled'
+        renderItem={renderFLItem}
+        keyExtractor={({ id }) => id.toString()}
+        refreshControl={renderFLRefreshControl()}
+        ListEmptyComponent={renderFLEmptyComponent()}
+        ListHeaderComponent={renderFLHeader()}
+        ListFooterComponent={renderFLFooter()}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.01}
+      />
+    </>
   );
 };
 
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
-    container: { backgroundColor: current.background, flex: 1 },
+    stickyHeaderContainer: {
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
+      backgroundColor: themeStyles[theme].background
+    },
     gradient: {
       position: 'absolute',
       bottom: 0,
       width: '100%',
       height: '50%'
     },
-    imageBackground: {
-      width: '100%'
-    },
     avatar: {
       width: '50%',
       aspectRatio: 1,
-      borderRadius: 999,
-      marginTop: 90
-    },
-    avatarBackground: {
-      backgroundColor:
-        theme === DARK ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
-      alignItems: 'center'
+      borderRadius: 999
     },
     displayName: {
       color: current.textColor,
@@ -237,7 +309,8 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       borderTopColor: current.borderColor,
       borderTopWidth: 1,
-      paddingVertical: 20
+      paddingVertical: 20,
+      backgroundColor: current.background
     },
     xpLabel: {
       textTransform: 'uppercase',
@@ -252,7 +325,8 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       borderBottomColor: current.borderColor,
       borderBottomWidth: 1,
-      paddingBottom: 20
+      paddingBottom: 20,
+      backgroundColor: current.background
     },
     xpValue: {
       textTransform: 'uppercase',
@@ -268,12 +342,14 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans',
       fontWeight: '700',
       fontSize: utils.figmaFontSizeScaler(20),
-      marginTop: 40,
-      padding: 5
+      padding: 5,
+      paddingTop: 40,
+      backgroundColor: current.background
     },
     emptyText: {
       color: current.textColor,
       fontFamily: 'OpenSans',
-      padding: 5
+      padding: 5,
+      backgroundColor: current.background
     }
   });

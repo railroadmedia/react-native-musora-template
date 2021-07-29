@@ -17,9 +17,11 @@ import { userReducer, UPDATE_USER, UPDATE_USER_AND_CACHE } from './userReducer';
 
 import { LIGHT, DARK } from '../themeStyles';
 import { userService } from '../services/user.service';
+import { HeaderContext } from './Headercontext';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
+  const [headerNavHeight, setHeaderNavHeight] = useState(0);
   const [cards, dispatchCards] = useReducer(cardsReducer, {});
   const [user, dispatchUser] = useReducer(userReducer, {});
 
@@ -58,13 +60,19 @@ export const State: React.FC = props => {
     setTheme(newTheme);
   };
 
+  const updateHeaderNavHeight = (height: number) => setHeaderNavHeight(height);
+
   return (
     <CardsContext.Provider
       value={{ cards, addCards, updateCard, addCardsAndCache }}
     >
       <UserContext.Provider value={{ user, updateUser, updateUserAndCache }}>
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          {!!theme && props.children}
+          <HeaderContext.Provider
+            value={{ headerNavHeight, updateHeaderNavHeight }}
+          >
+            {!!theme && props.children}
+          </HeaderContext.Provider>
         </ThemeContext.Provider>
       </UserContext.Provider>
     </CardsContext.Provider>
