@@ -16,7 +16,8 @@ import {
   Header,
   BackHeader,
   MyList,
-  Downloads
+  Downloads,
+  BottomNav
 } from 'react-native-musora-templates';
 
 const Stack = createStackNavigator(),
@@ -106,23 +107,14 @@ export default function App() {
                 </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
-            <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity
-                onPress={() => navigationRef.current?.navigate('home')}
-              >
-                <Text style={{ padding: 10 }}>Home</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigationRef.current?.navigate('courses')}
-              >
-                <Text style={{ padding: 10 }}>Courses</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigationRef.current?.navigate('noHeaderScene')}
-              >
-                <Text style={{ padding: 10 }}>No header scene</Text>
-              </TouchableOpacity>
-            </View>
+            <BottomNav
+              onHomePress={() => navigationRef.current?.navigate('home')}
+              onSearchPress={() => navigationRef.current?.navigate('courses')}
+              onForumPress={() =>
+                navigationRef.current?.navigate('noHeaderScene')
+              }
+              onMenuPress={() => {}}
+            />
           </>
         )}
       </State>

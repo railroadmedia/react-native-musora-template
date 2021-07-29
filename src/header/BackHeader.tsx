@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/ThemeContext';
 
-import { backHeaderBtn, backHeaderSettings } from '../images/svgs';
+import { back, settings } from '../images/svgs';
 import { utils } from '../utils';
 
 interface Props {
@@ -46,7 +46,7 @@ export const BackHeader: React.FC<Props> = ({
       />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <Text style={styles.title}>{title}</Text>
-        {backHeaderBtn({
+        {back({
           icon: { height: 20, fill: themeStyles[theme].headerNavColor },
           container: {
             paddingVertical: 7.5,
@@ -55,7 +55,7 @@ export const BackHeader: React.FC<Props> = ({
           onPress: () => onBack()
         })}
         {!!onSettings &&
-          backHeaderSettings({
+          settings({
             icon: { height: 20, fill: themeStyles[theme].headerNavColor },
             container: { paddingVertical: 7.5, paddingLeft: 20 },
             onPress: () => onSettings

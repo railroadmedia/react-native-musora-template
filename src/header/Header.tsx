@@ -13,7 +13,7 @@ import { utils } from '../utils';
 import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/ThemeContext';
 
-import { downloadsHeader, myListHeader } from '../images/svgs';
+import { downloads, myList } from '../images/svgs';
 import { UserContext } from '../state/UserContext';
 
 interface Props {
@@ -54,12 +54,12 @@ export const Header: React.FC<Props> = ({
           onPress: onLogoPress
         })}
       </View>
-      {downloadsHeader({
+      {downloads({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
         onPress: onDownloadsPress
       })}
-      {myListHeader({
+      {myList({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
         onPress: onMyListPress

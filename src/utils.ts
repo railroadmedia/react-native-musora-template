@@ -51,13 +51,13 @@ class Utils implements UtilsInterface {
   get headerSvgBrand() {
     switch (this.brand) {
       case 'pianote':
-        return svgs.pianoteHeader;
+        return svgs.pianote;
       case 'quitareo':
-        return svgs.guitareoHeader;
+        return svgs.guitareo;
       case 'singeo':
-        return svgs.singeoHeader;
+        return svgs.singeo;
       default:
-        return svgs.drumeoHeader;
+        return svgs.drumeo;
     }
   }
 
