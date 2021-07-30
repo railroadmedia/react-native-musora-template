@@ -23,7 +23,8 @@ import {
   Header
 } from 'react-native-musora-templates';
 
-const screensWithBackHeader = ['myList', 'downloads', 'profile'],
+const screensWithMainHeader = ['home', 'courses'],
+  screensWithBackHeader = ['myList', 'downloads', 'profile'],
   screensWithTransparentHeader = ['profile'],
   screensWithSettingsHeader = ['profile'],
   screensWithNoHeader = ['noHeaderScene'];
@@ -34,7 +35,10 @@ const Stack = createStackNavigator(),
     header: ({
       scene: {
         route: { name },
-        progress: { current, next }
+        progress: { current, next },
+        descriptor: {
+          options: { title }
+        }
       }
     }: StackHeaderProps) => {
       return (
@@ -63,7 +67,7 @@ const Stack = createStackNavigator(),
               screensWithSettingsHeader.includes(name) ? () => {} : undefined
             }
             transparent={screensWithTransparentHeader.includes(name)}
-            title={name}
+            title={title}
           />
         </Animated.View>
       );
@@ -97,15 +101,15 @@ export default function App() {
                 <Stack.Screen name='courses'>
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
-                <Stack.Screen name='myList'>
+                <Stack.Screen name='myList' options={{ title: 'My List' }}>
                   {props => <MyList {...props} whatever='whatever' />}
                 </Stack.Screen>
-                <Stack.Screen name='downloads'>
+                <Stack.Screen name='downloads' options={{ title: 'Downloads' }}>
                   {props => <Downloads {...props} whatever='whatever' />}
                 </Stack.Screen>
                 <Stack.Screen
                   name='profile'
-                  options={{ headerTransparent: true }}
+                  options={{ headerTransparent: true, title: 'Profile' }}
                 >
                   {props => <Profile {...props} />}
                 </Stack.Screen>

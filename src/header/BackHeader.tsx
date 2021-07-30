@@ -83,7 +83,6 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans',
       fontSize: utils.figmaFontSizeScaler(16),
       fontWeight: '800',
-      textTransform: 'capitalize',
       position: 'absolute',
       alignSelf: 'center',
       width: '100%',

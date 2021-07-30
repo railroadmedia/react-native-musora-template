@@ -64,7 +64,7 @@ export const State: React.FC = props => {
   const updateHeaderNavHeight = (height: number) => setHeaderNavHeight(height);
 
   return (
-    <View style={{ flex: 1, backgroundColor: themeStyles[theme].background }}>
+    <View style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}>
       <CardsContext.Provider
         value={{ cards, addCards, updateCard, addCardsAndCache }}
       >
