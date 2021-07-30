@@ -1,4 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
+import { View } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -15,7 +16,7 @@ import {
 
 import { userReducer, UPDATE_USER, UPDATE_USER_AND_CACHE } from './userReducer';
 
-import { LIGHT, DARK } from '../themeStyles';
+import { LIGHT, DARK, themeStyles } from '../themeStyles';
 import { userService } from '../services/user.service';
 import { HeaderContext } from './Headercontext';
 
@@ -63,18 +64,20 @@ export const State: React.FC = props => {
   const updateHeaderNavHeight = (height: number) => setHeaderNavHeight(height);
 
   return (
-    <CardsContext.Provider
-      value={{ cards, addCards, updateCard, addCardsAndCache }}
-    >
-      <UserContext.Provider value={{ user, updateUser, updateUserAndCache }}>
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
-          <HeaderContext.Provider
-            value={{ headerNavHeight, updateHeaderNavHeight }}
-          >
-            {!!theme && props.children}
-          </HeaderContext.Provider>
-        </ThemeContext.Provider>
-      </UserContext.Provider>
-    </CardsContext.Provider>
+    <View style={{ flex: 1, backgroundColor: themeStyles[theme].background }}>
+      <CardsContext.Provider
+        value={{ cards, addCards, updateCard, addCardsAndCache }}
+      >
+        <UserContext.Provider value={{ user, updateUser, updateUserAndCache }}>
+          <ThemeContext.Provider value={{ theme, toggleTheme }}>
+            <HeaderContext.Provider
+              value={{ headerNavHeight, updateHeaderNavHeight }}
+            >
+              {!!theme && props.children}
+            </HeaderContext.Provider>
+          </ThemeContext.Provider>
+        </UserContext.Provider>
+      </CardsContext.Provider>
+    </View>
   );
 };

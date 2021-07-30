@@ -17,12 +17,16 @@ import {
   Catalogue,
   Profile,
   State,
-  MainHeader,
-  BackHeader,
   MyList,
   Downloads,
-  BottomNav
+  BottomNav,
+  Header
 } from 'react-native-musora-templates';
+
+const screensWithBackHeader = ['myList', 'downloads', 'profile'],
+  screensWithTransparentHeader = ['profile'],
+  screensWithSettingsHeader = ['profile'],
+  screensWithNoHeader = ['noHeaderScene'];
 
 const Stack = createStackNavigator(),
   navigationRef = React.createRef<NavigationContainerRef>(),
@@ -33,9 +37,6 @@ const Stack = createStackNavigator(),
         progress: { current, next }
       }
     }: StackHeaderProps) => {
-      const isMainHeader = !!name.match(/^(home|courses)$/);
-      const isBackNavHeaderTransparent = !!name.match(/^(profile)$/);
-      const backNavHeaderHasSettings = !!name.match(/^(profile)$/);
       return (
         <Animated.View
           style={{
@@ -45,23 +46,25 @@ const Stack = createStackNavigator(),
             })
           }}
         >
-          {isMainHeader ? (
-            <MainHeader
-              onLogoPress={() => navigationRef.current?.navigate('home')}
-              onDownloadsPress={() =>
-                navigationRef.current?.navigate('downloads')
-              }
-              onMyListPress={() => navigationRef.current?.navigate('myList')}
-              onProfilePress={() => navigationRef.current?.navigate('profile')}
-            />
-          ) : (
-            <BackHeader
-              onBack={() => navigationRef.current?.goBack()}
-              title={name}
-              transparent={isBackNavHeaderTransparent}
-              onSettings={backNavHeaderHasSettings ? () => {} : undefined}
-            />
-          )}
+          <Header
+            onDownloadsPress={() =>
+              navigationRef.current?.navigate('downloads')
+            }
+            onLogoPress={() => navigationRef.current?.navigate('home')}
+            onMyListPress={() => navigationRef.current?.navigate('myList')}
+            onProfilePress={() => navigationRef.current?.navigate('profile')}
+            hidden={screensWithNoHeader.includes(name)}
+            onBack={
+              screensWithBackHeader.includes(name)
+                ? () => navigationRef.current?.goBack()
+                : undefined
+            }
+            onSettings={
+              screensWithSettingsHeader.includes(name) ? () => {} : undefined
+            }
+            transparent={screensWithTransparentHeader.includes(name)}
+            title={name}
+          />
         </Animated.View>
       );
     }
@@ -106,10 +109,7 @@ export default function App() {
                 >
                   {props => <Profile {...props} />}
                 </Stack.Screen>
-                <Stack.Screen
-                  name='noHeaderScene'
-                  options={{ header: () => null }}
-                >
+                <Stack.Screen name='noHeaderScene'>
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
               </Stack.Navigator>
