@@ -58,13 +58,13 @@ export const BackHeader: React.FC<Props> = ({
             paddingVertical: 7.5,
             paddingRight: 20
           },
-          onPress: () => onBack()
+          onPress: onBack
         })}
         {!!onSettings &&
           settings({
             icon: { height: 20, fill: themeStyles[theme].headerNavColor },
             container: { paddingVertical: 7.5, paddingLeft: 20 },
-            onPress: () => onSettings
+            onPress: onSettings
           })}
       </View>
     </SafeAreaView>

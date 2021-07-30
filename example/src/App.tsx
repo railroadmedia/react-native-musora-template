@@ -17,7 +17,7 @@ import {
   Catalogue,
   Profile,
   State,
-  Header,
+  MainHeader,
   BackHeader,
   MyList,
   Downloads,
@@ -46,7 +46,7 @@ const Stack = createStackNavigator(),
           }}
         >
           {isMainHeader ? (
-            <Header
+            <MainHeader
               onLogoPress={() => navigationRef.current?.navigate('home')}
               onDownloadsPress={() =>
                 navigationRef.current?.navigate('downloads')
