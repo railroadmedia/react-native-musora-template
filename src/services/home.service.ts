@@ -40,6 +40,6 @@ export const homeService = {
     ]);
   },
   getCache: async function () {
-    return JSON.parse((await AsyncStorage.getItem('@home')) || '');
+    return JSON.parse((await AsyncStorage.getItem('@home')) || '{}');
   }
 };

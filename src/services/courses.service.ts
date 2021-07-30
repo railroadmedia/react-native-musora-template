@@ -37,6 +37,6 @@ export const coursesService = {
     ]);
   },
   getCache: async function () {
-    return JSON.parse((await AsyncStorage.getItem('@courses')) || '');
+    return JSON.parse((await AsyncStorage.getItem('@courses')) || '{}');
   }
 };
