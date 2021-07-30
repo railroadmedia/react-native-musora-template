@@ -23,11 +23,9 @@ import {
   Header
 } from 'react-native-musora-templates';
 
-const screensWithMainHeader = ['home', 'courses'],
-  screensWithBackHeader = ['myList', 'downloads', 'profile'],
+const screensWithBackHeader = ['myList', 'downloads', 'profile'],
   screensWithTransparentHeader = ['profile'],
-  screensWithSettingsHeader = ['profile'],
-  screensWithNoHeader = ['noHeaderScene'];
+  screensWithSettingsHeader = ['profile'];
 
 const Stack = createStackNavigator(),
   navigationRef = React.createRef<NavigationContainerRef>(),
@@ -57,7 +55,6 @@ const Stack = createStackNavigator(),
             onLogoPress={() => navigationRef.current?.navigate('home')}
             onMyListPress={() => navigationRef.current?.navigate('myList')}
             onProfilePress={() => navigationRef.current?.navigate('profile')}
-            hidden={screensWithNoHeader.includes(name)}
             onBack={
               screensWithBackHeader.includes(name)
                 ? () => navigationRef.current?.goBack()
@@ -113,7 +110,10 @@ export default function App() {
                 >
                   {props => <Profile {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name='noHeaderScene'>
+                <Stack.Screen
+                  name='noHeaderScene'
+                  options={{ header: () => null }}
+                >
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
               </Stack.Navigator>

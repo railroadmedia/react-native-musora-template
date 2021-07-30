@@ -27,11 +27,11 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const page = useRef(1);
 
   useEffect(() => {
-    provider[scene].getCache?.().then(cache => {
+    provider[scene]?.getCache?.().then(cache => {
       if (isMounted.current) dispatch({ type: ADD_COMBINED, scene, ...cache });
     });
     provider[scene]
-      .getCombined?.({ page: page.current, signal: abortC.current.signal })
+      ?.getCombined?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, method]) => {
         if (isMounted.current) {
           addCardsAndCache(all?.data);

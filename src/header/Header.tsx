@@ -12,7 +12,6 @@ interface Props {
   title?: string;
   transparent?: boolean;
   onSettings?: Function;
-  hidden?: boolean;
 }
 export const Header: React.FC<Props> = ({
   onBack,
@@ -22,28 +21,21 @@ export const Header: React.FC<Props> = ({
   onDownloadsPress,
   onLogoPress,
   onMyListPress,
-  onProfilePress,
-  hidden
+  onProfilePress
 }) => {
-  return (
-    <View style={{ height: hidden ? 0 : undefined, overflow: 'hidden' }}>
-      {hidden ? (
-        <></>
-      ) : onBack ? (
-        <BackHeader
-          onBack={onBack}
-          title={title || ''}
-          transparent={transparent}
-          onSettings={onSettings}
-        />
-      ) : (
-        <MainHeader
-          onDownloadsPress={onDownloadsPress}
-          onLogoPress={onLogoPress}
-          onMyListPress={onMyListPress}
-          onProfilePress={onProfilePress}
-        />
-      )}
-    </View>
+  return onBack ? (
+    <BackHeader
+      onBack={onBack}
+      title={title || ''}
+      transparent={transparent}
+      onSettings={onSettings}
+    />
+  ) : (
+    <MainHeader
+      onDownloadsPress={onDownloadsPress}
+      onLogoPress={onLogoPress}
+      onMyListPress={onMyListPress}
+      onProfilePress={onProfilePress}
+    />
   );
 };
