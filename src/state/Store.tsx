@@ -35,7 +35,6 @@ export const State: React.FC = props => {
         else setTheme(LIGHT);
       }
     );
-    userService.getUserDetails().then(ud => updateUserAndCache(ud));
   }, []);
 
   const addCards = (cards?: { id: number }[]) => {

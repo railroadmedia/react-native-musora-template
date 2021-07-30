@@ -53,11 +53,11 @@ const authenticate: Auth = async function (email, password, purchases) {
     ).json();
     if (res.token) {
       token = `Bearer ${res.token}`;
-      setGenericPassword(email, password).catch(() => {});
-    } else resetGenericPassword().catch(() => {});
+      await setGenericPassword(email, password);
+    } else await resetGenericPassword().catch(() => {});
     return res;
   } catch (error) {
-    resetGenericPassword().catch(() => {});
+    await resetGenericPassword().catch(() => {});
     throw new Error();
   }
 };

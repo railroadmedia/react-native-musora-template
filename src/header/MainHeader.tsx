@@ -16,6 +16,7 @@ import { ThemeContext } from '../state/ThemeContext';
 import { downloads, myList } from '../images/svgs';
 import { UserContext } from '../state/UserContext';
 import { HeaderContext } from '../state/Headercontext';
+import { userService } from '../services/user.service';
 
 interface Props {
   onLogoPress: Function;
@@ -31,12 +32,13 @@ export const MainHeader: React.FC<Props> = ({
 }) => {
   const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
-  const { user } = useContext(UserContext);
+  const { user, updateUserAndCache } = useContext(UserContext);
   let styles = setStyles(theme);
 
   const isMounted = useRef(true);
 
   useEffect(() => {
+    userService.getUserDetails().then(ud => updateUserAndCache(ud));
     () => (isMounted.current = false);
   }, []);
 
