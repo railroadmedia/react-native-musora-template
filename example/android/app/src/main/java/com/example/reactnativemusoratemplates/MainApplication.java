@@ -11,6 +11,11 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
+import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
+import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
+import com.oblador.keychain.KeychainPackage;
+import com.horcrux.svg.SvgPackage;
+
 public class MainApplication extends Application implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost =
@@ -25,7 +30,10 @@ public class MainApplication extends Application implements ReactApplication {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for MusoraTemplatesExample:
-          // packages.add(new MyReactNativePackage());
+          packages.add(new AsyncStoragePackage());
+          packages.add(new SafeAreaContextPackage());
+          packages.add(new KeychainPackage());
+          packages.add(new SvgPackage());
           
           return packages;
         }
