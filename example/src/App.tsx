@@ -4,7 +4,11 @@ import {
   NavigationContainer,
   NavigationContainerRef
 } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackHeaderProps,
+  StackNavigationOptions
+} from '@react-navigation/stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import {
@@ -22,22 +26,25 @@ import {
 
 const Stack = createStackNavigator(),
   navigationRef = React.createRef<NavigationContainerRef>(),
-  stackOptions = {
-    header: (props: any) => {
-      const isMainHeader = props.scene.route.name.match(/^(home|courses)$/);
-      const isBackNavHeaderTransparent =
-        props.scene.route.name.match(/^(profile)$/);
-      const backNavHeaderHasSettings =
-        props.scene.route.name.match(/^(profile)$/);
-      const opacity = Animated.add(
-        props.scene.progress.current,
-        props.scene.progress.next || 0
-      ).interpolate({
-        inputRange: [0, 1, 2],
-        outputRange: [isMainHeader ? 1 : 0, 1, 0]
-      });
+  stackOptions: StackNavigationOptions = {
+    header: ({
+      scene: {
+        route: { name },
+        progress: { current, next }
+      }
+    }: StackHeaderProps) => {
+      const isMainHeader = !!name.match(/^(home|courses)$/);
+      const isBackNavHeaderTransparent = !!name.match(/^(profile)$/);
+      const backNavHeaderHasSettings = !!name.match(/^(profile)$/);
       return (
-        <Animated.View style={{ opacity }}>
+        <Animated.View
+          style={{
+            opacity: Animated.add(current, next || 0).interpolate({
+              inputRange: [0, 1, 2],
+              outputRange: [0, 1, 0]
+            })
+          }}
+        >
           {isMainHeader ? (
             <Header
               onLogoPress={() => navigationRef.current?.navigate('home')}
@@ -50,7 +57,7 @@ const Stack = createStackNavigator(),
           ) : (
             <BackHeader
               onBack={() => navigationRef.current?.goBack()}
-              title={props.scene.route.name}
+              title={name}
               transparent={isBackNavHeaderTransparent}
               onSettings={backNavHeaderHasSettings ? () => {} : undefined}
             />
@@ -101,7 +108,7 @@ export default function App() {
                 </Stack.Screen>
                 <Stack.Screen
                   name='noHeaderScene'
-                  options={{ headerShown: false }}
+                  options={{ header: () => null }}
                 >
                   {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
