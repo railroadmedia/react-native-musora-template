@@ -36,7 +36,14 @@ export const Gradient: React.FC<Props> = ({
                 key={c + i}
                 offset={`${(100 / (colors.length - 1)) * i}%`}
                 stopColor={c}
-                stopOpacity={c === 'transparent' ? 0 : 1}
+                stopOpacity={
+                  c === 'transparent'
+                    ? 0
+                    : c.includes('rgba')
+                    ? parseInt(c.split(',').pop()?.replace(')', '') || '100') /
+                      100
+                    : 1
+                }
               />
             ))}
           </LinearGradient>

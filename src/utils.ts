@@ -5,6 +5,7 @@ interface UtilsInterface {
   rootUrl: string;
   brand: string;
   color: string;
+  getColorWithAlpha: (alpha: number) => string;
   isiOS: boolean;
   fallbackAvatar: string;
   serverDownError: {
@@ -12,9 +13,7 @@ interface UtilsInterface {
     message: string;
   };
   figmaFontSizeScaler: (fontSize: number) => number;
-  headerSvgBrand: ({
-    icon: { width, height, fill }
-  }: svgs.Props) => JSX.Element;
+  svgBrand: ({ icon: { width, height, fill } }: svgs.Props) => JSX.Element;
 }
 class Utils implements UtilsInterface {
   brand = '';
@@ -23,12 +22,17 @@ class Utils implements UtilsInterface {
   fallbackAvatar =
     'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
 
-  private _color: { [brand: string]: '#0b76db' | '#fb1b2f' } = {
-    drumeo: '#0b76db',
-    pianote: '#fb1b2f'
+  private _color: {
+    [brand: string]: 'rgba(11, 118, 219, 1)' | 'rgba(251, 27, 47, 1)';
+  } = {
+    drumeo: 'rgba(11, 118, 219, 1)',
+    pianote: 'rgba(251, 27, 47, 1)'
   };
   get color() {
     return this._color[this.brand];
+  }
+  getColorWithAlpha(alpha: number) {
+    return this._color[this.brand]?.replace('1)', `${alpha})`) || '';
   }
 
   private serverDownMsg =
@@ -48,7 +52,7 @@ class Utils implements UtilsInterface {
     return this._serverDown[this.brand];
   }
 
-  get headerSvgBrand() {
+  get svgBrand() {
     switch (this.brand) {
       case 'pianote':
         return svgs.pianote;

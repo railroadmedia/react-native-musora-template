@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useReducer, useRef } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 
-import { ThemeContext } from '../state/ThemeContext';
+import { Banner } from '../commons/Banner';
+
 import { CardsContext } from '../state/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
@@ -10,21 +11,28 @@ import {
   ADD_COMBINED_AND_CACHE,
   catalogueReducer
 } from '../state/catalogue/reducer';
+import { ThemeContext } from '../state/ThemeContext';
+import { themeStyles } from '../themeStyles';
 
 interface Props {
   scene: string;
 }
 
 export const Catalogue: React.FC<Props> = ({ scene }) => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
   const { cards, addCards, addCardsAndCache, updateCard } =
     useContext(CardsContext);
+  const { theme } = useContext(ThemeContext);
+  let styles = setStyles(theme);
 
   const [catalogue, dispatch] = useReducer(catalogueReducer, {});
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
+
+  useEffect(() => {
+    styles = setStyles(theme);
+  }, [theme]);
 
   useEffect(() => {
     provider[scene]?.getCache?.().then(cache => {
@@ -50,18 +58,37 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       abortC.current.abort();
     };
   }, []);
+
+  const renderFLMethodBanner = () => (
+    <Banner
+      {...catalogue.method}
+      onMainPress={() => {}}
+      onMoreInfoPress={() => {}}
+    />
+  );
+
+  const renderFLHeader = () => <>{renderFLMethodBanner()}</>;
+
+  const renderFLItem = ({ item: {} }) => <View></View>;
+
+  console.log(catalogue.method);
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => toggleTheme()}>
-        <Text style={{ padding: 20, backgroundColor: 'red' }}>
-          change theme
-        </Text>
-      </TouchableOpacity>
-      <Text style={{ fontWeight: '900', fontSize: 20 }}>{scene} catalogue</Text>
+      <FlatList
+        data={catalogue.all}
+        renderItem={renderFLItem}
+        keyExtractor={id => id.toString()}
+        ListHeaderComponent={renderFLHeader()}
+      />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {}
-});
+const setStyles = (theme: string, current = themeStyles[theme]) =>
+  StyleSheet.create({
+    container: {
+      backgroundColor: current.background,
+      flex: 1
+    }
+  });

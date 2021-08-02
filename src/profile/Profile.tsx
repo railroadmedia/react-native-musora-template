@@ -273,7 +273,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       height: '100%',
       width: '100%',
       position: 'absolute',
-      backgroundColor: themeStyles[theme].background
+      backgroundColor: current.background
     },
     gradient: {
       position: 'absolute',

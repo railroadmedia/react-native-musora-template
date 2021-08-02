@@ -59,7 +59,7 @@ export const MainHeader: React.FC<Props> = ({
         barStyle={theme === DARK ? 'light-content' : 'dark-content'}
       />
       <View style={{ flex: 1 }}>
-        {utils.headerSvgBrand({
+        {utils.svgBrand({
           icon: { height: 30, fill: utils.color },
           onPress: onLogoPress
         })}
