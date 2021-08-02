@@ -41,7 +41,7 @@ export const Gradient: React.FC<Props> = ({
             ))}
           </LinearGradient>
         </Defs>
-        <Rect width={width} height={height} fill='url(#gradient)' />
+        <Rect width={'100%'} height={'100%'} fill='url(#gradient)' />
       </Svg>
       {children}
     </View>

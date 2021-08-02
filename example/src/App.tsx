@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import {
   NavigationContainer,
@@ -25,7 +25,8 @@ import {
 
 const screensWithBackHeader = ['myList', 'downloads', 'profile'],
   screensWithTransparentHeader = ['profile'],
-  screensWithSettingsHeader = ['profile'];
+  screensWithSettingsHeader = ['profile'],
+  scenesWithBottomNav = ['home', 'search', 'forum'];
 
 const Stack = createStackNavigator(),
   navigationRef = React.createRef<NavigationContainerRef>(),
@@ -72,7 +73,9 @@ const Stack = createStackNavigator(),
   };
 
 export default function App() {
+  const bottomNavOpacity = useRef(new Animated.Value(0));
   const [authenticated, setAuthenticated] = useState(false);
+  const [bottomNavMaxHeight, setBottomNavMaxHeight] = useState(0);
 
   useEffect(() => {
     utils.rootUrl = 'https://staging.pianote.com';
@@ -85,18 +88,35 @@ export default function App() {
       .catch(() => {});
   }, []);
 
+  const animateBottomNav = () => {
+    let name = navigationRef.current?.getCurrentRoute()?.name || '';
+    if (!bottomNavMaxHeight)
+      setBottomNavMaxHeight(scenesWithBottomNav.includes(name) ? 1000 : 0);
+    Animated.timing(bottomNavOpacity.current, {
+      toValue: scenesWithBottomNav.includes(name) ? 1 : 0,
+      duration: 200,
+      useNativeDriver: true
+    }).start(() => {
+      setBottomNavMaxHeight(scenesWithBottomNav.includes(name) ? 1000 : 0);
+    });
+  };
+
   return (
     <SafeAreaProvider>
       <State>
         {authenticated && (
           <>
-            <NavigationContainer ref={navigationRef}>
+            <NavigationContainer
+              ref={navigationRef}
+              onReady={animateBottomNav}
+              onStateChange={animateBottomNav}
+            >
               <Stack.Navigator screenOptions={stackOptions}>
                 <Stack.Screen name='home'>
                   {props => <Catalogue {...props} scene='home' />}
                 </Stack.Screen>
-                <Stack.Screen name='courses'>
-                  {props => <Catalogue {...props} scene='courses' />}
+                <Stack.Screen name='search'>
+                  {props => <Catalogue {...props} scene='search' />}
                 </Stack.Screen>
                 <Stack.Screen name='myList' options={{ title: 'My List' }}>
                   {props => <MyList {...props} whatever='whatever' />}
@@ -110,22 +130,25 @@ export default function App() {
                 >
                   {props => <Profile {...props} />}
                 </Stack.Screen>
-                <Stack.Screen
-                  name='noHeaderScene'
-                  options={{ header: () => null }}
-                >
-                  {props => <Catalogue {...props} scene='courses' />}
+                <Stack.Screen name='forum' options={{ header: () => null }}>
+                  {props => <Catalogue {...props} scene='forum' />}
                 </Stack.Screen>
               </Stack.Navigator>
             </NavigationContainer>
-            <BottomNav
-              onHomePress={() => navigationRef.current?.navigate('home')}
-              onSearchPress={() => navigationRef.current?.navigate('courses')}
-              onForumPress={() =>
-                navigationRef.current?.navigate('noHeaderScene')
-              }
-              onMenuPress={() => {}}
-            />
+            <Animated.View
+              style={{
+                overflow: 'hidden',
+                maxHeight: bottomNavMaxHeight,
+                opacity: bottomNavOpacity.current
+              }}
+            >
+              <BottomNav
+                onHomePress={() => navigationRef.current?.navigate('home')}
+                onSearchPress={() => navigationRef.current?.navigate('search')}
+                onForumPress={() => navigationRef.current?.navigate('forum')}
+                onMenuPress={() => {}}
+              />
+            </Animated.View>
           </>
         )}
       </State>
