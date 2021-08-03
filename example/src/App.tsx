@@ -113,10 +113,18 @@ export default function App() {
             >
               <Stack.Navigator screenOptions={stackOptions}>
                 <Stack.Screen name='home'>
-                  {props => <Catalogue {...props} scene='home' />}
+                  {props => (
+                    <Catalogue
+                      {...props}
+                      scene='home'
+                      hasMethodBanner={true}
+                      hasUserInfo={true}
+                      recentlyViewed={true}
+                    />
+                  )}
                 </Stack.Screen>
                 <Stack.Screen name='search'>
-                  {props => <Catalogue {...props} scene='search' />}
+                  {props => <Catalogue {...props} scene='courses' />}
                 </Stack.Screen>
                 <Stack.Screen name='myList' options={{ title: 'My List' }}>
                   {props => <MyList {...props} whatever='whatever' />}

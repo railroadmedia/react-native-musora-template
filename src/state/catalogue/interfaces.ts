@@ -2,6 +2,7 @@ export interface State {
   all?: number[];
   newContent?: number[];
   inProgress?: number[];
+  recentlyViewed?: number[];
   method?: {};
 }
 export interface Add {
@@ -16,6 +17,7 @@ export interface Reducer {
       all?: number[];
       inProgress?: number[];
       newContent?: number[];
+      recentlyViewed?: number[];
       method?: {};
     },
     action: {
@@ -24,6 +26,7 @@ export interface Reducer {
       all?: [{ id: number }?];
       newContent?: [{ id: number }?];
       inProgress?: [{ id: number }?];
+      recentlyViewed?: [{ id: number }?];
       method?: {};
     }
   ): State;

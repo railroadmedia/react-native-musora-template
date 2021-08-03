@@ -3,30 +3,32 @@ import { coursesService } from './courses.service';
 
 import type { Args } from './interfaces';
 
-interface ProviderMethod {
+interface ProviderFunction {
   ({}: Args): Promise<{ data?: [] }>;
 }
 
-interface ProviderMethodCombined {
-  ({}: Args): Promise<{ data?: [] }[]>;
+interface ProviderFunctionCombined {
+  ({}: Args): Promise<({ data?: [] } | undefined)[]>;
 }
 
-interface ProviderMethodCache {
+interface ProviderFunctionCache {
   (): Promise<{
     all?: [];
     inProgress?: [];
     newContent?: [];
+    recentlyViewed?: [];
     method?: {};
   }>;
 }
 
 interface Scene {
-  getMethod?: ProviderMethod;
-  getAll?: ProviderMethod;
-  getInProgress?: ProviderMethod;
-  getNew?: ProviderMethod;
-  getCombined?: ProviderMethodCombined;
-  getCache?: ProviderMethodCache;
+  getMethod?: ProviderFunction;
+  getAll?: ProviderFunction;
+  getRecentlyViewed?: ProviderFunction;
+  getInProgress?: ProviderFunction;
+  getNew?: ProviderFunction;
+  getCombined?: ProviderFunctionCombined;
+  getCache?: ProviderFunctionCache;
 }
 
 interface Provider {

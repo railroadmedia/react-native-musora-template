@@ -5,6 +5,7 @@ import type { Add, Reducer, AddMethod } from './interfaces';
 export const ADD_ALL = 'ADD_ALL';
 export const ADD_NEW = 'ADD_NEW';
 export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
+export const ADD_RECENTLY_VIEWED = 'ADD_RECENTLY_VIEWED';
 export const ADD_METHOD = 'ADD_METHOD';
 export const ADD_COMBINED = 'ADD_COMBINED';
 export const ADD_COMBINED_AND_CACHE = 'ADD_COMBINED_AND_CACHE';
@@ -30,6 +31,14 @@ const addInProgress: Add = (state, inProgress) => {
   return newState;
 };
 
+const addRecentlyViewed: Add = (state, recentlyViewed) => {
+  const newState: (number | undefined)[] = [
+    ...state,
+    ...recentlyViewed.map(rv => rv?.id)
+  ];
+  return newState;
+};
+
 const addMethod: AddMethod = (state, method) => {
   const newState: {} = { ...state, method };
   return newState;
@@ -37,7 +46,7 @@ const addMethod: AddMethod = (state, method) => {
 
 export const catalogueReducer: Reducer = (
   state,
-  { type, scene, all, newContent, inProgress, method }
+  { type, scene, all, newContent, inProgress, recentlyViewed, method }
 ) => {
   switch (type) {
     case ADD_ALL:
@@ -48,6 +57,10 @@ export const catalogueReducer: Reducer = (
       return inProgress
         ? addInProgress(state.inProgress || [], inProgress)
         : state;
+    case ADD_RECENTLY_VIEWED:
+      return recentlyViewed
+        ? addRecentlyViewed(state.recentlyViewed || [], recentlyViewed)
+        : state;
     case ADD_METHOD:
       return method ? addMethod(state.method || {}, method) : state;
     case ADD_COMBINED:
@@ -55,6 +68,7 @@ export const catalogueReducer: Reducer = (
         all: all?.map(a => a?.id || a) || [],
         newContent: newContent?.map(nc => nc?.id || nc) || [],
         inProgress: inProgress?.map(ip => ip?.id || ip) || [],
+        recentlyViewed: recentlyViewed?.map(rv => rv?.id || rv) || [],
         method: method || {}
       };
     case ADD_COMBINED_AND_CACHE: {
@@ -62,6 +76,7 @@ export const catalogueReducer: Reducer = (
         all: all?.map(a => a?.id || a) || [],
         newContent: newContent?.map(nc => nc?.id || nc) || [],
         inProgress: inProgress?.map(ip => ip?.id || ip) || [],
+        recentlyViewed: recentlyViewed?.map(rv => rv?.id || rv) || [],
         method: method || {}
       };
       AsyncStorage.setItem(`@${scene}`, JSON.stringify(newState));

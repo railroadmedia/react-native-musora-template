@@ -14,14 +14,18 @@ import { Gradient } from './Gradient';
 
 interface Props {
   thumbnail_url?: string;
-  onMainPress: Function;
-  onMoreInfoPress: Function;
+  onLeftBtnPress: Function;
+  onRightBtnPress: Function;
+  started?: boolean;
+  completed?: boolean;
 }
 
 export const Banner: React.FC<Props> = ({
   thumbnail_url,
-  onMainPress,
-  onMoreInfoPress
+  onLeftBtnPress,
+  onRightBtnPress,
+  started,
+  completed
 }) => {
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
@@ -55,17 +59,19 @@ export const Banner: React.FC<Props> = ({
       })}
       <View style={styles.btnsContainer}>
         <TouchableOpacity
-          onPress={() => onMainPress()}
+          onPress={() => onLeftBtnPress()}
           style={styles.btnTOpacity}
         >
           {play({
             icon: { height: 10, fill: 'white' },
             container: { paddingRight: 5 }
           })}
-          <Text style={styles.btnText}>START</Text>
+          <Text style={styles.btnText}>
+            {completed ? 'RESET' : started ? 'CONTINUE' : 'START'}
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => onMoreInfoPress()}
+          onPress={() => onRightBtnPress()}
           style={[styles.btnTOpacity, styles.btnTOpacityMoreInfo]}
         >
           {arrowRight({
@@ -83,7 +89,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     imageBackground: {
       width: '100%',
-      aspectRatio: 1,
+      aspectRatio: utils.isTablet ? 16 / 6 : 1,
       alignItems: 'center',
       justifyContent: 'flex-end'
     },
