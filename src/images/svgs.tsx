@@ -493,7 +493,9 @@ export const completedCircle = (props: Props) =>
     children: (
       <Svg
         viewBox='0 0 32 32'
-        fill={props.icon.fill}
+        fillRule='evenodd'
+        clipRule='evenodd'
+        strokeLinejoin='round'
         style={{
           height: props.icon.height,
           width: props.icon.width

@@ -11,6 +11,12 @@ interface CardIconProps {
   onIconPress: () => void;
 }
 
+const iconStyle = {
+  height: 25,
+  width: 25,
+  fill: utils.color
+};
+
 export const CardIcon: React.FC<CardIconProps> = ({
   published_on,
   iconType,
@@ -21,49 +27,29 @@ export const CardIcon: React.FC<CardIconProps> = ({
     <View>
       {new Date(published_on) > new Date()
         ? addToCalendar({
-            icon: {
-              height: 25,
-              width: 25,
-              fill: utils.color
-            },
+            icon: iconStyle,
             container: styles.icon,
             onPress: onIconPress
           })
         : iconType === 'next-lesson'
         ? play({
-            icon: {
-              height: 25,
-              width: 25,
-              fill: utils.color
-            },
+            icon: iconStyle,
             container: { padding: 15 }
           })
         : iconType === 'progress'
         ? reset({
-            icon: {
-              height: 25,
-              width: 25,
-              fill: utils.color
-            },
+            icon: iconStyle,
             container: styles.icon,
             onPress: onIconPress
           })
         : isAddedToPrimaryList
         ? x({
-            icon: {
-              height: 25,
-              width: 25,
-              fill: utils.color
-            },
+            icon: iconStyle,
             container: styles.icon,
             onPress: onIconPress
           })
         : plus({
-            icon: {
-              height: 25,
-              width: 25,
-              fill: utils.color
-            },
+            icon: iconStyle,
             container: styles.icon,
             onPress: onIconPress
           })}
