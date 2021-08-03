@@ -1,3 +1,5 @@
+import type { OrientationType } from 'react-native-orientation-locker';
+
 export interface CardsReducer {
   (
     state: {},
@@ -31,6 +33,11 @@ export interface CardsContext {
 export interface ThemeContext {
   theme: string;
   toggleTheme: () => void;
+}
+export interface OrientationContext {
+  orientation: OrientationType;
+  isLandscape: boolean;
+  updateOrientation: (orientation: OrientationType) => void;
 }
 export interface UserContext {
   user: {

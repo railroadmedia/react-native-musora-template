@@ -12,6 +12,7 @@ target 'MusoraTemplatesExample' do
   pod 'RNSVG', :path => '../../node_modules/react-native-svg'
   pod 'RNKeychain', :path => '../../node_modules/react-native-keychain'
   pod 'RNDeviceInfo', :path => '../../node_modules/react-native-device-info'
+  pod 'react-native-orientation-locker', :path => '../../node_modules/react-native-orientation-locker'
 
 
   # Enables Flipper.
