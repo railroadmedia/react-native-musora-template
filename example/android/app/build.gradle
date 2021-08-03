@@ -183,6 +183,7 @@ dependencies {
     implementation project(':react-native-safe-area-context')
     implementation project(':react-native-keychain')
     implementation project(':react-native-svg')
+    implementation project(':react-native-device-info')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
