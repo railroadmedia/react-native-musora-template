@@ -15,6 +15,7 @@ import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.oblador.keychain.KeychainPackage;
 import com.horcrux.svg.SvgPackage;
+import com.learnium.RNDeviceInfo.RNDeviceInfo;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -34,6 +35,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new SafeAreaContextPackage());
           packages.add(new KeychainPackage());
           packages.add(new SvgPackage());
+          packages.add(new RNDeviceInfo());
           
           return packages;
         }
