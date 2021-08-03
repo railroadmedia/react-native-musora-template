@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { View } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Orientation, { OrientationType } from 'react-native-orientation-locker';
 
 import { CardsContext } from './CardsContext';
 import { ThemeContext } from './ThemeContext';
@@ -17,16 +18,20 @@ import {
 import { userReducer, UPDATE_USER, UPDATE_USER_AND_CACHE } from './userReducer';
 
 import { LIGHT, DARK, themeStyles } from '../themeStyles';
-import { userService } from '../services/user.service';
 import { HeaderContext } from './Headercontext';
+import { OrientationContext } from './OrientationContext';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
   const [headerNavHeight, setHeaderNavHeight] = useState(0);
+  const [orientation, setOrientation] = useState(
+    Orientation.getInitialOrientation()
+  );
   const [cards, dispatchCards] = useReducer(cardsReducer, {});
   const [user, dispatchUser] = useReducer(userReducer, {});
 
   useEffect(() => {
+    Orientation.addOrientationListener(updateOrientation);
     AsyncStorage.multiGet(['@theme', '@cards', '@user']).then(
       ([[_, theme], [__, cards], [___, user]]) => {
         if (cards) addCards(Object.values(JSON.parse(cards)));
@@ -35,6 +40,9 @@ export const State: React.FC = props => {
         else setTheme(LIGHT);
       }
     );
+    return () => {
+      Orientation.removeOrientationListener(updateOrientation);
+    };
   }, []);
 
   const addCards = (cards?: { id: number }[]) => {
@@ -62,6 +70,8 @@ export const State: React.FC = props => {
 
   const updateHeaderNavHeight = (height: number) => setHeaderNavHeight(height);
 
+  const updateOrientation = (o: OrientationType) => setOrientation(o);
+
   return (
     <View style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}>
       <CardsContext.Provider
@@ -72,7 +82,15 @@ export const State: React.FC = props => {
             <HeaderContext.Provider
               value={{ headerNavHeight, updateHeaderNavHeight }}
             >
-              {!!theme && props.children}
+              <OrientationContext.Provider
+                value={{
+                  isLandscape: orientation.toLowerCase().includes('land'),
+                  orientation,
+                  updateOrientation
+                }}
+              >
+                {!!theme && props.children}
+              </OrientationContext.Provider>
             </HeaderContext.Provider>
           </ThemeContext.Provider>
         </UserContext.Provider>

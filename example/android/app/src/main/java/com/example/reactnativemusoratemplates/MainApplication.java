@@ -16,6 +16,8 @@ import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.oblador.keychain.KeychainPackage;
 import com.horcrux.svg.SvgPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
+import org.wonday.orientation.OrientationPackage;
+import org.wonday.orientation.OrientationActivityLifecycle;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -36,6 +38,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new KeychainPackage());
           packages.add(new SvgPackage());
           packages.add(new RNDeviceInfo());
+          packages.add(new OrientationPackage());
           
           return packages;
         }
@@ -56,6 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager()); // Remove this line if you don't want Flipper enabled
+    registerActivityLifecycleCallbacks(OrientationActivityLifecycle.getInstance());
   }
 
   /**
