@@ -9,79 +9,97 @@ export const ADD_RECENTLY_VIEWED = 'ADD_RECENTLY_VIEWED';
 export const ADD_METHOD = 'ADD_METHOD';
 export const ADD_COMBINED = 'ADD_COMBINED';
 export const ADD_COMBINED_AND_CACHE = 'ADD_COMBINED_AND_CACHE';
+export const UPDATE_CATALOGUE = 'UPDATE_CATALOGUE';
 
-const addAll: Add = (state, all) => {
-  const newState: (number | undefined)[] = [...state, ...all.map(a => a?.id)];
-  return newState;
-};
+const addAll: Add = (state, all) => ({
+  ...state,
+  all: all.map(a => (typeof a === 'number' ? a : a.id))
+});
 
-const addNew: Add = (state, newContent) => {
-  const newState: (number | undefined)[] = [
-    ...state,
-    ...newContent.map(n => n?.id)
-  ];
-  return newState;
-};
+const addNew: Add = (state, newContent) => ({
+  ...state,
+  newContent: newContent.map(nc => (typeof nc === 'number' ? nc : nc.id))
+});
 
-const addInProgress: Add = (state, inProgress) => {
-  const newState: (number | undefined)[] = [
-    ...state,
-    ...inProgress.map(ip => ip?.id)
-  ];
-  return newState;
-};
+const addInProgress: Add = (state, inProgress) => ({
+  ...state,
+  inProgress: inProgress.map(ip => (typeof ip === 'number' ? ip : ip.id))
+});
 
-const addRecentlyViewed: Add = (state, recentlyViewed) => {
-  const newState: (number | undefined)[] = [
-    ...state,
-    ...recentlyViewed.map(rv => rv?.id)
-  ];
-  return newState;
-};
+const addRecentlyViewed: Add = (state, recentlyViewed) => ({
+  ...state,
+  recentlyViewed: recentlyViewed.map(rv =>
+    typeof rv === 'number' ? rv : rv.id
+  )
+});
 
-const addMethod: AddMethod = (state, method) => {
-  const newState: {} = { ...state, method };
-  return newState;
-};
+const addMethod: AddMethod = (state, method) => ({ ...state, method });
 
 export const catalogueReducer: Reducer = (
   state,
-  { type, scene, all, newContent, inProgress, recentlyViewed, method }
+  {
+    type,
+    scene,
+    all,
+    newContent,
+    inProgress,
+    recentlyViewed,
+    method,
+    refreshing,
+    loadingMore
+  }
 ) => {
+  let newState = {
+    ...state,
+    refreshing: refreshing === undefined ? state.refreshing : refreshing,
+    loadingMore: loadingMore === undefined ? state.loadingMore : loadingMore
+  };
   switch (type) {
     case ADD_ALL:
-      return all ? addAll(state.all || [], all) : state;
+      return addAll(newState, all || []);
     case ADD_NEW:
-      return newContent ? addNew(state.newContent || [], newContent) : state;
+      return addNew(newState, newContent || []);
     case ADD_IN_PROGRESS:
-      return inProgress
-        ? addInProgress(state.inProgress || [], inProgress)
-        : state;
+      return addInProgress(newState, inProgress || []);
     case ADD_RECENTLY_VIEWED:
-      return recentlyViewed
-        ? addRecentlyViewed(state.recentlyViewed || [], recentlyViewed)
-        : state;
+      return addRecentlyViewed(newState, recentlyViewed || []);
     case ADD_METHOD:
-      return method ? addMethod(state.method || {}, method) : state;
+      return addMethod(newState, method || {});
     case ADD_COMBINED:
       return {
-        all: all?.map(a => a?.id || a) || [],
-        newContent: newContent?.map(nc => nc?.id || nc) || [],
-        inProgress: inProgress?.map(ip => ip?.id || ip) || [],
-        recentlyViewed: recentlyViewed?.map(rv => rv?.id || rv) || [],
+        ...newState,
+        all: all?.map(a => (typeof a === 'number' ? a : a.id)),
+        newContent: newContent?.map(nc =>
+          typeof nc === 'number' ? nc : nc.id
+        ),
+        inProgress: inProgress?.map(ip =>
+          typeof ip === 'number' ? ip : ip.id
+        ),
+        recentlyViewed: recentlyViewed?.map(rv =>
+          typeof rv === 'number' ? rv : rv.id
+        ),
         method: method || {}
       };
     case ADD_COMBINED_AND_CACHE: {
-      const newState = {
-        all: all?.map(a => a?.id || a) || [],
-        newContent: newContent?.map(nc => nc?.id || nc) || [],
-        inProgress: inProgress?.map(ip => ip?.id || ip) || [],
-        recentlyViewed: recentlyViewed?.map(rv => rv?.id || rv) || [],
+      newState = {
+        ...newState,
+        all: all?.map(a => (typeof a === 'number' ? a : a.id)),
+        newContent: newContent?.map(nc =>
+          typeof nc === 'number' ? nc : nc.id
+        ),
+        inProgress: inProgress?.map(ip =>
+          typeof ip === 'number' ? ip : ip.id
+        ),
+        recentlyViewed: recentlyViewed?.map(rv =>
+          typeof rv === 'number' ? rv : rv.id
+        ),
         method: method || {}
       };
       AsyncStorage.setItem(`@${scene}`, JSON.stringify(newState));
       return newState;
     }
+    case UPDATE_CATALOGUE:
+      return newState;
     default:
       return state;
   }

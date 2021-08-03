@@ -113,15 +113,7 @@ export default function App() {
             >
               <Stack.Navigator screenOptions={stackOptions}>
                 <Stack.Screen name='home'>
-                  {props => (
-                    <Catalogue
-                      {...props}
-                      scene='home'
-                      hasMethodBanner={true}
-                      hasUserInfo={true}
-                      recentlyViewed={true}
-                    />
-                  )}
+                  {props => <Catalogue {...props} scene='home' />}
                 </Stack.Screen>
                 <Stack.Screen name='search'>
                   {props => <Catalogue {...props} scene='courses' />}

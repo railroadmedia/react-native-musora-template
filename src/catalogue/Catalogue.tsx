@@ -5,7 +5,8 @@ import {
   FlatList,
   Image,
   Text,
-  ActivityIndicator
+  ActivityIndicator,
+  RefreshControl
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -17,7 +18,8 @@ import { provider } from '../services/catalogueSceneProvider.service';
 import {
   ADD_COMBINED,
   ADD_COMBINED_AND_CACHE,
-  catalogueReducer
+  catalogueReducer,
+  UPDATE_CATALOGUE
 } from '../state/catalogue/reducer';
 import { ThemeContext } from '../state/ThemeContext';
 import { themeStyles } from '../themeStyles';
@@ -29,23 +31,32 @@ import { Sort } from '../commons/Sort';
 
 interface Props {
   scene: string;
-  hasMethodBanner?: boolean;
-  hasUserInfo?: boolean;
-  recentlyViewed?: boolean;
 }
 
-export const Catalogue: React.FC<Props> = ({
-  scene,
-  hasMethodBanner,
-  hasUserInfo,
-  recentlyViewed
-}) => {
+export const Catalogue: React.FC<Props> = ({ scene }) => {
+  const hasMethodBanner = scene.match(/^(home)$/),
+    hasUserInfo = scene.match(/^(home)$/);
+
   const { user } = useContext(UserContext);
   const { addCardsAndCache, updateCard } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
-  const [catalogue, dispatch] = useReducer(catalogueReducer, {});
+  const [
+    {
+      method,
+      recentlyViewed,
+      inProgress,
+      newContent,
+      all,
+      loadingMore,
+      refreshing
+    },
+    dispatch
+  ] = useReducer(catalogueReducer, {
+    loadingMore: false,
+    refreshing: true
+  });
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -73,7 +84,8 @@ export const Catalogue: React.FC<Props> = ({
             all: all?.data,
             inProgress: inProgress?.data,
             recentlyViewed: recentlyViewed?.data,
-            newContent: newContent?.data
+            newContent: newContent?.data,
+            refreshing: false
           });
         }
       });
@@ -84,11 +96,7 @@ export const Catalogue: React.FC<Props> = ({
   }, []);
 
   const renderFLMethodBanner = () => (
-    <Banner
-      {...catalogue.method}
-      onRightBtnPress={() => {}}
-      onLeftBtnPress={() => {}}
-    />
+    <Banner {...method} onRightBtnPress={() => {}} onLeftBtnPress={() => {}} />
   );
 
   const renderCarousel = (items: number[] | undefined, title: string) =>
@@ -117,12 +125,12 @@ export const Catalogue: React.FC<Props> = ({
       ) : (
         <Text style={styles.sceneTitle}>{scene}</Text>
       )}
-      {!!recentlyViewed ? (
-        renderCarousel(catalogue.recentlyViewed, 'Recently Viewed')
+      {!!recentlyViewed?.length ? (
+        renderCarousel(recentlyViewed, 'Recently Viewed')
       ) : (
         <>
-          {renderCarousel(catalogue.inProgress, 'Continue')}
-          {renderCarousel(catalogue.newContent, 'New Lessons')}
+          {renderCarousel(inProgress, 'Continue')}
+          {renderCarousel(newContent, 'New Lessons')}
         </>
       )}
       <View
@@ -151,23 +159,39 @@ export const Catalogue: React.FC<Props> = ({
     <ActivityIndicator
       size='small'
       color={utils.color}
-      animating={true}
+      animating={loadingMore}
       style={{ padding: 15 }}
     />
   );
 
-  console.log(scene, catalogue);
+  const renderFLRefreshControl = () => (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={!!refreshing}
+    />
+  );
+
+  const refresh = () => {};
+
+  const loadMore = () => {
+    dispatch({ type: UPDATE_CATALOGUE, scene, loadingMore: true });
+  };
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={[]}
+        data={all}
         renderItem={renderFLItem}
         keyExtractor={id => id.toString()}
         ListHeaderComponent={renderFLHeader()}
         ListEmptyComponent={renderFLEmpty()}
         ListFooterComponent={renderFLFooter()}
+        refreshControl={renderFLRefreshControl()}
+        onEndReached={loadMore}
       />
     </SafeAreaView>
   );

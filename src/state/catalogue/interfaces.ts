@@ -4,30 +4,28 @@ export interface State {
   inProgress?: number[];
   recentlyViewed?: number[];
   method?: {};
+  refreshing: boolean;
+  loadingMore: boolean;
 }
 export interface Add {
-  (state: number[], add: [{ id: number }?]): number[] | {};
+  (state: State, add: ({ id: number } | number)[]): State;
 }
 export interface AddMethod {
-  (state: {}, add: {}): {};
+  (state: State, add: {}): State;
 }
 export interface Reducer {
   (
-    state: {
-      all?: number[];
-      inProgress?: number[];
-      newContent?: number[];
-      recentlyViewed?: number[];
-      method?: {};
-    },
+    state: State,
     action: {
       type: string;
       scene: string;
-      all?: [{ id: number }?];
-      newContent?: [{ id: number }?];
-      inProgress?: [{ id: number }?];
-      recentlyViewed?: [{ id: number }?];
+      all?: ({ id: number } | number)[];
+      newContent?: ({ id: number } | number)[];
+      inProgress?: ({ id: number } | number)[];
+      recentlyViewed?: ({ id: number } | number)[];
       method?: {};
+      refreshing?: boolean;
+      loadingMore?: boolean;
     }
   ): State;
 }
