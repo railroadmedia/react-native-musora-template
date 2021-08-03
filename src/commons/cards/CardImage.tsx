@@ -1,9 +1,7 @@
 import React from 'react';
-import { Dimensions, ImageBackground, StyleSheet, View } from 'react-native';
+import { ImageBackground, StyleSheet, View, Text } from 'react-native';
 import { completedCircle, inProgressCircle, lock } from '../../images/svgs';
-
-const fallbackThumb =
-  'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
+import { getImageUri } from './cardhelpers';
 
 interface CardImageProps {
   type: string;
@@ -12,6 +10,7 @@ interface CardImageProps {
   completed: boolean;
   progress_percent: number;
   size: number;
+  route: string;
   isLocked?: boolean;
 }
 
@@ -22,35 +21,17 @@ export const CardImage: React.FC<CardImageProps> = ({
   completed,
   progress_percent,
   size,
+  route,
   isLocked
 }) => {
-  const getImageUri = function (
-    thumbUri = fallbackThumb,
-    published_on: string,
-    type: string
-  ) {
-    if (!thumbUri.includes('https')) return thumbUri;
-    // if (this.props.dldActions) return thumbUri;
-    const width = Dimensions.get('screen').width;
-    const baseUri = 'https://cdn.musora.com/image/fetch';
-    if (new Date(published_on) > new Date()) {
-      return `${baseUri}/w_${width >> 0},ar_${
-        type === 'song' ? '1' : '16:9'
-      },fl_lossy,q_auto:eco,e_grayscale/${thumbUri}`;
-    }
-    return `${baseUri}/w_${width >> 0},ar_${
-      type === 'song' ? '1' : '16:9'
-    },fl_lossy,q_auto:good,c_fill,g_face/${thumbUri}`;
-  };
-
   return (
     <View style={styles.imageContainer}>
       <ImageBackground
         resizeMethod='resize'
         imageStyle={{ borderRadius: 8 }}
         style={[
-          styles.smallImage,
-          type === 'song' ? { width: 55, aspectRatio: 1 } : {}
+          styles.image,
+          route === 'songs' ? { aspectRatio: 1 } : { aspectRatio: 16 / 9 }
         ]}
         source={{ uri: getImageUri(thumbnail_url, published_on, type) }}
       >
@@ -90,7 +71,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderRadius: 8
   },
-  smallImage: {
+  image: {
     height: '100%',
     borderRadius: 8,
     aspectRatio: 16 / 9,

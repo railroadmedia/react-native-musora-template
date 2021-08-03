@@ -1,5 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions
+} from 'react-native';
 import { ThemeContext } from '../../state/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
@@ -8,7 +14,9 @@ import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
 import type CardProps from './CardProps';
 
-const RowCard: React.FC<CardProps> = props => {
+const windowWidth = Dimensions.get('screen').width;
+
+const SliderCard: React.FC<CardProps> = props => {
   const { item, iconType, route } = props;
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
     item.is_added_to_primary_playlist
@@ -24,34 +32,19 @@ const RowCard: React.FC<CardProps> = props => {
 
   const onCardPress = useCallback(() => {}, []);
 
-  const renderImage = () => {
-    if (route?.match(/^(live|schedule)$/)) {
-      let st = new Date(
-        `${item.live_event_start_time || item.published_on} UTC`
-      );
-      return (
-        <View style={styles.liveTextContainer}>
-          <Text style={styles.liveTextBold}>
-            {st.toLocaleString([], { weekday: 'short' })} {st.getDate()}
-          </Text>
-          <Text style={styles.liveTextSimple}>
-            {st.toLocaleString([], { hour: 'numeric', minute: '2-digit' })}
-          </Text>
-        </View>
-      );
-    }
-    return <CardImage size={30} {...item} route={route} />;
-  };
-
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      style={styles.listContainer}
+      style={[
+        styles.cardContainer,
+        { width: route === 'songs' ? windowWidth / 2.2 : (windowWidth * 3) / 4 }
+      ]}
       onPress={onCardPress}
     >
-      {renderImage()}
-
-      <View style={styles.cardTextContainerSmall}>
+      <View style={{ aspectRatio: route === 'songs' ? 1 : 16 / 9 }}>
+        <CardImage size={50} {...item} route={route} />
+      </View>
+      <View style={styles.cardTextContainerBig}>
         <View style={{ flex: 1 }}>
           <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
             {item.title}
@@ -77,19 +70,14 @@ const RowCard: React.FC<CardProps> = props => {
 
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
-    listContainer: {
-      height: 65,
-      flexDirection: 'row',
-      width: '100%',
-      alignItems: 'center',
-      paddingHorizontal: 15
+    cardContainer: {
+      marginBottom: 20,
+      paddingHorizontal: 10
     },
-    cardTextContainerSmall: {
-      flex: 1,
+    cardTextContainerBig: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      alignItems: 'center',
-      marginLeft: 10
+      alignItems: 'center'
     },
     title: {
       color: current.textColor,
@@ -100,27 +88,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       color: current.textColor,
       fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans'
-    },
-    liveTextContainer: {
-      width: '30%',
-      borderRadius: 10,
-      aspectRatio: 16 / 9,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: 'black'
-    },
-    liveTextBold: {
-      fontSize: utils.figmaFontSizeScaler(18),
-      color: 'white',
-      textAlign: 'center',
-      fontFamily: 'OpenSans-Bold'
-    },
-    liveTextSimple: {
-      fontSize: utils.figmaFontSizeScaler(18),
-      color: 'white',
-      textAlign: 'center',
-      fontFamily: 'OpenSans'
     }
   });
 
-export default RowCard;
+export default SliderCard;

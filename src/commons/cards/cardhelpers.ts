@@ -1,4 +1,5 @@
-import type { CardProps } from './RowCard';
+import { Dimensions } from 'react-native';
+import type CardProps from './CardProps';
 
 const contentTypes = [
   'course',
@@ -18,7 +19,10 @@ const contentTypes = [
   'coach-stream'
 ];
 
-const secondsToHms = (d: number | string) => {
+const fallbackThumb =
+  'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
+
+const secondsToHms = (d: number | string): string => {
   d = Number(d);
   var m = Math.floor(d / 60);
   var s = d - m * 60;
@@ -28,6 +32,29 @@ const secondsToHms = (d: number | string) => {
   return mDisplay;
 };
 
+const dateToLocaleString = function (date: Date, options: any): string {
+  return date.toLocaleString([], options);
+};
+
+export const getImageUri = function (
+  thumbUri = fallbackThumb,
+  published_on: string,
+  type: string
+) {
+  if (!thumbUri.includes('https')) return thumbUri;
+  // if (this.props.dldActions) return thumbUri;
+  const width = Dimensions.get('screen').width;
+  const baseUri = 'https://cdn.musora.com/image/fetch';
+  if (new Date(published_on) > new Date()) {
+    return `${baseUri}/w_${width >> 0},ar_${
+      type === 'song' ? '1' : '16:9'
+    },fl_lossy,q_auto:eco,e_grayscale/${thumbUri}`;
+  }
+  return `${baseUri}/w_${width >> 0},ar_${
+    type === 'song' ? '1' : '16:9'
+  },fl_lossy,q_auto:good,c_fill,g_face/${thumbUri}`;
+};
+
 export const decideSubtitle = (props: CardProps): string => {
   const {
     route,
@@ -35,6 +62,7 @@ export const decideSubtitle = (props: CardProps): string => {
       type,
       length_in_seconds,
       published_on,
+      live_event_start_time,
       instructors,
       level_number,
       artist,
@@ -72,10 +100,19 @@ export const decideSubtitle = (props: CardProps): string => {
   //   type?.includes('learning-path')
   // )
   //   return null;
+  if (route?.match(/^(live|schedule)$/)) return type;
+  let st = new Date(`${live_event_start_time || published_on} UTC`);
+  if (st > new Date())
+    return `Releasing ${dateToLocaleString(st, {
+      month: 'short'
+    })} ${dateToLocaleString(st, { day: '2-digit' })}, ${st.getFullYear()}`;
+  if (route?.match(/^(coachOverview)$/))
+    return `${(length_in_seconds / 60) >> 0} mins`;
+  if (route?.match(/^(coaches)$/)) return `${type} / ${instructors.join(', ')}`;
   return subtitle + transformText(type);
 };
 
-const transformText = (text: string, showBar?: boolean) => {
+const transformText = (text: string, showBar?: boolean): string => {
   if (text === 'learning-path-level') text = 'Drumeo Method';
   if (text === 'learning-path-lesson') text = 'Drumeo Method Lesson';
   try {
