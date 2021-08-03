@@ -28,6 +28,7 @@ export const BackHeader: React.FC<Props> = ({
   const isMounted = useRef(true);
 
   useEffect(() => {
+    isMounted.current = true;
     () => (isMounted.current = false);
   }, []);
 
@@ -41,7 +42,7 @@ export const BackHeader: React.FC<Props> = ({
         styles.safeAreaContainer,
         transparent ? { backgroundColor: 'transparent' } : {}
       ]}
-      edges={['top']}
+      edges={['top', 'left', 'right']}
       onLayout={({ nativeEvent }) =>
         updateHeaderNavHeight(nativeEvent.layout.height)
       }

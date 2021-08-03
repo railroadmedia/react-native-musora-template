@@ -36,10 +36,18 @@ export const MainHeader: React.FC<Props> = ({
   let styles = setStyles(theme);
 
   const isMounted = useRef(true);
+  const abortC = useRef(new AbortController());
 
   useEffect(() => {
-    userService.getUserDetails().then(ud => updateUserAndCache(ud));
-    () => (isMounted.current = false);
+    isMounted.current = true;
+    abortC.current = new AbortController();
+    userService
+      .getUserDetails({ signal: abortC.current.signal })
+      .then(ud => updateUserAndCache(ud));
+    () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
   }, []);
 
   useEffect(() => {
@@ -49,7 +57,7 @@ export const MainHeader: React.FC<Props> = ({
   return (
     <SafeAreaView
       style={styles.safeAreaContainer}
-      edges={['top']}
+      edges={['top', 'left', 'right']}
       onLayout={({ nativeEvent }) =>
         updateHeaderNavHeight(nativeEvent.layout.height)
       }

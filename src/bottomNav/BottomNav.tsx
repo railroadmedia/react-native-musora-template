@@ -50,7 +50,7 @@ export const BottomNav: React.FC<Props> = ({
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       <Animated.View
         style={{
           backgroundColor: utils.color,
