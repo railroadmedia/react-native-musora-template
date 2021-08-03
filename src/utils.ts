@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import * as svgs from './images/svgs';
 
 interface UtilsInterface {
@@ -7,6 +8,7 @@ interface UtilsInterface {
   color: string;
   getColorWithAlpha: (alpha: number) => string;
   isiOS: boolean;
+  isTablet: boolean;
   fallbackAvatar: string;
   serverDownError: {
     title: string;
@@ -30,6 +32,9 @@ class Utils implements UtilsInterface {
   };
   get color() {
     return this._color[this.brand];
+  }
+  get isTablet() {
+    return DeviceInfo.isTablet();
   }
   getColorWithAlpha(alpha: number) {
     return this._color[this.brand]?.replace('1)', `${alpha})`) || '';
