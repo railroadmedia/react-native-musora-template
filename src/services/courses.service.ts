@@ -29,7 +29,7 @@ export const coursesService = {
       signal
     });
   },
-  getCombined: function (params: Args) {
+  getCatalogue: function (params: Args) {
     return Promise.all([
       this.getAll(params),
       this.getNew(params),

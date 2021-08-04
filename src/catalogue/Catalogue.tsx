@@ -16,10 +16,11 @@ import { CardsContext } from '../state/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
 import {
-  ADD_COMBINED,
-  ADD_COMBINED_AND_CACHE,
+  ADD_ALL,
+  SET_CATALOGUE_FROM_CACHE,
+  SET_CATALOGUE_AND_CACHE,
   catalogueReducer,
-  UPDATE_CATALOGUE
+  UPDATE_CATALOGUE_LOADERS
 } from '../state/catalogue/reducer';
 import { ThemeContext } from '../state/ThemeContext';
 import { themeStyles } from '../themeStyles';
@@ -38,7 +39,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     hasUserInfo = scene.match(/^(home)$/);
 
   const { user } = useContext(UserContext);
-  const { addCardsAndCache, updateCard } = useContext(CardsContext);
+  const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
@@ -61,6 +62,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
+  const refreshPromise = useRef<Promise<void | {}>>();
 
   useEffect(() => {
     styles = setStyles(theme);
@@ -70,15 +72,24 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     isMounted.current = true;
     abortC.current = new AbortController();
     provider[scene]?.getCache?.().then(cache => {
-      if (isMounted.current) dispatch({ type: ADD_COMBINED, scene, ...cache });
+      if (isMounted.current)
+        dispatch({ type: SET_CATALOGUE_FROM_CACHE, scene, cache });
     });
-    provider[scene]
-      ?.getCombined?.({ page: page.current, signal: abortC.current.signal })
+    setCatalogue();
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
+  }, []);
+
+  const setCatalogue = () =>
+    (refreshPromise.current = provider[scene]
+      ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
         if (isMounted.current) {
           addCardsAndCache(all?.data);
           dispatch({
-            type: ADD_COMBINED_AND_CACHE,
+            type: SET_CATALOGUE_AND_CACHE,
             scene,
             method,
             all: all?.data,
@@ -88,12 +99,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
             refreshing: false
           });
         }
-      });
-    return () => {
-      isMounted.current = false;
-      abortC.current.abort();
-    };
-  }, []);
+      }));
 
   const renderFLMethodBanner = () => (
     <Banner {...method} onRightBtnPress={() => {}} onLeftBtnPress={() => {}} />
@@ -147,8 +153,10 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     </>
   );
 
-  const renderFLItem = ({ item: {} }) => (
-    <View style={{ height: 50, backgroundColor: 'red', marginVertical: 5 }} />
+  const renderFLItem = ({ item }: { item: number }) => (
+    <View style={{ height: 50, backgroundColor: 'red', marginVertical: 5 }}>
+      <Text>{item}</Text>
+    </View>
   );
 
   const renderFLEmpty = () => (
@@ -174,10 +182,38 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     />
   );
 
-  const refresh = () => {};
+  const refresh = () => {
+    page.current = 1;
+    abortC.current.abort();
+    abortC.current = new AbortController();
+    dispatch({
+      type: UPDATE_CATALOGUE_LOADERS,
+      scene,
+      loadingMore: false,
+      refreshing: true
+    });
+    setCatalogue();
+  };
 
   const loadMore = () => {
-    dispatch({ type: UPDATE_CATALOGUE, scene, loadingMore: true });
+    dispatch({ type: UPDATE_CATALOGUE_LOADERS, scene, loadingMore: true });
+    refreshPromise.current?.then(() => {
+      provider[scene]
+        ?.getAll({
+          page: ++page.current,
+          signal: abortC.current.signal
+        })
+        .then(all => {
+          addCards(all?.data);
+          dispatch({
+            type: ADD_ALL,
+            scene,
+            method,
+            all: all?.data,
+            loadingMore: false
+          });
+        });
+    });
   };
 
   return (

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Text, TouchableOpacity, View } from 'react-native';
+import { Animated } from 'react-native';
 import {
   NavigationContainer,
   NavigationContainerRef
@@ -78,8 +78,8 @@ export default function App() {
   const [bottomNavMaxHeight, setBottomNavMaxHeight] = useState(0);
 
   useEffect(() => {
-    utils.rootUrl = 'https://staging.pianote.com';
-    utils.brand = 'pianote';
+    utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
+    utils.brand = 'drumeo';
 
     authenticate()
       .then(auth => {

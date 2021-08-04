@@ -39,7 +39,7 @@ export const homeService = {
       signal
     });
   },
-  getCombined: function (params: Args) {
+  getCatalogue: function (params: Args) {
     return Promise.all([
       this.getAll(params),
       undefined, // this.getNew(params),

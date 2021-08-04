@@ -7,27 +7,27 @@ interface ProviderFunction {
   ({}: Args): Promise<{ data?: [] }>;
 }
 
-interface ProviderFunctionCombined {
+interface ProviderFunctionCatalogue {
   ({}: Args): Promise<({ data?: [] } | undefined)[]>;
 }
 
 interface ProviderFunctionCache {
   (): Promise<{
-    all?: [];
-    inProgress?: [];
-    newContent?: [];
-    recentlyViewed?: [];
+    all?: number[];
+    inProgress?: number[];
+    newContent?: number[];
+    recentlyViewed?: number[];
     method?: {};
   }>;
 }
 
 interface Scene {
   getMethod?: ProviderFunction;
-  getAll?: ProviderFunction;
+  getAll: ProviderFunction;
   getRecentlyViewed?: ProviderFunction;
   getInProgress?: ProviderFunction;
   getNew?: ProviderFunction;
-  getCombined?: ProviderFunctionCombined;
+  getCatalogue?: ProviderFunctionCatalogue;
   getCache?: ProviderFunctionCache;
 }
 
