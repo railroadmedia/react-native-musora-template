@@ -20,7 +20,7 @@ import {
   SET_CATALOGUE_FROM_CACHE,
   SET_CATALOGUE_AND_CACHE,
   catalogueReducer,
-  UPDATE_CATALOGUE
+  UPDATE_CATALOGUE_LOADERS
 } from '../state/catalogue/reducer';
 import { ThemeContext } from '../state/ThemeContext';
 import { themeStyles } from '../themeStyles';
@@ -62,6 +62,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
+  const refreshPromise = useRef<Promise<void | {}>>();
 
   useEffect(() => {
     styles = setStyles(theme);
@@ -82,7 +83,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   }, []);
 
   const setCatalogue = () =>
-    provider[scene]
+    (refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
         if (isMounted.current) {
@@ -98,7 +99,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
             refreshing: false
           });
         }
-      });
+      }));
 
   const renderFLMethodBanner = () => (
     <Banner {...method} onRightBtnPress={() => {}} onLeftBtnPress={() => {}} />
@@ -186,7 +187,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     abortC.current.abort();
     abortC.current = new AbortController();
     dispatch({
-      type: UPDATE_CATALOGUE,
+      type: UPDATE_CATALOGUE_LOADERS,
       scene,
       loadingMore: false,
       refreshing: true
@@ -195,23 +196,24 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   };
 
   const loadMore = () => {
-    if (refreshing || loadingMore) return;
-    dispatch({ type: UPDATE_CATALOGUE, scene, loadingMore: true });
-    provider[scene]
-      ?.getAll({
-        page: ++page.current,
-        signal: abortC.current.signal
-      })
-      .then(all => {
-        addCards(all?.data);
-        dispatch({
-          type: ADD_ALL,
-          scene,
-          method,
-          all: all?.data,
-          loadingMore: false
+    dispatch({ type: UPDATE_CATALOGUE_LOADERS, scene, loadingMore: true });
+    refreshPromise.current?.then(() => {
+      provider[scene]
+        ?.getAll({
+          page: ++page.current,
+          signal: abortC.current.signal
+        })
+        .then(all => {
+          addCards(all?.data);
+          dispatch({
+            type: ADD_ALL,
+            scene,
+            method,
+            all: all?.data,
+            loadingMore: false
+          });
         });
-      });
+    });
   };
 
   return (

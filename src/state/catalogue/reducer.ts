@@ -9,7 +9,7 @@ export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
 export const ADD_RECENTLY_VIEWED = 'ADD_RECENTLY_VIEWED';
 export const SET_METHOD = 'SET_METHOD';
 export const SET_CATALOGUE_AND_CACHE = 'SET_CATALOGUE_AND_CACHE';
-export const UPDATE_CATALOGUE = 'UPDATE_CATALOGUE';
+export const UPDATE_CATALOGUE_LOADERS = 'UPDATE_CATALOGUE_LOADERS';
 
 const add: Add = (currentItem, nextItem) => [
   ...(currentItem || []),
@@ -61,7 +61,7 @@ export const catalogueReducer: Reducer = (
       AsyncStorage.setItem(`@${scene}`, JSON.stringify(cachedState));
       return { ...newState, ...cachedState };
     }
-    case UPDATE_CATALOGUE:
+    case UPDATE_CATALOGUE_LOADERS:
       return newState;
     case SET_CATALOGUE_FROM_CACHE:
       return { ...newState, ...cache };
