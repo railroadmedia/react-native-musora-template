@@ -8,24 +8,32 @@ export interface State {
   loadingMore: boolean;
 }
 export interface Add {
-  (state: State, add: ({ id: number } | number)[]): State;
+  (
+    currentItem: number[] | undefined,
+    nextItem: { id: number }[] | undefined
+  ): number[];
 }
-export interface AddMethod {
-  (state: State, add: {}): State;
+
+interface Cache {
+  all?: number[];
+  newContent?: number[];
+  inProgress?: number[];
+  recentlyViewed?: number[];
+  method?: {};
+}
+
+interface Action {
+  type: string;
+  scene: string;
+  cache?: Cache;
+  all?: { id: number }[];
+  newContent?: { id: number }[];
+  inProgress?: { id: number }[];
+  recentlyViewed?: { id: number }[];
+  method?: {};
+  refreshing?: boolean;
+  loadingMore?: boolean;
 }
 export interface Reducer {
-  (
-    state: State,
-    action: {
-      type: string;
-      scene: string;
-      all?: ({ id: number } | number)[];
-      newContent?: ({ id: number } | number)[];
-      inProgress?: ({ id: number } | number)[];
-      recentlyViewed?: ({ id: number } | number)[];
-      method?: {};
-      refreshing?: boolean;
-      loadingMore?: boolean;
-    }
-  ): State;
+  (state: State, action: Action): State;
 }
