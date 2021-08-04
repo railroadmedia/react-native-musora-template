@@ -17,18 +17,13 @@ import type CardProps from './CardProps';
 const windowWidth = Dimensions.get('screen').width;
 
 const SliderCard: React.FC<CardProps> = props => {
-  const { item, iconType, route } = props;
-  const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
-    item.is_added_to_primary_playlist
-  );
+  const { item, route, onRemoveItemFromList } = props;
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
-
-  const onIconPress = useCallback(() => {}, []);
 
   const onCardPress = useCallback(() => {}, []);
 
@@ -57,12 +52,7 @@ const SliderCard: React.FC<CardProps> = props => {
             {decideSubtitle(props)}
           </Text>
         </View>
-        <CardIcon
-          {...item}
-          isAddedToPrimaryList={isAddedToPrimaryList}
-          iconType={iconType}
-          onIconPress={onIconPress}
-        />
+        <CardIcon cardProps={props} onResetProgress={onRemoveItemFromList} />
       </View>
     </TouchableOpacity>
   );

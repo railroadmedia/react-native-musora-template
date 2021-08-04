@@ -73,13 +73,13 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
     actionBtnText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: '#ffffff'
     },
     cancelBtnText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: utils.color,
       padding: 15
     },
@@ -93,13 +93,13 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       padding: 15,
       textAlign: 'center',
       color: current.textColor,
-      fontSize: 20,
+      fontSize: utils.figmaFontSizeScaler(20),
       fontFamily: 'OpenSans-Bold'
     },
     message: {
       padding: 15,
       textAlign: 'center',
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans',
       color: current.textColor
     },

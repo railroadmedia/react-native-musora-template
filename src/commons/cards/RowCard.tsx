@@ -1,5 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+
 import { ThemeContext } from '../../state/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
@@ -9,18 +10,13 @@ import { CardImage } from './CardImage';
 import type CardProps from './CardProps';
 
 const RowCard: React.FC<CardProps> = props => {
-  const { item, iconType, route } = props;
-  const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
-    item.is_added_to_primary_playlist
-  );
+  const { item, route, onRemoveItemFromList } = props;
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
-
-  const onIconPress = useCallback(() => {}, []);
 
   const onCardPress = useCallback(() => {}, []);
 
@@ -64,12 +60,7 @@ const RowCard: React.FC<CardProps> = props => {
             {decideSubtitle(props)}
           </Text>
         </View>
-        <CardIcon
-          {...item}
-          isAddedToPrimaryList={isAddedToPrimaryList}
-          iconType={iconType}
-          onIconPress={onIconPress}
-        />
+        <CardIcon cardProps={props} onResetProgress={onRemoveItemFromList} />
       </View>
     </TouchableOpacity>
   );

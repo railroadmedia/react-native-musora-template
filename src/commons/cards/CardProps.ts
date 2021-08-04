@@ -19,5 +19,7 @@ export default interface CardProps {
     isLocked?: boolean;
     is_added_to_primary_playlist: boolean;
     live_event_start_time?: string;
+    live_event_end_time?: string;
   };
+  onRemoveItemFromList?: (id: number) => void;
 }
