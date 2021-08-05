@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { CardsReducer, AddCards, UpdateCard } from './interfaces';
+import type { CardsReducer, AddCards, UpdateCard } from './CardsInterfaces';
 
 export const ADD_CARDS = 'ADD_CARDS';
 export const ADD_CARDS_AND_CACHE = 'ADD_CARDS_AND_CACHE';

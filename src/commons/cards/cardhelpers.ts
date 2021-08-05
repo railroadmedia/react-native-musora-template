@@ -1,5 +1,5 @@
 import { Dimensions } from 'react-native';
-import type { Card } from 'src/state/interfaces';
+import type { Card } from '../../state/cards/CardsInterfaces';
 
 const contentTypes = [
   'course',

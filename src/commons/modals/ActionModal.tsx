@@ -8,7 +8,7 @@ import {
   Modal
 } from 'react-native';
 import { utils } from '../../utils';
-import { ThemeContext } from '../../state/ThemeContext';
+import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 
 interface ActionModalProps {

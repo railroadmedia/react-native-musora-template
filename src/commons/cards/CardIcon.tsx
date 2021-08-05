@@ -6,7 +6,7 @@ import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
 import ActionModal from '../modals/ActionModal';
 import { userService } from '../../services/user.service';
-import type { Card } from '../../state/interfaces';
+import type { Card } from '../../state/cards/CardsInterfaces';
 
 interface CardIconProps {
   item: Card;

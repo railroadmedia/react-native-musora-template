@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { UserReducer, UpdateUser } from './interfaces';
+import type { UserReducer, UpdateUser } from './UserInterfaces';
 
 export const UPDATE_USER_AND_CACHE = 'UPDATE_USER_AND_CACHE';
 export const UPDATE_USER = 'UPDATE_USER';

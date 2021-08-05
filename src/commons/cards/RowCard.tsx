@@ -1,9 +1,9 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import type { Card } from '../../state/interfaces';
-import { CardsContext } from '../../state/CardsContext';
+import type { Card } from '../../state/cards/CardsInterfaces';
+import { CardsContext } from '../../state/cards/CardsContext';
 
-import { ThemeContext } from '../../state/ThemeContext';
+import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { decideSubtitle } from './cardhelpers';

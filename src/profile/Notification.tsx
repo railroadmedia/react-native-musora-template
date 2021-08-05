@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { messageBubble, threeDotsMenu } from '../images/svgs';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { utils } from '../utils';
 

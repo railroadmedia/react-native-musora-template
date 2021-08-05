@@ -11,11 +11,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { utils } from '../utils';
 
 import { themeStyles, DARK } from '../themeStyles';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 
 import { downloads, myList } from '../images/svgs';
-import { UserContext } from '../state/UserContext';
-import { HeaderContext } from '../state/Headercontext';
+import { UserContext } from '../state/user/UserContext';
+import { HeaderContext } from '../state/header/HeaderContext';
 import { userService } from '../services/user.service';
 
 interface Props {

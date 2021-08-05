@@ -4,22 +4,25 @@ import { View } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Orientation, { OrientationType } from 'react-native-orientation-locker';
 
-import { CardsContext } from './CardsContext';
-import { ThemeContext } from './ThemeContext';
-import { UserContext } from './UserContext';
+import { CardsContext } from './cards/CardsContext';
+import { ThemeContext } from './theme/ThemeContext';
+import { UserContext } from './user/UserContext';
 
 import {
-  cardsReducer,
-  ADD_CARDS,
-  UPDATE_CARD,
-  ADD_CARDS_AND_CACHE
-} from './cardsReducer';
-
-import { userReducer, UPDATE_USER, UPDATE_USER_AND_CACHE } from './userReducer';
+  userReducer,
+  UPDATE_USER,
+  UPDATE_USER_AND_CACHE
+} from './user/UserReducer';
 
 import { LIGHT, DARK, themeStyles } from '../themeStyles';
-import { HeaderContext } from './Headercontext';
-import { OrientationContext } from './OrientationContext';
+import { HeaderContext } from './header/HeaderContext';
+import { OrientationContext } from './orientation/OrientationContext';
+import {
+  ADD_CARDS,
+  ADD_CARDS_AND_CACHE,
+  cardsReducer,
+  UPDATE_CARD
+} from './cards/CardsReducer';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');

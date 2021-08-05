@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Dimensions
 } from 'react-native';
-import { CardsContext } from 'src/state/CardsContext';
-import type { Card } from 'src/state/interfaces';
-import { ThemeContext } from '../../state/ThemeContext';
+import { CardsContext } from '../../state/cards/CardsContext';
+import type { Card } from '../../state/cards/CardsInterfaces';
+import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { decideSubtitle } from './cardhelpers';

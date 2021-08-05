@@ -18,10 +18,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { utils } from '../utils';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { right } from '../images/svgs';
-import { CardsContext } from '../state/CardsContext';
+import { CardsContext } from '../state/cards/CardsContext';
 import {
   ADD_COMPLETED,
   ADD_IN_PROGRESS,
