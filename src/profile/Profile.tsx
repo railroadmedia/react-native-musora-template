@@ -35,7 +35,7 @@ import {
   profileReducer,
   SET_PROFILE,
   UPDATE_PROFILE
-} from '../state/profile/reducer';
+} from '../state/profile/ProfileReducer';
 
 interface Props {}
 

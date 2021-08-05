@@ -1,4 +1,8 @@
-import type { ProfileReducer, UpdateNotif, UpdateUser } from './interfaces';
+import type {
+  ProfileReducer,
+  UpdateNotif,
+  UpdateUser
+} from './ProfileInterfaces';
 
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SET_PROFILE = 'SET_PROFILE';

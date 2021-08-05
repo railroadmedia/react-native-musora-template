@@ -1,4 +1,4 @@
-export interface State {
+export interface CatalogueState {
   all?: number[];
   newContent?: number[];
   inProgress?: number[];
@@ -14,7 +14,7 @@ export interface Add {
   ): number[];
 }
 
-interface Cache {
+interface CatalogueCache {
   all?: number[];
   newContent?: number[];
   inProgress?: number[];
@@ -22,10 +22,10 @@ interface Cache {
   method?: {};
 }
 
-interface Action {
+interface CatalogueAction {
   type: string;
   scene: string;
-  cache?: Cache;
+  cache?: CatalogueCache;
   all?: { id: number }[];
   newContent?: { id: number }[];
   inProgress?: { id: number }[];
@@ -34,6 +34,6 @@ interface Action {
   refreshing?: boolean;
   loadingMore?: boolean;
 }
-export interface Reducer {
-  (state: State, action: Action): State;
+export interface CatalogueReducer {
+  (state: CatalogueState, action: CatalogueAction): CatalogueState;
 }

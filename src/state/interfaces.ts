@@ -50,7 +50,7 @@ export interface Card {
 }
 
 export interface CardsContext {
-  cards: Card[];
+  cards: { [key: number]: Card };
   addCards: (cards?: { id: number }[]) => void;
   addCardsAndCache: (cards?: { id: number }[]) => void;
   updateCard: (card?: { id: number }) => void;

@@ -21,7 +21,7 @@ import {
   SET_CATALOGUE_AND_CACHE,
   catalogueReducer,
   UPDATE_CATALOGUE_LOADERS
-} from '../state/catalogue/reducer';
+} from '../state/catalogue/CatalogueReducer';
 import { ThemeContext } from '../state/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { UserContext } from '../state/UserContext';

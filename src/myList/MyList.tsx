@@ -32,7 +32,7 @@ import {
   SET_MY_LIST_AND_CACHE,
   SET_MY_LIST_FROM_CACHE,
   UPDATE_MY_LIST_LOADERS
-} from '../state/myList/reducer';
+} from '../state/myList/MyListReducer';
 import { myListService } from '../services/myList.service';
 import RowCard from '../commons/cards/RowCard';
 

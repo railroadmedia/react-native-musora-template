@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { Add, MyListReducer } from './interfaces';
+import type { Add, MyListReducer } from './MyListInterfaces';
 
 export const SET_MY_LIST_FROM_CACHE = 'SET_MY_LIST_FROM_CACHE';
 export const SET_IN_PROGRESS = 'SET_IN_PROGRESS';

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import type { Add, Reducer } from './interfaces';
+import type { Add, CatalogueReducer } from './CatalogueInterfaces';
 
 export const SET_CATALOGUE_FROM_CACHE = 'SET_CATALOGUE_FROM_CACHE';
 export const ADD_ALL = 'ADD_ALL';
@@ -16,7 +16,7 @@ const add: Add = (currentItem, nextItem) => [
   ...(nextItem || []).map(ni => ni.id)
 ];
 
-export const catalogueReducer: Reducer = (
+export const catalogueReducer: CatalogueReducer = (
   state,
   {
     type,
