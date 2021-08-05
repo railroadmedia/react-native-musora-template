@@ -6,18 +6,28 @@ import {
   StyleSheet,
   Dimensions
 } from 'react-native';
+import { CardsContext } from 'src/state/CardsContext';
+import type { Card } from 'src/state/interfaces';
 import { ThemeContext } from '../../state/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { decideSubtitle } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
-import type CardProps from './CardProps';
 
 const windowWidth = Dimensions.get('screen').width;
 
-const SliderCard: React.FC<CardProps> = props => {
-  const { item, route, onRemoveItemFromList } = props;
+interface SliderCardProps {
+  id: number;
+  route: string;
+  onRemoveItemFromList?: () => void;
+}
+
+const SliderCard: React.FC<SliderCardProps> = props => {
+  const { id, route, onRemoveItemFromList } = props;
+  const { cards } = useContext(CardsContext);
+  const item: Card = cards[id];
+
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
@@ -49,10 +59,10 @@ const SliderCard: React.FC<CardProps> = props => {
             ellipsizeMode={'tail'}
             style={styles.subtitle}
           >
-            {decideSubtitle(props)}
+            {decideSubtitle({ item, route })}
           </Text>
         </View>
-        <CardIcon cardProps={props} onResetProgress={onRemoveItemFromList} />
+        <CardIcon item={item} onResetProgress={onRemoveItemFromList} />
       </View>
     </TouchableOpacity>
   );

@@ -1,5 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import type { Card } from '../../state/interfaces';
+import { CardsContext } from '../../state/CardsContext';
 
 import { ThemeContext } from '../../state/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -7,10 +9,18 @@ import { utils } from '../../utils';
 import { decideSubtitle } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
-import type CardProps from './CardProps';
 
-const RowCard: React.FC<CardProps> = props => {
-  const { item, route, onRemoveItemFromList } = props;
+interface RowCardProps {
+  id: number;
+  route: string;
+  onRemoveItemFromList?: () => void;
+}
+
+const RowCard: React.FC<RowCardProps> = props => {
+  const { id, route, onRemoveItemFromList } = props;
+  const { cards } = useContext(CardsContext);
+  const item: Card = cards[id];
+
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
@@ -57,10 +67,10 @@ const RowCard: React.FC<CardProps> = props => {
             ellipsizeMode={'tail'}
             style={styles.subtitle}
           >
-            {decideSubtitle(props)}
+            {decideSubtitle({ item, route })}
           </Text>
         </View>
-        <CardIcon cardProps={props} onResetProgress={onRemoveItemFromList} />
+        <CardIcon item={item} onResetProgress={onRemoveItemFromList} />
       </View>
     </TouchableOpacity>
   );
@@ -73,7 +83,8 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
-      paddingHorizontal: 15
+      paddingHorizontal: 15,
+      marginBottom: 10
     },
     cardTextContainerSmall: {
       flex: 1,

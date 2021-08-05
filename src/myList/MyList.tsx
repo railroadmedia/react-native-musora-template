@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import {
   StyleSheet,
   FlatList,
@@ -6,26 +13,112 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  BackHandler
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { utils } from '../utils';
 import { ThemeContext } from '../state/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { right } from '../images/svgs';
+import { CardsContext } from '../state/CardsContext';
+import {
+  ADD_COMPLETED,
+  ADD_IN_PROGRESS,
+  ADD_MY_LIST,
+  myListReducer,
+  SET_COMPLETED,
+  SET_IN_PROGRESS,
+  SET_MY_LIST_AND_CACHE,
+  SET_MY_LIST_FROM_CACHE,
+  UPDATE_MY_LIST_LOADERS
+} from '../state/myList/reducer';
+import { myListService } from '../services/myList.service';
+import RowCard from '../commons/cards/RowCard';
 
 interface MyListProps {}
 
+type TitleTypes = 'In Progress' | 'Completed';
+
 export const MyList: React.FC<MyListProps> = ({}) => {
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [refreshing, setRefreshing] = useState(false);
   const [title, setTitle] = useState('My List');
   const { theme } = useContext(ThemeContext);
+  const { addCardsAndCache, addCards } = useContext(CardsContext);
+  const isMounted = useRef(true);
+  const abortC = useRef(new AbortController());
+  const page = useRef(1);
+  const [{ myList, completed, inProgress, loadingMore, refreshing }, dispatch] =
+    useReducer(myListReducer, {
+      loadingMore: false,
+      refreshing: true
+    });
 
   let styles = setStyles(theme);
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
+
+  const backButtonHandler = useCallback(() => {
+    setTitle('My List');
+    return true;
+  }, []);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backButtonHandler);
+    };
+  }, [backButtonHandler]);
+
+  useEffect(() => {
+    isMounted.current = true;
+    abortC.current = new AbortController();
+    myListService.getCache?.().then(cache => {
+      if (isMounted.current) dispatch({ type: SET_MY_LIST_FROM_CACHE, cache });
+    });
+    setMyList();
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
+  }, []);
+
+  const setMyList = () =>
+    myListService
+      .myList({ page: page.current, signal: abortC.current.signal })
+      .then(myList => {
+        if (isMounted.current) {
+          addCardsAndCache(myList?.data);
+          dispatch({
+            type: SET_MY_LIST_AND_CACHE,
+            myList: myList?.data,
+            refreshing: false
+          });
+        }
+      });
+
+  const setInProgress = () =>
+    myListService
+      .inProgress({ page: page.current, signal: abortC.current.signal })
+      .then(inProgress => {
+        dispatch({
+          type: SET_IN_PROGRESS,
+          inProgress: inProgress?.data,
+          refreshing: false
+        });
+      });
+
+  const setCompleted = () =>
+    myListService
+      .completed({ page: page.current, signal: abortC.current.signal })
+      .then(completed => {
+        dispatch({
+          type: SET_COMPLETED,
+          completed: completed?.data,
+          refreshing: false
+        });
+      });
 
   const renderFLEmpty = () => (
     <Text style={styles.emptyListText}>
@@ -56,12 +149,38 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     />
   );
 
-  const refresh = () => {};
+  const refresh = () => {
+    page.current = 1;
+    abortC.current.abort();
+    abortC.current = new AbortController();
+    dispatch({
+      type: UPDATE_MY_LIST_LOADERS,
+      loadingMore: false,
+      refreshing: true
+    });
+    decideCall(title as TitleTypes);
+  };
 
   const loadMore = () => {};
 
-  const onNavigate = useCallback((title: string) => {
+  const onNavigate = useCallback((title: TitleTypes) => {
     setTitle(title);
+    dispatch({
+      type: UPDATE_MY_LIST_LOADERS,
+      loadingMore: false,
+      refreshing: true
+    });
+    decideCall(title);
+  }, []);
+
+  const decideCall = useCallback((title: TitleTypes) => {
+    if (title === 'In Progress') {
+      setInProgress();
+    } else if (title === 'Completed') {
+      setCompleted();
+    } else {
+      setMyList();
+    }
   }, []);
 
   const renderFLHeader = () => {
@@ -73,7 +192,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
               testID={title}
               key={index}
               style={[styles.navigationButton]}
-              onPress={() => onNavigate(title)}
+              onPress={() => onNavigate(title as TitleTypes)}
             >
               <Text style={styles.navigationBtnText}>{title}</Text>
               {right({
@@ -91,13 +210,19 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     return <Text style={styles.title}>{title}</Text>;
   };
 
-  const renderFLItem = () => <View />;
+  const renderFLItem = ({ item }: any) => <RowCard id={item} route='myList' />;
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <FlatList
         showsVerticalScrollIndicator={false}
-        data={[{ id: 1 }]}
+        data={
+          title === 'In Progress'
+            ? inProgress
+            : title === 'Completed'
+            ? completed
+            : myList
+        }
         onEndReached={loadMore}
         keyExtractor={id => id.toString()}
         ListHeaderComponent={renderFLHeader()}
@@ -140,6 +265,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       fontSize: utils.figmaFontSizeScaler(20),
       fontFamily: 'OpenSans-Bold',
       paddingLeft: 15,
-      paddingTop: 5
+      paddingTop: 5,
+      marginBottom: 10
     }
   });

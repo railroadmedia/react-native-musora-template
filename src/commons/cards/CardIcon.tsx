@@ -5,11 +5,12 @@ import * as AddCalendarEvent from 'react-native-add-calendar-event';
 import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
 import ActionModal from '../modals/ActionModal';
-import type CardProps from './CardProps';
 import { userService } from '../../services/user.service';
+import type { Card } from '../../state/interfaces';
 
 interface CardIconProps {
-  cardProps: CardProps;
+  item: Card;
+  iconType?: 'next-lesson' | 'progress';
   onResetProgress?: (id: number) => void;
 }
 
@@ -20,17 +21,15 @@ const iconStyle = {
 };
 
 export const CardIcon: React.FC<CardIconProps> = ({
-  cardProps: {
-    iconType,
-    item: {
-      id,
-      published_on,
-      is_added_to_primary_playlist,
-      live_event_start_time,
-      live_event_end_time,
-      title
-    }
+  item: {
+    id,
+    published_on,
+    is_added_to_primary_playlist,
+    live_event_start_time,
+    live_event_end_time,
+    title
   },
+  iconType,
   onResetProgress
 }) => {
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
