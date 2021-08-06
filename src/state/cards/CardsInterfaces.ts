@@ -1,15 +1,12 @@
 export interface CardsReducer {
-  (
-    state: {},
-    action: { type: string; cards?: { id: number }[]; card?: { id: number } }
-  ): {};
+  (state: {}, action: { type: string; cards?: Card[]; card?: Card }): {};
 }
 
 export interface AddCards {
-  (state: {}, cards: { id: number }[], cache?: boolean): {};
+  (state: {}, cards: Card[], cache?: boolean): {};
 }
 export interface UpdateCard {
-  (state: {}, card: { id: number }): {};
+  (state: {}, card: Card): {};
 }
 
 export interface Card {
@@ -38,7 +35,7 @@ export interface Card {
 
 export interface ICardsContext {
   cards: { [key: number]: Card };
-  addCards: (cards?: { id: number }[]) => void;
-  addCardsAndCache: (cards?: { id: number }[]) => void;
-  updateCard: (card?: { id: number }) => void;
+  addCards: (cards?: Card[]) => void;
+  addCardsAndCache: (cards?: Card[]) => void;
+  updateCard: (card?: Card) => void;
 }

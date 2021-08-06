@@ -23,6 +23,7 @@ import {
   cardsReducer,
   UPDATE_CARD
 } from './cards/CardsReducer';
+import type { Card } from './cards/CardsInterfaces';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
@@ -48,13 +49,13 @@ export const State: React.FC = props => {
     };
   }, []);
 
-  const addCards = (cards?: { id: number }[]) => {
+  const addCards = (cards?: Card[]) => {
     dispatchCards({ type: ADD_CARDS, cards });
   };
-  const addCardsAndCache = (cards?: { id: number }[]) => {
+  const addCardsAndCache = (cards?: Card[]) => {
     dispatchCards({ type: ADD_CARDS_AND_CACHE, cards });
   };
-  const updateCard = (card?: { id: number }) => {
+  const updateCard = (card?: Card) => {
     dispatchCards({ type: UPDATE_CARD, card });
   };
 
