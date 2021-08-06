@@ -108,7 +108,6 @@ export const MyList: React.FC<MyListProps> = ({}) => {
         signal: abortC.current.signal
       })
       .then(inProgress => {
-        console.log(inProgress);
         addCards(inProgress?.data);
         dispatch({
           type: SET_IN_PROGRESS,
@@ -121,7 +120,6 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     myListService
       .completed({ page: completedPage.current, signal: abortC.current.signal })
       .then(completed => {
-        console.log(completed);
         addCards(completed?.data);
         dispatch({
           type: SET_COMPLETED,
@@ -171,7 +169,6 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   };
 
   const loadMore = () => {
-    console.log('loadmore', title);
     dispatch({ type: UPDATE_MY_LIST_LOADERS, loadingMore: true });
     if (title === 'In Progress') {
       myListService
