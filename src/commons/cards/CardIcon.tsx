@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import * as AddCalendarEvent from 'react-native-add-calendar-event';
+
 import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
 import ActionModal from '../modals/ActionModal';
+import { userService } from '../../services/user.service';
+import type { Card } from '../../state/cards/CardsInterfaces';
 
 interface CardIconProps {
-  published_on: string;
+  item: Card;
   iconType?: 'next-lesson' | 'progress';
-  isAddedToPrimaryList: boolean;
-  onIconPress: () => void;
+  onResetProgress?: (id: number) => void;
 }
 
 const iconStyle = {
@@ -18,14 +21,54 @@ const iconStyle = {
 };
 
 export const CardIcon: React.FC<CardIconProps> = ({
-  published_on,
+  item: {
+    id,
+    published_on,
+    is_added_to_primary_playlist,
+    live_event_start_time,
+    live_event_end_time,
+    title
+  },
   iconType,
-  isAddedToPrimaryList,
-  onIconPress
+  onResetProgress
 }) => {
+  const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
+    is_added_to_primary_playlist
+  );
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [showAddToCalendarModal, setShowAddToCalendarModal] = useState(false);
+
+  const addLessonToCalendar = useCallback(() => {
+    const startDate = new Date(
+      live_event_start_time || published_on
+    ).toISOString();
+    const endDate = new Date(live_event_end_time || published_on).toISOString();
+
+    const eventConfig = {
+      title: title,
+      startDate,
+      endDate
+    };
+    AddCalendarEvent.presentEventCreatingDialog(eventConfig)
+      .then(() => setShowAddToCalendarModal(false))
+      .catch(() => setShowAddToCalendarModal(false));
+  }, [live_event_start_time, live_event_end_time, title, published_on]);
+
+  const addToMyList = useCallback(() => {
+    setIsAddedToPrimaryList(true);
+    userService.addToMyList(id);
+  }, [setIsAddedToPrimaryList, id]);
+
+  const removeFromMyList = useCallback(() => {
+    setIsAddedToPrimaryList(false);
+    userService.removeFromMyList(id);
+  }, [setIsAddedToPrimaryList, id]);
+
+  const resetProgress = useCallback(() => {
+    userService.resetProgress(id);
+    onResetProgress?.(id);
+  }, [id]);
 
   return (
     <View>
@@ -55,14 +98,14 @@ export const CardIcon: React.FC<CardIconProps> = ({
         : plus({
             icon: iconStyle,
             container: styles.icon,
-            onPress: onIconPress
+            onPress: addToMyList
           })}
       {showRemoveModal && (
         <ActionModal
           title='Hold your horses...'
           message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
           btnText='REMOVE'
-          onAction={onIconPress}
+          onAction={removeFromMyList}
           onCancel={() => setShowRemoveModal(false)}
         />
       )}
@@ -71,7 +114,7 @@ export const CardIcon: React.FC<CardIconProps> = ({
           title='Hold your horses...'
           message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
           btnText='RESET'
-          onAction={onIconPress}
+          onAction={resetProgress}
           onCancel={() => setShowResetModal(false)}
         />
       )}
@@ -82,7 +125,7 @@ export const CardIcon: React.FC<CardIconProps> = ({
           })}
           message={`Add this lesson to your calendar so you're notified when it's available`}
           btnText='ADD TO CALENDAR'
-          onAction={onIconPress}
+          onAction={addLessonToCalendar}
           onCancel={() => setShowAddToCalendarModal(false)}
         />
       )}

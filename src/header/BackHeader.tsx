@@ -3,11 +3,11 @@ import { StyleSheet, Text, StatusBar, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { themeStyles, DARK } from '../themeStyles';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 
 import { back, settings } from '../images/svgs';
 import { utils } from '../utils';
-import { HeaderContext } from '../state/Headercontext';
+import { HeaderContext } from '../state/header/HeaderContext';
 
 interface Props {
   onBack: Function;

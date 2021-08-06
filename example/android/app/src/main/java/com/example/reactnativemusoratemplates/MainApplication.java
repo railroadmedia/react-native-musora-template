@@ -18,6 +18,7 @@ import com.horcrux.svg.SvgPackage;
 import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import org.wonday.orientation.OrientationPackage;
 import org.wonday.orientation.OrientationActivityLifecycle;
+import com.vonovak.AddCalendarEventPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -39,6 +40,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new SvgPackage());
           packages.add(new RNDeviceInfo());
           packages.add(new OrientationPackage());
+          packages.add(new AddCalendarEventPackage());
           
           return packages;
         }

@@ -133,6 +133,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -185,6 +186,7 @@ dependencies {
     implementation project(':react-native-keychain')
     implementation project(':react-native-svg')
     implementation project(':react-native-device-info')
+    implementation project(':react-native-add-calendar-event')
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules

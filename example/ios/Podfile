@@ -13,6 +13,7 @@ target 'MusoraTemplatesExample' do
   pod 'RNKeychain', :path => '../../node_modules/react-native-keychain'
   pod 'RNDeviceInfo', :path => '../../node_modules/react-native-device-info'
   pod 'react-native-orientation-locker', :path => '../../node_modules/react-native-orientation-locker'
+  pod 'react-native-add-calendar-event', :path => '../../node_modules/react-native-add-calendar-event'
 
 
   # Enables Flipper.

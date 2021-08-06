@@ -1,5 +1,5 @@
 import { Dimensions } from 'react-native';
-import type CardProps from './CardProps';
+import type { Card } from '../../state/cards/CardsInterfaces';
 
 const contentTypes = [
   'course',
@@ -55,7 +55,10 @@ export const getImageUri = function (
   },fl_lossy,q_auto:good,c_fill,g_face/${thumbUri}`;
 };
 
-export const decideSubtitle = (props: CardProps): string => {
+export const decideSubtitle = (props: {
+  item: Card;
+  route: string;
+}): string => {
   const {
     route,
     item: {

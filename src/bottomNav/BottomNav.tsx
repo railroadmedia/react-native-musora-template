@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { home, messageBubbles, search, threeLinesMenu } from '../images/svgs';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { utils } from '../utils';
 

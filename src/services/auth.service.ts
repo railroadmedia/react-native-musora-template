@@ -3,8 +3,7 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
-
-import type { UserContext } from '../state/interfaces';
+import type { IUserContext } from '../state/user/UserInterfaces';
 
 import { utils } from '../utils';
 
@@ -27,7 +26,7 @@ interface Call {
     signal?: AbortSignal;
     body?: {};
   }): Promise<
-    { title?: string; message?: string; data?: [] } & UserContext['user']
+    { title?: string; message?: string; data?: [] } & IUserContext['user']
   >;
 }
 

@@ -21,9 +21,9 @@ import { Gradient } from '../commons/Gradient';
 
 import { userService } from '../services/user.service';
 
-import { ThemeContext } from '../state/ThemeContext';
-import { UserContext } from '../state/UserContext';
-import { HeaderContext } from '../state/Headercontext';
+import { ThemeContext } from '../state/theme/ThemeContext';
+import { UserContext } from '../state/user/UserContext';
+import { HeaderContext } from '../state/header/HeaderContext';
 
 import { themeStyles } from '../themeStyles';
 
@@ -35,7 +35,7 @@ import {
   profileReducer,
   SET_PROFILE,
   UPDATE_PROFILE
-} from '../state/profile/reducer';
+} from '../state/profile/ProfileReducer';
 
 interface Props {}
 

@@ -599,6 +599,26 @@ export const filters = (props: Props) =>
     )
   });
 
+export const right = (props: Props) =>
+  touchifySvg({
+    ...props,
+    children: (
+      <Svg
+        viewBox='0 0 32 32'
+        fill={props.icon.fill}
+        style={{
+          height: props.icon.height,
+          width: props.icon.width
+        }}
+      >
+        <Path
+          id='arrow-right'
+          d='M20.95,16l-12.021,-12.021c-0.39,-0.391 -0.39,-1.024 0,-1.415c0.39,-0.39 1.024,-0.39 1.414,0l12.728,12.728c0.195,0.196 0.293,0.452 0.293,0.708c0,0.256 -0.098,0.512 -0.293,0.708l-12.728,12.728c-0.39,0.39 -1.024,0.39 -1.414,0c-0.39,-0.391 -0.39,-1.024 0,-1.415l12.021,-12.021Z'
+        />
+      </Svg>
+    )
+  });
+
 export const sort = (props: Props) =>
   touchifySvg({
     ...props,

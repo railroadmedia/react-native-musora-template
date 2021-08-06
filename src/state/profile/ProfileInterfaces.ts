@@ -1,9 +1,9 @@
-import type { UserContext } from '../interfaces';
 import type { NotificationProps } from '../../profile/Notification';
+import type { IUserContext } from '../user/UserInterfaces';
 
 export interface UpdateUser {
-  (state: UserContext['user'] | undefined, user?: UserContext['user']): {
-    user: UserContext['user'];
+  (state: IUserContext['user'] | undefined, user?: IUserContext['user']): {
+    user: IUserContext['user'];
   };
 }
 export interface UpdateNotif {
@@ -18,7 +18,7 @@ export interface NewState {
   loadingMore?: boolean;
   refreshing?: boolean;
   notifications?: NotificationProps[];
-  user?: UserContext['user'];
+  user?: IUserContext['user'];
 }
 export interface ProfileReducer {
   (state: NewState, action: { type: string } & NewState): NewState;

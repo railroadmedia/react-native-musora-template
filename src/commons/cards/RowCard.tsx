@@ -1,26 +1,32 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { ThemeContext } from '../../state/ThemeContext';
+import type { Card } from '../../state/cards/CardsInterfaces';
+import { CardsContext } from '../../state/cards/CardsContext';
+
+import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { decideSubtitle } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
-import type CardProps from './CardProps';
 
-const RowCard: React.FC<CardProps> = props => {
-  const { item, iconType, route } = props;
-  const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
-    item.is_added_to_primary_playlist
-  );
+interface RowCardProps {
+  id: number;
+  route: string;
+  onRemoveItemFromList?: () => void;
+}
+
+const RowCard: React.FC<RowCardProps> = props => {
+  const { id, route, onRemoveItemFromList } = props;
+  const { cards } = useContext(CardsContext);
+  const item: Card = cards[id];
+
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
   useEffect(() => {
     styles = setStyles(theme);
   }, [theme]);
-
-  const onIconPress = useCallback(() => {}, []);
 
   const onCardPress = useCallback(() => {}, []);
 
@@ -61,15 +67,10 @@ const RowCard: React.FC<CardProps> = props => {
             ellipsizeMode={'tail'}
             style={styles.subtitle}
           >
-            {decideSubtitle(props)}
+            {decideSubtitle({ item, route })}
           </Text>
         </View>
-        <CardIcon
-          {...item}
-          isAddedToPrimaryList={isAddedToPrimaryList}
-          iconType={iconType}
-          onIconPress={onIconPress}
-        />
+        <CardIcon item={item} onResetProgress={onRemoveItemFromList} />
       </View>
     </TouchableOpacity>
   );
@@ -82,7 +83,8 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       width: '100%',
       alignItems: 'center',
-      paddingHorizontal: 15
+      paddingHorizontal: 15,
+      marginBottom: 10
     },
     cardTextContainerSmall: {
       flex: 1,

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { FlatList, View } from 'react-native';
-import { OrientationContext } from '../state/OrientationContext';
+import { OrientationContext } from '../state/orientation/OrientationContext';
 import { utils } from '../utils';
 
 interface Props {

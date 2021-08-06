@@ -7,7 +7,7 @@ import {
   View
 } from 'react-native';
 import { arrowRight, method, play } from '../images/svgs';
-import { ThemeContext } from '../state/ThemeContext';
+import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { utils } from '../utils';
 import { Gradient } from './Gradient';

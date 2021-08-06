@@ -12,7 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '../commons/Banner';
 
-import { CardsContext } from '../state/CardsContext';
+import { CardsContext } from '../state/cards/CardsContext';
 
 import { provider } from '../services/catalogueSceneProvider.service';
 import {
@@ -21,10 +21,10 @@ import {
   SET_CATALOGUE_AND_CACHE,
   catalogueReducer,
   UPDATE_CATALOGUE_LOADERS
-} from '../state/catalogue/reducer';
-import { ThemeContext } from '../state/ThemeContext';
+} from '../state/catalogue/CatalogueReducer';
+import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
-import { UserContext } from '../state/UserContext';
+import { UserContext } from '../state/user/UserContext';
 import { utils } from '../utils';
 import { Carousel } from './Carousel';
 import { Filters } from './Filters';
