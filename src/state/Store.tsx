@@ -17,7 +17,7 @@ import {
 
 import { userReducer, UPDATE_USER, UPDATE_USER_AND_CACHE } from './userReducer';
 
-import { LIGHT, DARK, themeStyles } from '../themeStyles';
+import { LIGHT, DARK } from '../themeStyles';
 import { HeaderContext } from './Headercontext';
 import { OrientationContext } from './OrientationContext';
 
@@ -73,7 +73,7 @@ export const State: React.FC = props => {
   const updateOrientation = (o: OrientationType) => setOrientation(o);
 
   return (
-    <View style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}>
+    <View style={{ flex: 1 }}>
       <CardsContext.Provider
         value={{ cards, addCards, updateCard, addCardsAndCache }}
       >

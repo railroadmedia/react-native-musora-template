@@ -314,8 +314,6 @@ PODS:
     - React-jsi (= 0.63.4)
   - RNCAsyncStorage (1.15.5):
     - React-Core
-  - RNCMaskedView (0.1.11):
-    - React
   - RNDeviceInfo (8.1.5):
     - React-Core
   - RNGestureHandler (1.10.3):
@@ -351,7 +349,7 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.4.0):
+  - RNScreens (3.5.0):
     - React-Core
     - React-RCTImage
   - RNSVG (12.1.1):
@@ -410,7 +408,6 @@ DEPENDENCIES:
   - React-RCTVibration (from `../node_modules/react-native/Libraries/Vibration`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../../node_modules/@react-native-async-storage/async-storage`)"
-  - "RNCMaskedView (from `../node_modules/@react-native-community/masked-view`)"
   - RNDeviceInfo (from `../../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNKeychain (from `../../node_modules/react-native-keychain`)
@@ -493,8 +490,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../../node_modules/@react-native-async-storage/async-storage"
-  RNCMaskedView:
-    :path: "../node_modules/@react-native-community/masked-view"
   RNDeviceInfo:
     :path: "../../node_modules/react-native-device-info"
   RNGestureHandler:
@@ -552,12 +547,11 @@ SPEC CHECKSUMS:
   React-RCTVibration: ae4f914cfe8de7d4de95ae1ea6cc8f6315d73d9d
   ReactCommon: 73d79c7039f473b76db6ff7c6b159c478acbbb3b
   RNCAsyncStorage: 8324611026e8dc3706f829953aa6e3899f581589
-  RNCMaskedView: f127cd9652acfa31b91dcff613e07ba18b774db6
   RNDeviceInfo: 93e4281fb95d158efdeccd7112277e44a098e63b
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNKeychain: f75b8c8b2f17d3b2aa1f25b4a0ac5b83d947ff8f
   RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
-  RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
+  RNScreens: 01ab149b5dd5c27f5ff26741b1d2bdf2cee1af35
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a

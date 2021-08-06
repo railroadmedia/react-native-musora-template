@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		054EF0A60B0D4DBBAB34B4F5 /* RobotoCondensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3165A65AD35E4124BEF77E82 /* RobotoCondensed-Italic.ttf */; };
-		0FE7F2A833C10C8BC2251599 /* libPods-MusoraTemplatesExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
@@ -23,6 +22,7 @@
 		967FF98C3FDF421BA923838C /* OpenSans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 927046A379E64234B005BEE5 /* OpenSans-Bold.ttf */; };
 		97A8075C698A43339999F418 /* OpenSans-SemiboldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0CB0FC06245B4855A8509893 /* OpenSans-SemiboldItalic.ttf */; };
 		9C052600BAC5417DB42BF8F5 /* OpenSans-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C08318B99B2041F7BE375840 /* OpenSans-LightItalic.ttf */; };
+		AE9AF06B0F5A93EA9B3A949B /* libPods-MusoraTemplatesExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3D20531CEB2E26E3F85404ED /* libPods-MusoraTemplatesExample.a */; };
 		AF61ED4D987543269CC60C87 /* RobotoCondensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EA1CB4106EBD4FCAB3B96D70 /* RobotoCondensed-Regular.ttf */; };
 		C11720BD8F5D41E0B5D60554 /* RobotoCondensed-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C4CB5430690744E5A7630B24 /* RobotoCondensed-LightItalic.ttf */; };
 		CE781AD10E4C4E8F87B9B91A /* OpenSans-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5F42053F41BF4112B9554B74 /* OpenSans-ExtraBoldItalic.ttf */; };
@@ -32,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		0B8FD6A0A12CADF056E90697 /* Pods-MusoraTemplatesExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.release.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.release.xcconfig"; sourceTree = "<group>"; };
 		0CB0FC06245B4855A8509893 /* OpenSans-SemiboldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-SemiboldItalic.ttf"; path = "../assets/fonts/OpenSans-SemiboldItalic.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* MusoraTemplatesExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusoraTemplatesExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = MusoraTemplatesExample/AppDelegate.h; sourceTree = "<group>"; };
@@ -42,20 +43,19 @@
 		1F54321ABF92454393DBA0C5 /* OpenSans-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Italic.ttf"; path = "../assets/fonts/OpenSans-Italic.ttf"; sourceTree = "<group>"; };
 		21C7FBA6AB9F4A9F90DA9458 /* RobotoCondensed-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Bold.ttf"; path = "../assets/fonts/RobotoCondensed-Bold.ttf"; sourceTree = "<group>"; };
 		2480A374727541279B38CFF2 /* OpenSans-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-ExtraBold.ttf"; path = "../assets/fonts/OpenSans-ExtraBold.ttf"; sourceTree = "<group>"; };
-		2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.debug.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.debug.xcconfig"; sourceTree = "<group>"; };
 		3165A65AD35E4124BEF77E82 /* RobotoCondensed-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Italic.ttf"; path = "../assets/fonts/RobotoCondensed-Italic.ttf"; sourceTree = "<group>"; };
 		35F0DF5F08D442358A05B4B8 /* RobotoCondensed-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-BoldItalic.ttf"; path = "../assets/fonts/RobotoCondensed-BoldItalic.ttf"; sourceTree = "<group>"; };
-		3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusoraTemplatesExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D20531CEB2E26E3F85404ED /* libPods-MusoraTemplatesExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MusoraTemplatesExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		43F522A48CC043B98A2E8721 /* OpenSans-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Light.ttf"; path = "../assets/fonts/OpenSans-Light.ttf"; sourceTree = "<group>"; };
 		537094BE9C4D4B8C9A85F731 /* RobotoCondensed-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Light.ttf"; path = "../assets/fonts/RobotoCondensed-Light.ttf"; sourceTree = "<group>"; };
 		5F42053F41BF4112B9554B74 /* OpenSans-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-ExtraBoldItalic.ttf"; path = "../assets/fonts/OpenSans-ExtraBoldItalic.ttf"; sourceTree = "<group>"; };
 		5F452179853D486DBC034B50 /* OpenSans.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = OpenSans.ttf; path = ../assets/fonts/OpenSans.ttf; sourceTree = "<group>"; };
-		739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.release.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MusoraTemplatesExample/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		927046A379E64234B005BEE5 /* OpenSans-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-Bold.ttf"; path = "../assets/fonts/OpenSans-Bold.ttf"; sourceTree = "<group>"; };
 		977BD270FE654DB68F47D6E1 /* OpenSans-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-BoldItalic.ttf"; path = "../assets/fonts/OpenSans-BoldItalic.ttf"; sourceTree = "<group>"; };
 		C08318B99B2041F7BE375840 /* OpenSans-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "OpenSans-LightItalic.ttf"; path = "../assets/fonts/OpenSans-LightItalic.ttf"; sourceTree = "<group>"; };
 		C4CB5430690744E5A7630B24 /* RobotoCondensed-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-LightItalic.ttf"; path = "../assets/fonts/RobotoCondensed-LightItalic.ttf"; sourceTree = "<group>"; };
+		DF62677A6BFA695456DAD816 /* Pods-MusoraTemplatesExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MusoraTemplatesExample.debug.xcconfig"; path = "Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample.debug.xcconfig"; sourceTree = "<group>"; };
 		EA1CB4106EBD4FCAB3B96D70 /* RobotoCondensed-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "RobotoCondensed-Regular.ttf"; path = "../assets/fonts/RobotoCondensed-Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -67,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0FE7F2A833C10C8BC2251599 /* libPods-MusoraTemplatesExample.a in Frameworks */,
+				AE9AF06B0F5A93EA9B3A949B /* libPods-MusoraTemplatesExample.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,7 +93,7 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				3D1FCAF402C07AF0C791DC69 /* libPods-MusoraTemplatesExample.a */,
+				3D20531CEB2E26E3F85404ED /* libPods-MusoraTemplatesExample.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -101,8 +101,8 @@
 		6B9684456A2045ADE5A6E47E /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */,
-				739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */,
+				DF62677A6BFA695456DAD816 /* Pods-MusoraTemplatesExample.debug.xcconfig */,
+				0B8FD6A0A12CADF056E90697 /* Pods-MusoraTemplatesExample.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -167,14 +167,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "MusoraTemplatesExample" */;
 			buildPhases = (
-				15E42F0A2230AFEBEC44B4B3 /* [CP] Check Pods Manifest.lock */,
+				D6B6994568F673B621471B79 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				E0686D0A207CE43A83D4F2E1 /* [CP] Embed Pods Frameworks */,
-				54085EA830C05EE79FF19B65 /* [CP] Copy Pods Resources */,
+				5B1AFC08072BAC1A46A442F1 /* [CP] Embed Pods Frameworks */,
+				BA5CEE132042421F4EAC6CC7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -260,7 +260,43 @@
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
-		15E42F0A2230AFEBEC44B4B3 /* [CP] Check Pods Manifest.lock */ = {
+		5B1AFC08072BAC1A46A442F1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BA5CEE132042421F4EAC6CC7 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D6B6994568F673B621471B79 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -280,42 +316,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		54085EA830C05EE79FF19B65 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh",
-				"${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E0686D0A207CE43A83D4F2E1 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh",
-				"${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenSSL/OpenSSL.framework/OpenSSL",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/OpenSSL.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MusoraTemplatesExample/Pods-MusoraTemplatesExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -354,7 +354,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2707849B1FAE473BA64CD5EF /* Pods-MusoraTemplatesExample.debug.xcconfig */;
+			baseConfigurationReference = DF62677A6BFA695456DAD816 /* Pods-MusoraTemplatesExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -379,7 +379,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 739CEE58933FEFDD4FF7EA3C /* Pods-MusoraTemplatesExample.release.xcconfig */;
+			baseConfigurationReference = 0B8FD6A0A12CADF056E90697 /* Pods-MusoraTemplatesExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

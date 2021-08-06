@@ -21,6 +21,7 @@ class Utils implements UtilsInterface {
   brand = '';
   rootUrl = '';
   isiOS = Platform.OS === 'ios';
+  isTablet = DeviceInfo.isTablet();
   fallbackAvatar =
     'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
 
@@ -32,9 +33,6 @@ class Utils implements UtilsInterface {
   };
   get color() {
     return this._color[this.brand];
-  }
-  get isTablet() {
-    return DeviceInfo.isTablet();
   }
   getColorWithAlpha(alpha: number) {
     return this._color[this.brand]?.replace('1)', `${alpha})`) || '';

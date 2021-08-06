@@ -119,13 +119,29 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       {!!hasUserInfo ? (
         <View style={styles.userInfoContainer}>
           <Image source={{ uri: user.avatarUrl }} style={styles.avatarImg} />
+          {utils.isTablet && (
+            <>
+              <Text style={styles.userStatsTitle}>
+                DAYS AS A MEMBER{`\n`}
+                <Text style={styles.userStatsValue}>
+                  {user.daysAsMember || 0}
+                </Text>
+              </Text>
+              <Text style={styles.userStatsTitle}>
+                LESSONS COMPLETED{`\n`}
+                <Text style={styles.userStatsValue}>
+                  {user.lessonsCompleted || 0}
+                </Text>
+              </Text>
+            </>
+          )}
           <Text style={styles.userStatsTitle}>
             XP{`\n`}
-            <Text style={styles.userStatsValue}>{user.totalXp}</Text>
+            <Text style={styles.userStatsValue}>{user.totalXp || 0}</Text>
           </Text>
           <Text style={styles.userStatsTitle}>
             {utils.brand} METHOD{`\n`}
-            <Text style={styles.userStatsValue}>{user.xpRank}</Text>
+            <Text style={styles.userStatsValue}>{user.xpRank || '-'}</Text>
           </Text>
         </View>
       ) : (
@@ -215,7 +231,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         });
     });
   };
-
+  // Brau user pe home tableta mai multe info
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <FlatList

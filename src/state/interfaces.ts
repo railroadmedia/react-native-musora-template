@@ -45,6 +45,8 @@ export interface UserContext {
     display_name?: string;
     totalXp?: string;
     xpRank?: string;
+    daysAsMember?: string;
+    lessonsCompleted?: string;
   };
   updateUser: (user: UserContext['user']) => void;
   updateUserAndCache: (user: UserContext['user']) => void;

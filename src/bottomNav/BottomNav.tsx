@@ -13,12 +13,9 @@ interface Props {
   onMenuPress: Function;
 }
 
-export const BottomNav: React.FC<Props> = ({
-  onHomePress,
-  onSearchPress,
-  onForumPress,
-  onMenuPress
-}) => {
+export const BottomNav: React.FC<Props> & {
+  changeActiveBtn?: (btnName?: 'home' | 'search' | 'forum' | 'menu') => void;
+} = ({ onHomePress, onSearchPress, onForumPress, onMenuPress }) => {
   const translateX = useRef(new Animated.Value(0));
   const scaleX = useRef(new Animated.Value(0));
   const layouts = useRef<{ [key: string]: { x: number; width: number } }>({});
@@ -33,8 +30,10 @@ export const BottomNav: React.FC<Props> = ({
     if (btn === 'home') movePill('home');
   };
 
-  const movePill = (btn: string) => {
-    let { width, x } = layouts.current[btn];
+  const movePill = (btn: string | undefined) => {
+    let { width, x } = btn
+      ? layouts.current[btn] || { width: 0, x: 0 }
+      : { width: 0, x: 0 };
     Animated.parallel([
       Animated.timing(translateX.current, {
         toValue: (width - 1) / 2 + x,
@@ -47,6 +46,18 @@ export const BottomNav: React.FC<Props> = ({
         useNativeDriver: true
       })
     ]).start();
+  };
+
+  const homeIndexCorespondent: { [key: string]: number } = {
+    home: 0,
+    search: 1,
+    forum: 2,
+    menu: 3
+  };
+
+  BottomNav.changeActiveBtn = btnName => {
+    setSelected(btnName ? homeIndexCorespondent[btnName] : -1);
+    movePill(btnName);
   };
 
   return (
@@ -75,8 +86,7 @@ export const BottomNav: React.FC<Props> = ({
           },
           container: { padding: 20 },
           onPress: () => {
-            setSelected(0);
-            movePill('home');
+            BottomNav.changeActiveBtn?.('home');
             onHomePress();
           }
         })}
@@ -92,8 +102,7 @@ export const BottomNav: React.FC<Props> = ({
           },
           container: { padding: 20 },
           onPress: () => {
-            setSelected(1);
-            movePill('search');
+            BottomNav.changeActiveBtn?.('search');
             onSearchPress();
           }
         })}
@@ -109,8 +118,7 @@ export const BottomNav: React.FC<Props> = ({
           },
           container: { padding: 20 },
           onPress: () => {
-            setSelected(2);
-            movePill('forum');
+            BottomNav.changeActiveBtn?.('forum');
             onForumPress();
           }
         })}
@@ -126,8 +134,7 @@ export const BottomNav: React.FC<Props> = ({
           },
           container: { padding: 20 },
           onPress: () => {
-            setSelected(3);
-            movePill('menu');
+            BottomNav.changeActiveBtn?.('menu');
             onMenuPress();
           }
         })}
