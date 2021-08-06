@@ -41,7 +41,7 @@ export const getImageUri = function (
   published_on: string,
   type: string
 ) {
-  if (!thumbUri.includes('https')) return thumbUri;
+  if (!thumbUri?.includes('https')) return thumbUri;
   // if (this.props.dldActions) return thumbUri;
   const width = Dimensions.get('screen').width;
   const baseUri = 'https://cdn.musora.com/image/fetch';

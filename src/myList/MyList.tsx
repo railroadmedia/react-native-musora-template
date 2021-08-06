@@ -46,7 +46,10 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const page = useRef(1);
+  const myListPage = useRef(1);
+  const inProgressPage = useRef(1);
+  const completedPage = useRef(1);
+
   const [{ myList, completed, inProgress, loadingMore, refreshing }, dispatch] =
     useReducer(myListReducer, {
       loadingMore: false,
@@ -86,7 +89,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
 
   const setMyList = () =>
     myListService
-      .myList({ page: page.current, signal: abortC.current.signal })
+      .myList({ page: myListPage.current, signal: abortC.current.signal })
       .then(myList => {
         if (isMounted.current) {
           addCardsAndCache(myList?.data);
@@ -100,8 +103,12 @@ export const MyList: React.FC<MyListProps> = ({}) => {
 
   const setInProgress = () =>
     myListService
-      .inProgress({ page: page.current, signal: abortC.current.signal })
+      .inProgress({
+        page: inProgressPage.current,
+        signal: abortC.current.signal
+      })
       .then(inProgress => {
+        console.log(inProgress);
         addCards(inProgress?.data);
         dispatch({
           type: SET_IN_PROGRESS,
@@ -112,8 +119,9 @@ export const MyList: React.FC<MyListProps> = ({}) => {
 
   const setCompleted = () =>
     myListService
-      .completed({ page: page.current, signal: abortC.current.signal })
+      .completed({ page: completedPage.current, signal: abortC.current.signal })
       .then(completed => {
+        console.log(completed);
         addCards(completed?.data);
         dispatch({
           type: SET_COMPLETED,
@@ -152,7 +160,6 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   );
 
   const refresh = () => {
-    page.current = 1;
     abortC.current.abort();
     abortC.current = new AbortController();
     dispatch({
@@ -163,7 +170,53 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     decideCall(title as TitleTypes);
   };
 
-  const loadMore = () => {};
+  const loadMore = () => {
+    console.log('loadmore', title);
+    dispatch({ type: UPDATE_MY_LIST_LOADERS, loadingMore: true });
+    if (title === 'In Progress') {
+      myListService
+        .inProgress({
+          page: ++inProgressPage.current,
+          signal: abortC.current.signal
+        })
+        .then(inProgress => {
+          addCards(inProgress?.data);
+          dispatch({
+            type: ADD_IN_PROGRESS,
+            inProgress: inProgress?.data,
+            loadingMore: false
+          });
+        });
+    } else if (title === 'Completed') {
+      myListService
+        .completed({
+          page: ++completedPage.current,
+          signal: abortC.current.signal
+        })
+        .then(completed => {
+          addCards(completed?.data);
+          dispatch({
+            type: ADD_COMPLETED,
+            completed: completed?.data,
+            loadingMore: false
+          });
+        });
+    } else {
+      myListService
+        .myList({
+          page: ++myListPage.current,
+          signal: abortC.current.signal
+        })
+        .then(myList => {
+          addCards(myList?.data);
+          dispatch({
+            type: ADD_MY_LIST,
+            myList: myList?.data,
+            loadingMore: false
+          });
+        });
+    }
+  };
 
   const onNavigate = useCallback((title: TitleTypes) => {
     setTitle(title);
