@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { utils } from '../utils';
 
@@ -30,6 +30,7 @@ export const MainHeader: React.FC<Props> = ({
   onMyListPress,
   onProfilePress
 }) => {
+  const { top, left, right } = useSafeAreaInsets();
   const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
   const { user, updateUserAndCache } = useContext(UserContext);
@@ -55,9 +56,11 @@ export const MainHeader: React.FC<Props> = ({
   }, [theme]);
 
   return (
-    <SafeAreaView
-      style={styles.safeAreaContainer}
-      edges={['top', 'left', 'right']}
+    <View
+      style={[
+        styles.safeAreaContainer,
+        { paddingTop: top, paddingRight: right, paddingLeft: left }
+      ]}
       onLayout={({ nativeEvent }) =>
         updateHeaderNavHeight(nativeEvent.layout.height)
       }
@@ -92,7 +95,7 @@ export const MainHeader: React.FC<Props> = ({
           style={{ height: 35, aspectRatio: 1, borderRadius: 20 }}
         />
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 

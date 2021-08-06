@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react';
 import { StyleSheet, Text, StatusBar, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { themeStyles, DARK } from '../themeStyles';
 import { ThemeContext } from '../state/theme/ThemeContext';
@@ -21,6 +21,7 @@ export const BackHeader: React.FC<Props> = ({
   transparent,
   onSettings
 }) => {
+  let { top, left, right } = useSafeAreaInsets();
   const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
@@ -37,12 +38,12 @@ export const BackHeader: React.FC<Props> = ({
   }, [theme]);
 
   return (
-    <SafeAreaView
+    <View
       style={[
         styles.safeAreaContainer,
+        { paddingTop: top, paddingLeft: left, paddingRight: right },
         transparent ? { backgroundColor: 'transparent' } : {}
       ]}
-      edges={['top', 'left', 'right']}
       onLayout={({ nativeEvent }) =>
         updateHeaderNavHeight(nativeEvent.layout.height)
       }
@@ -68,7 +69,7 @@ export const BackHeader: React.FC<Props> = ({
             onPress: onSettings
           })}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useContext, useRef, useState } from 'react';
 import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { home, messageBubbles, search, threeLinesMenu } from '../images/svgs';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
@@ -17,6 +17,7 @@ export const BottomNav: React.FC<Props> & {
   changeActiveBtn?: (btnName?: 'home' | 'search' | 'forum' | 'menu') => void;
   setVisibility?: (visible: boolean) => void;
 } = ({ onHomePress, onSearchPress, onForumPress, onMenuPress }) => {
+  const { bottom, left, right } = useSafeAreaInsets();
   const translateX = useRef(new Animated.Value(0));
   const scaleX = useRef(new Animated.Value(0));
   const translateY = useRef(new Animated.Value(300));
@@ -51,12 +52,12 @@ export const BottomNav: React.FC<Props> & {
     Animated.parallel([
       Animated.timing(translateX.current, {
         toValue: (width - 1) / 2 + x,
-        duration: 200,
+        duration: utils.navigationAnimationSpeed,
         useNativeDriver: true
       }),
       Animated.timing(scaleX.current, {
         toValue: width,
-        duration: 200,
+        duration: utils.navigationAnimationSpeed,
         useNativeDriver: true
       })
     ]).start();
@@ -71,7 +72,7 @@ export const BottomNav: React.FC<Props> & {
     if (position === 'relative') setPosition(visible ? 'relative' : 'absolute');
     Animated.timing(translateY.current, {
       toValue: visible ? 0 : 300,
-      duration: 500,
+      duration: utils.navigationAnimationSpeed,
       useNativeDriver: true
     }).start(() => {
       if (position === 'absolute')
@@ -81,95 +82,94 @@ export const BottomNav: React.FC<Props> & {
 
   return (
     <Animated.View
-      style={{
-        position,
-        bottom: 0,
-        width: '100%',
-        transform: [{ translateY: translateY.current }]
-      }}
+      style={[
+        styles.container,
+        {
+          position,
+          paddingBottom: bottom,
+          paddingLeft: left,
+          paddingRight: right,
+          transform: [{ translateY: translateY.current }]
+        }
+      ]}
     >
-      <SafeAreaView
-        style={[styles.container]}
-        edges={['bottom', 'left', 'right']}
-      >
-        <Animated.View
-          style={{
-            backgroundColor: utils.color,
-            height: 3,
-            width: 1,
-            left: 0,
-            transform: [
-              { translateX: translateX.current },
-              { scaleX: scaleX.current }
-            ],
-            position: 'absolute'
-          }}
-        />
-        <View onLayout={e => onLayout(e, 'home')}>
-          {home({
-            icon: {
-              height: 30,
-              fill:
-                selected === 0
-                  ? utils.color
-                  : themeStyles[theme].contrastTextColor
-            },
-            container: { padding: 20 },
-            onPress: () => {
-              BottomNav.changeActiveBtn?.('home');
-              onHomePress();
-            }
-          })}
-        </View>
-        <View onLayout={e => onLayout(e, 'search')}>
-          {search({
-            icon: {
-              height: 30,
-              fill:
-                selected === 1
-                  ? utils.color
-                  : themeStyles[theme].contrastTextColor
-            },
-            container: { padding: 20 },
-            onPress: () => {
-              BottomNav.changeActiveBtn?.('search');
-              onSearchPress();
-            }
-          })}
-        </View>
-        <View onLayout={e => onLayout(e, 'forum')}>
-          {messageBubbles({
-            icon: {
-              height: 30,
-              fill:
-                selected === 2
-                  ? utils.color
-                  : themeStyles[theme].contrastTextColor
-            },
-            container: { padding: 20 },
-            onPress: () => {
-              BottomNav.changeActiveBtn?.('forum');
-              onForumPress();
-            }
-          })}
-        </View>
-        <View onLayout={e => onLayout(e, 'menu')}>
-          {threeLinesMenu({
-            icon: {
-              height: 30,
-              fill:
-                selected === 3
-                  ? utils.color
-                  : themeStyles[theme].contrastTextColor
-            },
-            container: { padding: 20 },
-            onPress: () => {
-              BottomNav.changeActiveBtn?.('menu');
-              onMenuPress();
-            }
-          })}
-        </View>
-      </SafeAreaView>
+      <Animated.View
+        style={{
+          backgroundColor: utils.color,
+          height: 3,
+          width: 1,
+          left: 0,
+          transform: [
+            { translateX: translateX.current },
+            { scaleX: scaleX.current }
+          ],
+          position: 'absolute'
+        }}
+      />
+      <View onLayout={e => onLayout(e, 'home')}>
+        {home({
+          icon: {
+            height: 30,
+            fill:
+              selected === 0
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+          },
+          container: { padding: 20 },
+          onPress: () => {
+            BottomNav.changeActiveBtn?.('home');
+            onHomePress();
+          }
+        })}
+      </View>
+      <View onLayout={e => onLayout(e, 'search')}>
+        {search({
+          icon: {
+            height: 30,
+            fill:
+              selected === 1
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+          },
+          container: { padding: 20 },
+          onPress: () => {
+            BottomNav.changeActiveBtn?.('search');
+            onSearchPress();
+          }
+        })}
+      </View>
+      <View onLayout={e => onLayout(e, 'forum')}>
+        {messageBubbles({
+          icon: {
+            height: 30,
+            fill:
+              selected === 2
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+          },
+          container: { padding: 20 },
+          onPress: () => {
+            BottomNav.changeActiveBtn?.('forum');
+            onForumPress();
+          }
+        })}
+      </View>
+      <View onLayout={e => onLayout(e, 'menu')}>
+        {threeLinesMenu({
+          icon: {
+            height: 30,
+            fill:
+              selected === 3
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+          },
+          container: { padding: 20 },
+          onPress: () => {
+            BottomNav.changeActiveBtn?.('menu');
+            onMenuPress();
+          }
+        })}
+      </View>
     </Animated.View>
   );
 };
@@ -178,6 +178,8 @@ const setStyle = (theme: string, current = themeStyles[theme]) =>
     container: {
       backgroundColor: current.background,
       flexDirection: 'row',
-      justifyContent: 'space-evenly'
+      justifyContent: 'space-evenly',
+      bottom: 0,
+      width: '100%'
     }
   });

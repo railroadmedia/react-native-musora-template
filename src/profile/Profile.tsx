@@ -55,7 +55,7 @@ export const Profile: React.FC<Props> = () => {
     useReducer(profileReducer, {
       user: cachedUser,
       notifications: [],
-      loadingMore: true,
+      loadingMore: false,
       refreshing: true
     });
 
@@ -117,9 +117,10 @@ export const Profile: React.FC<Props> = () => {
         source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
         resizeMode={'cover'}
         style={{
-          height: flHeaderHeight + headerNavHeight,
+          height: flHeaderHeight + 2 * headerNavHeight,
           width: '100%',
           position: 'absolute',
+          marginTop: -headerNavHeight,
           transform: [
             {
               scale: scrollY.current.interpolate({
@@ -134,9 +135,10 @@ export const Profile: React.FC<Props> = () => {
       <Animated.View
         style={{
           position: 'absolute',
-          height: flHeaderHeight + headerNavHeight,
+          height: flHeaderHeight + 2 * headerNavHeight,
           width: '100%',
           backgroundColor: themeStyles[theme].background,
+          marginTop: -headerNavHeight,
           transform: [
             {
               scale: scrollY.current.interpolate({
@@ -249,7 +251,7 @@ export const Profile: React.FC<Props> = () => {
         showsVerticalScrollIndicator={false}
         windowSize={10}
         data={notifications}
-        style={{ flex: 1, marginTop: headerNavHeight }}
+        style={{ flex: 1 }}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         removeClippedSubviews={true}

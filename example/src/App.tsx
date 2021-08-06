@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Easing } from 'react-native';
 import {
   NavigationContainer,
   NavigationContainerRefWithCurrent,
@@ -6,6 +7,7 @@ import {
   RouteProp,
   useNavigationContainerRef
 } from '@react-navigation/native';
+import type { TransitionSpec } from '@react-navigation/stack/lib/typescript/src/types';
 import {
   createStackNavigator,
   StackHeaderProps,
@@ -47,24 +49,44 @@ export default function App() {
 
   const navigate = navigationRef.navigate;
 
+  const config: TransitionSpec = {
+    animation: 'timing',
+    config: {
+      duration: utils.navigationAnimationSpeed,
+      easing: Easing.ease
+    }
+  };
   const screenOptions: (props: {
     route: RouteProp<ParamListBase, string>;
     navigation: any;
   }) => StackNavigationOptions = ({ navigation: { navigate, goBack } }) => {
     return {
-      header: ({ options: { title, headerTransparent } }: StackHeaderProps) => {
+      transitionSpec: { open: config, close: config },
+      header: ({ options: { title } }: StackHeaderProps) => {
         return (
           <Header
-            onLogoPress={() => navigate('home')}
-            onDownloadsPress={() => navigate('downloads')}
-            onMyListPress={() => navigate('myList')}
-            onProfilePress={() => navigate('profile')}
+            onLogoPress={() => {
+              navigate('home');
+              BottomNav.setVisibility?.(true);
+            }}
+            onDownloadsPress={() => {
+              navigate('downloads');
+              BottomNav.setVisibility?.(true);
+            }}
+            onMyListPress={() => {
+              navigate('myList');
+              BottomNav.setVisibility?.(true);
+            }}
+            onProfilePress={() => {
+              navigate('profile');
+              BottomNav.setVisibility?.(false);
+            }}
             onBack={title ? goBack : undefined}
             onSettings={
               title?.toLowerCase()?.match(/^(profile)$/) ? () => {} : undefined
             }
             title={title}
-            transparent={headerTransparent}
+            transparent={!!title?.toLowerCase()?.match(/^(profile)$/)}
           />
         );
       }
@@ -127,7 +149,7 @@ export default function App() {
                   </Stack.Screen>
                   <Stack.Screen
                     name='profile'
-                    options={{ title: 'Profile', headerTransparent: true }}
+                    options={{ title: 'Profile' }}
                     listeners={{
                       focus: () => {
                         BottomNav.changeActiveBtn?.();
@@ -152,9 +174,18 @@ export default function App() {
                 </Stack.Navigator>
               </NavigationContainer>
               <BottomNav
-                onHomePress={() => navigate('home')}
-                onSearchPress={() => navigate('search')}
-                onForumPress={() => navigate('forum')}
+                onHomePress={() => {
+                  navigate('home');
+                  BottomNav.setVisibility?.(true);
+                }}
+                onSearchPress={() => {
+                  navigate('search');
+                  BottomNav.setVisibility?.(true);
+                }}
+                onForumPress={() => {
+                  navigate('forum');
+                  BottomNav.setVisibility?.(true);
+                }}
                 onMenuPress={() => {}}
               />
             </>
