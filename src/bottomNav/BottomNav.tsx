@@ -19,10 +19,11 @@ export const BottomNav: React.FC<Props> & {
 } = ({ onHomePress, onSearchPress, onForumPress, onMenuPress }) => {
   const translateX = useRef(new Animated.Value(0));
   const scaleX = useRef(new Animated.Value(0));
+  const translateY = useRef(new Animated.Value(300));
   const layouts = useRef<{ [key: string]: { x: number; width: number } }>({});
 
   const [selected, setSelected] = useState(0);
-  const [maxHeight, setMaxHeight] = useState(0);
+  const [position, setPosition] = useState<'absolute' | 'relative'>('absolute');
 
   const { theme } = useContext(ThemeContext);
   let styles = setStyle(theme);
@@ -67,98 +68,114 @@ export const BottomNav: React.FC<Props> & {
   };
 
   BottomNav.setVisibility = visible => {
-    setMaxHeight(visible ? 1000 : 10);
+    if (position === 'relative') setPosition(visible ? 'relative' : 'absolute');
+    Animated.timing(translateY.current, {
+      toValue: visible ? 0 : 300,
+      duration: 500,
+      useNativeDriver: true
+    }).start(() => {
+      if (position === 'absolute')
+        setPosition(visible ? 'relative' : 'absolute');
+    });
   };
 
   return (
-    <SafeAreaView
-      style={[styles.container, { maxHeight }]}
-      edges={['bottom', 'left', 'right']}
+    <Animated.View
+      style={{
+        position,
+        bottom: 0,
+        width: '100%',
+        transform: [{ translateY: translateY.current }]
+      }}
     >
-      <Animated.View
-        style={{
-          backgroundColor: utils.color,
-          height: 3,
-          width: 1,
-          left: 0,
-          transform: [
-            { translateX: translateX.current },
-            { scaleX: scaleX.current }
-          ],
-          position: 'absolute'
-        }}
-      />
-      <View onLayout={e => onLayout(e, 'home')}>
-        {home({
-          icon: {
-            height: 30,
-            fill:
-              selected === 0
-                ? utils.color
-                : themeStyles[theme].contrastTextColor
-          },
-          container: { padding: 20 },
-          onPress: () => {
-            BottomNav.changeActiveBtn?.('home');
-            onHomePress();
-          }
-        })}
-      </View>
-      <View onLayout={e => onLayout(e, 'search')}>
-        {search({
-          icon: {
-            height: 30,
-            fill:
-              selected === 1
-                ? utils.color
-                : themeStyles[theme].contrastTextColor
-          },
-          container: { padding: 20 },
-          onPress: () => {
-            BottomNav.changeActiveBtn?.('search');
-            onSearchPress();
-          }
-        })}
-      </View>
-      <View onLayout={e => onLayout(e, 'forum')}>
-        {messageBubbles({
-          icon: {
-            height: 30,
-            fill:
-              selected === 2
-                ? utils.color
-                : themeStyles[theme].contrastTextColor
-          },
-          container: { padding: 20 },
-          onPress: () => {
-            BottomNav.changeActiveBtn?.('forum');
-            onForumPress();
-          }
-        })}
-      </View>
-      <View onLayout={e => onLayout(e, 'menu')}>
-        {threeLinesMenu({
-          icon: {
-            height: 30,
-            fill:
-              selected === 3
-                ? utils.color
-                : themeStyles[theme].contrastTextColor
-          },
-          container: { padding: 20 },
-          onPress: () => {
-            BottomNav.changeActiveBtn?.('menu');
-            onMenuPress();
-          }
-        })}
-      </View>
-    </SafeAreaView>
+      <SafeAreaView
+        style={[styles.container]}
+        edges={['bottom', 'left', 'right']}
+      >
+        <Animated.View
+          style={{
+            backgroundColor: utils.color,
+            height: 3,
+            width: 1,
+            left: 0,
+            transform: [
+              { translateX: translateX.current },
+              { scaleX: scaleX.current }
+            ],
+            position: 'absolute'
+          }}
+        />
+        <View onLayout={e => onLayout(e, 'home')}>
+          {home({
+            icon: {
+              height: 30,
+              fill:
+                selected === 0
+                  ? utils.color
+                  : themeStyles[theme].contrastTextColor
+            },
+            container: { padding: 20 },
+            onPress: () => {
+              BottomNav.changeActiveBtn?.('home');
+              onHomePress();
+            }
+          })}
+        </View>
+        <View onLayout={e => onLayout(e, 'search')}>
+          {search({
+            icon: {
+              height: 30,
+              fill:
+                selected === 1
+                  ? utils.color
+                  : themeStyles[theme].contrastTextColor
+            },
+            container: { padding: 20 },
+            onPress: () => {
+              BottomNav.changeActiveBtn?.('search');
+              onSearchPress();
+            }
+          })}
+        </View>
+        <View onLayout={e => onLayout(e, 'forum')}>
+          {messageBubbles({
+            icon: {
+              height: 30,
+              fill:
+                selected === 2
+                  ? utils.color
+                  : themeStyles[theme].contrastTextColor
+            },
+            container: { padding: 20 },
+            onPress: () => {
+              BottomNav.changeActiveBtn?.('forum');
+              onForumPress();
+            }
+          })}
+        </View>
+        <View onLayout={e => onLayout(e, 'menu')}>
+          {threeLinesMenu({
+            icon: {
+              height: 30,
+              fill:
+                selected === 3
+                  ? utils.color
+                  : themeStyles[theme].contrastTextColor
+            },
+            container: { padding: 20 },
+            onPress: () => {
+              BottomNav.changeActiveBtn?.('menu');
+              onMenuPress();
+            }
+          })}
+        </View>
+      </SafeAreaView>
+    </Animated.View>
   );
 };
 const setStyle = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     container: {
-      overflow: 'hidden',
       backgroundColor: current.background,
       flexDirection: 'row',
       justifyContent: 'space-evenly'
