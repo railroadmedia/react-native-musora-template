@@ -118,7 +118,7 @@ export default function App() {
                       focus: () => BottomNav.changeActiveBtn?.()
                     }}
                   >
-                    {props => <MyList {...props} whatever='whatever' />}
+                    {props => <MyList {...props} />}
                   </Stack.Screen>
                   <Stack.Screen
                     name='downloads'
