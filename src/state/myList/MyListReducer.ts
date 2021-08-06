@@ -25,7 +25,6 @@ export const myListReducer: MyListReducer = (
     refreshing: refreshing === undefined ? state.refreshing : refreshing,
     loadingMore: loadingMore === undefined ? state.loadingMore : loadingMore
   };
-  console.log('newState', newState);
   switch (type) {
     case ADD_MY_LIST:
       return { ...newState, myList: add(newState.myList, myList) };
