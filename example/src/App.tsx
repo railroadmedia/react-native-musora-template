@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Animated } from 'react-native';
 import {
   NavigationContainer,
   NavigationContainerRefWithCurrent,
@@ -53,35 +52,20 @@ export default function App() {
     navigation: any;
   }) => StackNavigationOptions = ({ navigation: { navigate, goBack } }) => {
     return {
-      headerMode: 'float',
-      header: ({
-        progress: { current, next },
-        options: { title, headerTransparent }
-      }: StackHeaderProps) => {
+      header: ({ options: { title, headerTransparent } }: StackHeaderProps) => {
         return (
-          <Animated.View
-            style={{
-              opacity: Animated.add(current, next || 0).interpolate({
-                inputRange: [0, 1, 2],
-                outputRange: [0, 1, 0]
-              })
-            }}
-          >
-            <Header
-              onLogoPress={() => navigate('home')}
-              onDownloadsPress={() => navigate('downloads')}
-              onMyListPress={() => navigate('myList')}
-              onProfilePress={() => navigate('profile')}
-              onBack={title ? goBack : undefined}
-              onSettings={
-                title?.toLowerCase()?.match(/^(profile)$/)
-                  ? () => {}
-                  : undefined
-              }
-              title={title}
-              transparent={headerTransparent}
-            />
-          </Animated.View>
+          <Header
+            onLogoPress={() => navigate('home')}
+            onDownloadsPress={() => navigate('downloads')}
+            onMyListPress={() => navigate('myList')}
+            onProfilePress={() => navigate('profile')}
+            onBack={title ? goBack : undefined}
+            onSettings={
+              title?.toLowerCase()?.match(/^(profile)$/) ? () => {} : undefined
+            }
+            title={title}
+            transparent={headerTransparent}
+          />
         );
       }
     };
@@ -98,7 +82,10 @@ export default function App() {
                   <Stack.Screen
                     name='home'
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.('home')
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.('home');
+                        BottomNav.setVisibility?.(true);
+                      }
                     }}
                   >
                     {props => <Catalogue {...props} scene='home' />}
@@ -106,7 +93,10 @@ export default function App() {
                   <Stack.Screen
                     name='search'
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.('search')
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.('search');
+                        BottomNav.setVisibility?.(true);
+                      }
                     }}
                   >
                     {props => <Catalogue {...props} scene='courses' />}
@@ -115,7 +105,10 @@ export default function App() {
                     name='myList'
                     options={{ title: 'My List' }}
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.()
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.();
+                        BottomNav.setVisibility?.(true);
+                      }
                     }}
                   >
                     {props => <MyList {...props} />}
@@ -124,7 +117,10 @@ export default function App() {
                     name='downloads'
                     options={{ title: 'Downloads' }}
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.()
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.();
+                        BottomNav.setVisibility?.(true);
+                      }
                     }}
                   >
                     {props => <Downloads {...props} whatever='whatever' />}
@@ -133,15 +129,22 @@ export default function App() {
                     name='profile'
                     options={{ title: 'Profile', headerTransparent: true }}
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.()
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.();
+                        BottomNav.setVisibility?.(false);
+                      }
                     }}
                   >
                     {props => <Profile {...props} />}
                   </Stack.Screen>
                   <Stack.Screen
                     name='forum'
+                    options={{ headerShown: false }}
                     listeners={{
-                      focus: () => BottomNav.changeActiveBtn?.('forum')
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.('forum');
+                        BottomNav.setVisibility?.(true);
+                      }
                     }}
                   >
                     {props => <Catalogue {...props} scene='forum' />}

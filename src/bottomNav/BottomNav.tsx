@@ -15,19 +15,32 @@ interface Props {
 
 export const BottomNav: React.FC<Props> & {
   changeActiveBtn?: (btnName?: 'home' | 'search' | 'forum' | 'menu') => void;
+  setVisibility?: (visible: boolean) => void;
 } = ({ onHomePress, onSearchPress, onForumPress, onMenuPress }) => {
   const translateX = useRef(new Animated.Value(0));
   const scaleX = useRef(new Animated.Value(0));
   const layouts = useRef<{ [key: string]: { x: number; width: number } }>({});
 
   const [selected, setSelected] = useState(0);
+  const [maxHeight, setMaxHeight] = useState(0);
 
   const { theme } = useContext(ThemeContext);
   let styles = setStyle(theme);
 
+  const homeIndexCorespondent: { [key: string]: number } = {
+    home: 0,
+    search: 1,
+    forum: 2,
+    menu: 3
+  };
+
   const onLayout = ({ nativeEvent: ne }: LayoutChangeEvent, btn: string) => {
     layouts.current[btn] = { x: ne.layout.x, width: ne.layout.width };
-    if (btn === 'home') movePill('home');
+    movePill(
+      Object.keys(homeIndexCorespondent).find(
+        key => homeIndexCorespondent[key] === selected
+      )
+    );
   };
 
   const movePill = (btn: string | undefined) => {
@@ -48,20 +61,20 @@ export const BottomNav: React.FC<Props> & {
     ]).start();
   };
 
-  const homeIndexCorespondent: { [key: string]: number } = {
-    home: 0,
-    search: 1,
-    forum: 2,
-    menu: 3
-  };
-
   BottomNav.changeActiveBtn = btnName => {
     setSelected(btnName ? homeIndexCorespondent[btnName] : -1);
     movePill(btnName);
   };
 
+  BottomNav.setVisibility = visible => {
+    setMaxHeight(visible ? 1000 : 10);
+  };
+
   return (
-    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView
+      style={[styles.container, { maxHeight }]}
+      edges={['bottom', 'left', 'right']}
+    >
       <Animated.View
         style={{
           backgroundColor: utils.color,
@@ -145,6 +158,7 @@ export const BottomNav: React.FC<Props> & {
 const setStyle = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     container: {
+      overflow: 'hidden',
       backgroundColor: current.background,
       flexDirection: 'row',
       justifyContent: 'space-evenly'
