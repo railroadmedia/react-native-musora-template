@@ -27,6 +27,9 @@ import {
   ADD_IN_PROGRESS,
   ADD_MY_LIST,
   myListReducer,
+  REMOVE_COMPLETED,
+  REMOVE_IN_PROGRESS,
+  REMOVE_MY_LIST,
   SET_COMPLETED,
   SET_IN_PROGRESS,
   SET_MY_LIST_AND_CACHE,
@@ -41,7 +44,7 @@ interface MyListProps {}
 type TitleTypes = 'In Progress' | 'Completed';
 
 export const MyList: React.FC<MyListProps> = ({}) => {
-  const [title, setTitle] = useState('My List');
+  const [pageTitle, setPageTitle] = useState('My List');
   const { theme } = useContext(ThemeContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const isMounted = useRef(true);
@@ -62,7 +65,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   }, [theme]);
 
   const backButtonHandler = useCallback(() => {
-    setTitle('My List');
+    setPageTitle('My List');
     return true;
   }, []);
 
@@ -87,7 +90,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     };
   }, []);
 
-  const setMyList = () =>
+  const setMyList = () => {
     myListService
       .myList({ page: myListPage.current, signal: abortC.current.signal })
       .then(myList => {
@@ -100,6 +103,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
           });
         }
       });
+  };
 
   const setInProgress = () =>
     myListService
@@ -130,9 +134,9 @@ export const MyList: React.FC<MyListProps> = ({}) => {
 
   const renderFLEmpty = () => (
     <Text style={styles.emptyListText}>
-      {title === 'My List'
+      {pageTitle === 'My List'
         ? 'When you add a lesson to your list it will show up here!'
-        : title === 'In Progress'
+        : pageTitle === 'In Progress'
         ? 'When you start a lesson it will show up here!'
         : 'When you complete a lesson it will show up here!'}
     </Text>
@@ -160,17 +164,20 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   const refresh = () => {
     abortC.current.abort();
     abortC.current = new AbortController();
+    myListPage.current = 1;
+    inProgressPage.current = 1;
+    completedPage.current = 1;
     dispatch({
       type: UPDATE_MY_LIST_LOADERS,
       loadingMore: false,
       refreshing: true
     });
-    decideCall(title as TitleTypes);
+    decideCall(pageTitle as TitleTypes);
   };
 
   const loadMore = () => {
     dispatch({ type: UPDATE_MY_LIST_LOADERS, loadingMore: true });
-    if (title === 'In Progress') {
+    if (pageTitle === 'In Progress') {
       myListService
         .inProgress({
           page: ++inProgressPage.current,
@@ -184,7 +191,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
             loadingMore: false
           });
         });
-    } else if (title === 'Completed') {
+    } else if (pageTitle === 'Completed') {
       myListService
         .completed({
           page: ++completedPage.current,
@@ -215,8 +222,29 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     }
   };
 
+  const removeItemFromList = useCallback((id: number) => {
+    dispatch({
+      type: REMOVE_MY_LIST,
+      id
+    });
+  }, []);
+
+  const removeItemFromProgess = useCallback((id: number, title: string) => {
+    if (title === 'In Progress') {
+      dispatch({
+        type: REMOVE_IN_PROGRESS,
+        id
+      });
+    } else {
+      dispatch({
+        type: REMOVE_COMPLETED,
+        id
+      });
+    }
+  }, []);
+
   const onNavigate = useCallback((title: TitleTypes) => {
-    setTitle(title);
+    setPageTitle(title);
     dispatch({
       type: UPDATE_MY_LIST_LOADERS,
       loadingMore: false,
@@ -236,7 +264,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   }, []);
 
   const renderFLHeader = () => {
-    if (title === 'My List')
+    if (pageTitle === 'My List')
       return (
         <View>
           {['In Progress', 'Completed'].map((title, index) => (
@@ -259,19 +287,31 @@ export const MyList: React.FC<MyListProps> = ({}) => {
           <Text style={styles.title}>Added To My List</Text>
         </View>
       );
-    return <Text style={styles.title}>{title}</Text>;
+    return <Text style={styles.title}>{pageTitle}</Text>;
   };
 
-  const renderFLItem = ({ item }: any) => <RowCard id={item} route='myList' />;
+  const renderFLItem = ({ item }: any) => (
+    <RowCard
+      id={item}
+      route='myList'
+      iconType={
+        pageTitle === 'In Progress' || pageTitle === 'Completed'
+          ? 'progress'
+          : null
+      }
+      onRemoveFromMyList={removeItemFromList}
+      onResetProgress={(id: number) => removeItemFromProgess(id, pageTitle)}
+    />
+  );
 
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={
-          title === 'In Progress'
+          pageTitle === 'In Progress'
             ? inProgress
-            : title === 'Completed'
+            : pageTitle === 'Completed'
             ? completed
             : myList
         }

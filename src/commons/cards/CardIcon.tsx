@@ -10,8 +10,9 @@ import type { Card } from '../../state/cards/CardsInterfaces';
 
 interface CardIconProps {
   item: Card;
-  iconType?: 'next-lesson' | 'progress';
+  iconType?: 'next-lesson' | 'progress' | null;
   onResetProgress?: (id: number) => void;
+  onRemoveFromMyList?: (id: number) => void;
 }
 
 const iconStyle = {
@@ -30,7 +31,8 @@ export const CardIcon: React.FC<CardIconProps> = ({
     title
   },
   iconType,
-  onResetProgress
+  onResetProgress,
+  onRemoveFromMyList
 }) => {
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
     is_added_to_primary_playlist
@@ -63,6 +65,7 @@ export const CardIcon: React.FC<CardIconProps> = ({
   const removeFromMyList = useCallback(() => {
     setIsAddedToPrimaryList(false);
     userService.removeFromMyList(id);
+    onRemoveFromMyList?.(id);
   }, [setIsAddedToPrimaryList, id]);
 
   const resetProgress = useCallback(() => {
@@ -105,7 +108,10 @@ export const CardIcon: React.FC<CardIconProps> = ({
           title='Hold your horses...'
           message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
           btnText='REMOVE'
-          onAction={removeFromMyList}
+          onAction={() => {
+            setShowRemoveModal(false);
+            removeFromMyList();
+          }}
           onCancel={() => setShowRemoveModal(false)}
         />
       )}
@@ -114,7 +120,10 @@ export const CardIcon: React.FC<CardIconProps> = ({
           title='Hold your horses...'
           message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
           btnText='RESET'
-          onAction={resetProgress}
+          onAction={() => {
+            setShowResetModal(false);
+            resetProgress();
+          }}
           onCancel={() => setShowResetModal(false)}
         />
       )}
@@ -125,7 +134,10 @@ export const CardIcon: React.FC<CardIconProps> = ({
           })}
           message={`Add this lesson to your calendar so you're notified when it's available`}
           btnText='ADD TO CALENDAR'
-          onAction={addLessonToCalendar}
+          onAction={() => {
+            setShowAddToCalendarModal(false);
+            addLessonToCalendar();
+          }}
           onCancel={() => setShowAddToCalendarModal(false)}
         />
       )}

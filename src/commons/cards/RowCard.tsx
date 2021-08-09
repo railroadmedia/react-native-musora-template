@@ -13,11 +13,13 @@ import { CardImage } from './CardImage';
 interface RowCardProps {
   id: number;
   route: string;
-  onRemoveItemFromList?: () => void;
+  iconType?: 'next-lesson' | 'progress' | null;
+  onResetProgress?: (id: number) => void;
+  onRemoveFromMyList?: (id: number) => void;
 }
 
 const RowCard: React.FC<RowCardProps> = props => {
-  const { id, route, onRemoveItemFromList } = props;
+  const { id, route, onResetProgress, onRemoveFromMyList, iconType } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
 
@@ -70,7 +72,12 @@ const RowCard: React.FC<RowCardProps> = props => {
             {decideSubtitle({ item, route })}
           </Text>
         </View>
-        <CardIcon item={item} onResetProgress={onRemoveItemFromList} />
+        <CardIcon
+          item={item}
+          iconType={iconType}
+          onResetProgress={onResetProgress}
+          onRemoveFromMyList={onRemoveFromMyList}
+        />
       </View>
     </TouchableOpacity>
   );

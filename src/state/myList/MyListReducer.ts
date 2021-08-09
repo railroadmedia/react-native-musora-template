@@ -7,6 +7,9 @@ export const SET_IN_PROGRESS = 'SET_IN_PROGRESS';
 export const SET_COMPLETED = 'SET_COMPLETED';
 export const ADD_MY_LIST = 'ADD_MY_LIST';
 export const ADD_COMPLETED = 'ADD_COMPLETED';
+export const REMOVE_IN_PROGRESS = 'REMOVE_IN_PROGRESS';
+export const REMOVE_MY_LIST = 'REMOVE_MY_LIST';
+export const REMOVE_COMPLETED = 'REMOVE_COMPLETED';
 export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
 export const SET_MY_LIST_AND_CACHE = 'SET_MY_LIST_AND_CACHE';
 export const UPDATE_MY_LIST_LOADERS = 'UPDATE_MY_LIST_LOADERS';
@@ -18,7 +21,7 @@ const add: Add = (currentItem, nextItem) => [
 
 export const myListReducer: MyListReducer = (
   state,
-  { type, myList, inProgress, completed, cache, refreshing, loadingMore }
+  { type, id, myList, inProgress, completed, cache, refreshing, loadingMore }
 ) => {
   let newState = {
     ...state,
@@ -47,6 +50,21 @@ export const myListReducer: MyListReducer = (
       return newState;
     case SET_MY_LIST_FROM_CACHE:
       return { ...newState, ...cache };
+    case REMOVE_MY_LIST:
+      return {
+        ...newState,
+        myList: newState.myList?.filter((ml: number) => ml !== id)
+      };
+    case REMOVE_IN_PROGRESS:
+      return {
+        ...newState,
+        inProgress: newState.inProgress?.filter((ip: number) => ip !== id)
+      };
+    case REMOVE_COMPLETED:
+      return {
+        ...newState,
+        completed: newState.completed?.filter((c: number) => c !== id)
+      };
     default:
       return state;
   }

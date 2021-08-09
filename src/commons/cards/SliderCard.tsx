@@ -20,11 +20,10 @@ const windowWidth = Dimensions.get('screen').width;
 interface SliderCardProps {
   id: number;
   route: string;
-  onRemoveItemFromList?: () => void;
 }
 
 const SliderCard: React.FC<SliderCardProps> = props => {
-  const { id, route, onRemoveItemFromList } = props;
+  const { id, route } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
 
@@ -62,7 +61,7 @@ const SliderCard: React.FC<SliderCardProps> = props => {
             {decideSubtitle({ item, route })}
           </Text>
         </View>
-        <CardIcon item={item} onResetProgress={onRemoveItemFromList} />
+        <CardIcon item={item} />
       </View>
     </TouchableOpacity>
   );

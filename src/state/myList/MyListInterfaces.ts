@@ -24,6 +24,7 @@ interface MyListAction {
   inProgress?: { id: number }[];
   refreshing?: boolean;
   loadingMore?: boolean;
+  id?: number;
 }
 export interface MyListReducer {
   (state: MyListState, action: MyListAction): MyListState;
