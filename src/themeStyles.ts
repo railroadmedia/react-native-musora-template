@@ -11,6 +11,7 @@ interface Themes {
     contrastBackground?: string;
     contrastTextColor?: string;
     borderColor?: string;
+    textBoxColor?: string;
   };
 }
 export const themeStyles: Themes = {
@@ -20,7 +21,8 @@ export const themeStyles: Themes = {
     headerNavColor: 'black',
     contrastBackground: 'grey',
     contrastTextColor: 'grey',
-    borderColor: 'lightgrey'
+    borderColor: 'lightgrey',
+    textBoxColor: '#E1E6EB'
   },
   [DARK]: {
     background: '#00101D',
@@ -28,7 +30,8 @@ export const themeStyles: Themes = {
     headerNavColor: 'white',
     contrastBackground: '#081825',
     contrastTextColor: '#445F74',
-    borderColor: '#002039'
+    borderColor: '#002039',
+    textBoxColor: '#F7F9FC'
   },
   [OTHER]: {}
 };

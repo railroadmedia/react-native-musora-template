@@ -19,15 +19,20 @@ interface Auth {
   }>;
 }
 
+export interface Response {
+  title?: string;
+  message?: string;
+  data?: [];
+  meta?: any;
+}
+
 interface Call {
   ({}: {
     url: string;
     method?: string;
     signal?: AbortSignal;
     body?: {};
-  }): Promise<
-    { title?: string; message?: string; data?: [] } & IUserContext['user']
-  >;
+  }): Promise<Response & IUserContext['user']>;
 }
 
 const authenticate: Auth = async function (email, password, purchases) {

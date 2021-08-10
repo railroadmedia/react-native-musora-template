@@ -24,7 +24,8 @@ import {
   MyList,
   Downloads,
   BottomNav,
-  Header
+  Header,
+  Search
 } from 'react-native-musora-templates';
 
 const Stack = createStackNavigator();
@@ -114,6 +115,7 @@ export default function App() {
                   </Stack.Screen>
                   <Stack.Screen
                     name='search'
+                    options={{ title: 'Search' }}
                     listeners={{
                       focus: () => {
                         BottomNav.changeActiveBtn?.('search');
@@ -121,7 +123,7 @@ export default function App() {
                       }
                     }}
                   >
-                    {props => <Catalogue {...props} scene='courses' />}
+                    {props => <Search {...props} />}
                   </Stack.Screen>
                   <Stack.Screen
                     name='myList'

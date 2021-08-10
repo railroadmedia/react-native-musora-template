@@ -1,4 +1,5 @@
 import React, {
+  ReactElement,
   useCallback,
   useContext,
   useEffect,
@@ -38,6 +39,7 @@ import {
 } from '../state/myList/MyListReducer';
 import { myListService } from '../services/myList.service';
 import RowCard from '../commons/cards/RowCard';
+import type { Response } from '../services/auth.service';
 
 interface MyListProps {}
 
@@ -77,11 +79,27 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     };
   }, [backButtonHandler]);
 
+  const setMyList = () =>
+    myListService
+      .myList({ page: myListPage.current, signal: abortC.current.signal })
+      .then((myListRes: Response) => {
+        if (isMounted.current) {
+          addCardsAndCache(myListRes?.data);
+          dispatch({
+            type: SET_MY_LIST_AND_CACHE,
+            myList: myListRes?.data,
+            refreshing: false
+          });
+        }
+      });
+
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
-    myListService.getCache?.().then(cache => {
-      if (isMounted.current) dispatch({ type: SET_MY_LIST_FROM_CACHE, cache });
+    myListService.getCache?.().then((cache: any) => {
+      if (isMounted.current) {
+        dispatch({ type: SET_MY_LIST_FROM_CACHE, cache });
+      }
     });
     setMyList();
     return () => {
@@ -90,32 +108,17 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     };
   }, []);
 
-  const setMyList = () => {
-    myListService
-      .myList({ page: myListPage.current, signal: abortC.current.signal })
-      .then(myList => {
-        if (isMounted.current) {
-          addCardsAndCache(myList?.data);
-          dispatch({
-            type: SET_MY_LIST_AND_CACHE,
-            myList: myList?.data,
-            refreshing: false
-          });
-        }
-      });
-  };
-
   const setInProgress = () =>
     myListService
       .inProgress({
         page: inProgressPage.current,
         signal: abortC.current.signal
       })
-      .then(inProgress => {
-        addCards(inProgress?.data);
+      .then((inProgressRes: Response) => {
+        addCards(inProgressRes?.data);
         dispatch({
           type: SET_IN_PROGRESS,
-          inProgress: inProgress?.data,
+          inProgress: inProgressRes?.data,
           refreshing: false
         });
       });
@@ -123,16 +126,16 @@ export const MyList: React.FC<MyListProps> = ({}) => {
   const setCompleted = () =>
     myListService
       .completed({ page: completedPage.current, signal: abortC.current.signal })
-      .then(completed => {
-        addCards(completed?.data);
+      .then((completedRes: Response) => {
+        addCards(completedRes?.data);
         dispatch({
           type: SET_COMPLETED,
-          completed: completed?.data,
+          completed: completedRes?.data,
           refreshing: false
         });
       });
 
-  const renderFLEmpty = () => (
+  const renderFLEmpty = (): ReactElement => (
     <Text style={styles.emptyListText}>
       {pageTitle === 'My List'
         ? 'When you add a lesson to your list it will show up here!'
@@ -142,7 +145,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     </Text>
   );
 
-  const renderFLFooter = () => (
+  const renderFLFooter = (): ReactElement => (
     <ActivityIndicator
       size='small'
       color={utils.color}
@@ -151,7 +154,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     />
   );
 
-  const renderFLRefreshControl = () => (
+  const renderFLRefreshControl = (): ReactElement => (
     <RefreshControl
       colors={['white']}
       tintColor={utils.color}
@@ -161,7 +164,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     />
   );
 
-  const refresh = () => {
+  const refresh = (): void => {
     abortC.current.abort();
     abortC.current = new AbortController();
     myListPage.current = 1;
@@ -175,7 +178,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     decideCall(pageTitle as TitleTypes);
   };
 
-  const loadMore = () => {
+  const loadMore = (): void => {
     dispatch({ type: UPDATE_MY_LIST_LOADERS, loadingMore: true });
     if (pageTitle === 'In Progress') {
       myListService
@@ -183,11 +186,11 @@ export const MyList: React.FC<MyListProps> = ({}) => {
           page: ++inProgressPage.current,
           signal: abortC.current.signal
         })
-        .then(inProgress => {
-          addCards(inProgress?.data);
+        .then((inProgressRes: Response) => {
+          addCards(inProgressRes?.data);
           dispatch({
             type: ADD_IN_PROGRESS,
-            inProgress: inProgress?.data,
+            inProgress: inProgressRes?.data,
             loadingMore: false
           });
         });
@@ -197,11 +200,11 @@ export const MyList: React.FC<MyListProps> = ({}) => {
           page: ++completedPage.current,
           signal: abortC.current.signal
         })
-        .then(completed => {
-          addCards(completed?.data);
+        .then((completedRes: Response) => {
+          addCards(completedRes?.data);
           dispatch({
             type: ADD_COMPLETED,
-            completed: completed?.data,
+            completed: completedRes?.data,
             loadingMore: false
           });
         });
@@ -211,11 +214,11 @@ export const MyList: React.FC<MyListProps> = ({}) => {
           page: ++myListPage.current,
           signal: abortC.current.signal
         })
-        .then(myList => {
-          addCards(myList?.data);
+        .then((myListRes: Response) => {
+          addCards(myListRes?.data);
           dispatch({
             type: ADD_MY_LIST,
-            myList: myList?.data,
+            myList: myListRes?.data,
             loadingMore: false
           });
         });
@@ -263,7 +266,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     }
   }, []);
 
-  const renderFLHeader = () => {
+  const renderFLHeader = (): ReactElement => {
     if (pageTitle === 'My List')
       return (
         <View>
@@ -290,7 +293,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
     return <Text style={styles.title}>{pageTitle}</Text>;
   };
 
-  const renderFLItem = ({ item }: any) => (
+  const renderFLItem = ({ item }: any): ReactElement => (
     <RowCard
       id={item}
       route='myList'
@@ -316,6 +319,7 @@ export const MyList: React.FC<MyListProps> = ({}) => {
             : myList
         }
         onEndReached={loadMore}
+        onEndReachedThreshold={0.01}
         keyExtractor={id => id.toString()}
         ListHeaderComponent={renderFLHeader()}
         ListEmptyComponent={renderFLEmpty()}

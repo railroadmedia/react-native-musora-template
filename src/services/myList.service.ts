@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { utils } from '../utils';
 
 import { call } from './auth.service';
 
@@ -15,7 +16,7 @@ export const myListService = {
   },
   myList: function ({ page, filters, sort, signal }: Args) {
     return call({
-      url: `/musora-api/my-list?limit=10&brand=drumeo&sort=${
+      url: `/musora-api/my-list?limit=10&brand=${utils.brand}&sort=${
         sort || '-published_on'
       }&page=${page || 1}${filters || ''}`,
       signal
@@ -23,9 +24,11 @@ export const myListService = {
   },
   completed: function ({ page, filters, sort, signal }: Args) {
     return call({
-      url: `/musora-api/my-list?limit=10&brand=drumeo&state=completed&sort=${
-        sort || '-published_on'
-      }&page=${page || 1}${filters || ''}`,
+      url: `/musora-api/my-list?limit=10&brand=${
+        utils.brand
+      }&state=completed&sort=${sort || '-published_on'}&page=${page || 1}${
+        filters || ''
+      }`,
       signal
     });
   },
