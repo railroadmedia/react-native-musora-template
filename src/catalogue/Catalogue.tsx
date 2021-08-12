@@ -29,6 +29,7 @@ import { utils } from '../utils';
 import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../commons/Sort';
+import type { IMethod } from 'src/state/method/MethodInterfaces';
 
 interface Props {
   scene: string;
@@ -91,7 +92,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
           dispatch({
             type: SET_CATALOGUE_AND_CACHE,
             scene,
-            method,
+            method: method as IMethod,
             all: all?.data,
             inProgress: inProgress?.data,
             recentlyViewed: recentlyViewed?.data,
@@ -102,7 +103,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       }));
 
   const renderFLMethodBanner = () => (
-    <Banner {...method} onRightBtnPress={() => {}} onLeftBtnPress={() => {}} />
+    <Banner
+      {...method}
+      isBig={true}
+      onRightBtnPress={() => {}}
+      onLeftBtnPress={() => {}}
+    />
   );
 
   const renderCarousel = (items: number[] | undefined, title: string) =>

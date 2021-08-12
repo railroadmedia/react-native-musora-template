@@ -1,9 +1,11 @@
+import type { IMethod } from '../method/MethodInterfaces';
+
 export interface CatalogueState {
   all?: number[];
   newContent?: number[];
   inProgress?: number[];
   recentlyViewed?: number[];
-  method?: {};
+  method?: IMethod;
   refreshing: boolean;
   loadingMore: boolean;
 }
@@ -19,7 +21,7 @@ interface CatalogueCache {
   newContent?: number[];
   inProgress?: number[];
   recentlyViewed?: number[];
-  method?: {};
+  method?: IMethod;
 }
 
 interface CatalogueAction {
@@ -30,7 +32,7 @@ interface CatalogueAction {
   newContent?: { id: number }[];
   inProgress?: { id: number }[];
   recentlyViewed?: { id: number }[];
-  method?: {};
+  method?: IMethod;
   refreshing?: boolean;
   loadingMore?: boolean;
 }

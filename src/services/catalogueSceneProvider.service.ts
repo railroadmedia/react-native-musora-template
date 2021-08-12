@@ -2,6 +2,7 @@ import { homeService } from './home.service';
 import { coursesService } from './courses.service';
 
 import type { Args } from './interfaces';
+import type { IMethod } from '../state/method/MethodInterfaces';
 
 interface ProviderFunction {
   ({}: Args): Promise<{ data?: [] }>;
@@ -17,7 +18,7 @@ interface ProviderFunctionCache {
     inProgress?: number[];
     newContent?: number[];
     recentlyViewed?: number[];
-    method?: {};
+    method?: IMethod;
   }>;
 }
 

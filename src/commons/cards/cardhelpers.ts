@@ -85,11 +85,14 @@ export const decideSubtitle = (props: {
     return size + 'MB';
   }
 
-  if (new Date(published_on) > new Date())
-    return 'Releasing ' + new Date(published_on).toDateString();
+  let st = new Date(`${live_event_start_time || published_on} UTC`);
+  if (st > new Date())
+    return `Releasing ${dateToLocaleString(st, {
+      month: 'short'
+    })} ${dateToLocaleString(st, { day: '2-digit' })}, ${st.getFullYear()}`;
   if (route === 'lessonPart') return secondsToHms(length_in_seconds);
   if (route === 'myList') return transformText(type);
-  if (type === 'course' || type === 'learning-path-lesson')
+  if ((type === 'course' || type === 'learning-path-lesson') && instructors)
     return subtitle + instructors?.join(', ');
   if (type === 'learning-path-level')
     return subtitle + 'Level ' + (level_number || '');
@@ -104,15 +107,10 @@ export const decideSubtitle = (props: {
   // )
   //   return null;
   if (route?.match(/^(live|schedule)$/)) return type;
-  let st = new Date(`${live_event_start_time || published_on} UTC`);
-  if (st > new Date())
-    return `Releasing ${dateToLocaleString(st, {
-      month: 'short'
-    })} ${dateToLocaleString(st, { day: '2-digit' })}, ${st.getFullYear()}`;
   if (route?.match(/^(coachOverview)$/))
     return `${(length_in_seconds / 60) >> 0} mins`;
   if (route?.match(/^(coaches)$/)) return `${type} / ${instructors.join(', ')}`;
-  return subtitle + transformText(type);
+  return transformText(type);
 };
 
 const transformText = (text: string, showBar?: boolean): string => {

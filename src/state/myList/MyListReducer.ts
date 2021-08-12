@@ -2,17 +2,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Add, MyListReducer } from './MyListInterfaces';
 
-export const SET_MY_LIST_FROM_CACHE = 'SET_MY_LIST_FROM_CACHE';
-export const SET_IN_PROGRESS = 'SET_IN_PROGRESS';
-export const SET_COMPLETED = 'SET_COMPLETED';
-export const ADD_MY_LIST = 'ADD_MY_LIST';
-export const ADD_COMPLETED = 'ADD_COMPLETED';
-export const REMOVE_IN_PROGRESS = 'REMOVE_IN_PROGRESS';
-export const REMOVE_MY_LIST = 'REMOVE_MY_LIST';
-export const REMOVE_COMPLETED = 'REMOVE_COMPLETED';
-export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
-export const SET_MY_LIST_AND_CACHE = 'SET_MY_LIST_AND_CACHE';
-export const UPDATE_MY_LIST_LOADERS = 'UPDATE_MY_LIST_LOADERS';
+export const SET_MY_LIST_FROM_CACHE: string = 'SET_MY_LIST_FROM_CACHE';
+export const SET_IN_PROGRESS: string = 'SET_IN_PROGRESS';
+export const SET_COMPLETED: string = 'SET_COMPLETED';
+export const ADD_MY_LIST: string = 'ADD_MY_LIST';
+export const ADD_COMPLETED: string = 'ADD_COMPLETED';
+export const REMOVE_IN_PROGRESS: string = 'REMOVE_IN_PROGRESS';
+export const REMOVE_MY_LIST: string = 'REMOVE_MY_LIST';
+export const REMOVE_COMPLETED: string = 'REMOVE_COMPLETED';
+export const ADD_IN_PROGRESS: string = 'ADD_IN_PROGRESS';
+export const SET_MY_LIST_AND_CACHE: string = 'SET_MY_LIST_AND_CACHE';
+export const UPDATE_MY_LIST_LOADERS: string = 'UPDATE_MY_LIST_LOADERS';
 
 const add: Add = (currentItem, nextItem) => [
   ...(currentItem || []),

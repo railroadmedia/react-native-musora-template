@@ -7,7 +7,6 @@ export const ADD_ALL = 'ADD_ALL';
 export const ADD_NEW = 'ADD_NEW';
 export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
 export const ADD_RECENTLY_VIEWED = 'ADD_RECENTLY_VIEWED';
-export const SET_METHOD = 'SET_METHOD';
 export const SET_CATALOGUE_AND_CACHE = 'SET_CATALOGUE_AND_CACHE';
 export const UPDATE_CATALOGUE_LOADERS = 'UPDATE_CATALOGUE_LOADERS';
 
@@ -48,8 +47,6 @@ export const catalogueReducer: CatalogueReducer = (
         ...newState,
         recentlyViewed: add(newState.recentlyViewed, recentlyViewed)
       };
-    case SET_METHOD:
-      return { ...newState, method };
     case SET_CATALOGUE_AND_CACHE: {
       let cachedState = {
         all: (all || []).map(ni => ni.id),
