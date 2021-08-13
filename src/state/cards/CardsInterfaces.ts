@@ -10,27 +10,27 @@ export interface UpdateCard {
 }
 
 export interface Card {
-  artist: string;
-  completed: boolean;
-  head_shot_picture_url: string;
+  artist?: string;
+  completed?: boolean;
+  head_shot_picture_url?: string;
   id: number;
-  instructors: string[];
-  is_added_to_primary_playlist: boolean;
-  length_in_seconds: number;
-  like_count: number;
-  name: string;
-  progress_percent: number;
+  instructors?: string[];
+  is_added_to_primary_playlist?: boolean;
+  length_in_seconds?: number;
+  like_count?: number;
+  name?: string;
+  progress_percent?: number;
   published_on: string;
-  started: boolean;
-  status: string;
-  style: string;
-  thumbnail_url: string;
-  title: string;
+  started?: boolean;
+  status?: string;
+  style?: string;
+  thumbnail_url?: string;
+  title?: string;
   type: string;
-  live_event_start_time: string;
-  live_event_end_time: string;
-  level_number: number;
-  sizeInBytes: number;
+  live_event_start_time?: string;
+  live_event_end_time?: string;
+  level_number?: number;
+  sizeInBytes?: number;
 }
 
 export interface ICardsContext {

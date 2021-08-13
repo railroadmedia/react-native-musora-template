@@ -1,0 +1,191 @@
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
+import {
+  View,
+  Text,
+  StatusBar,
+  ScrollView,
+  RefreshControl,
+  ActivityIndicator,
+  StyleSheet
+} from 'react-native';
+import { ThemeContext } from '../state/theme/ThemeContext';
+import { utils } from '../utils';
+import { themeStyles } from '../themeStyles';
+import { NextLesson } from '../commons/NextLesson';
+import {
+  methodReducer,
+  SET_LEVEL,
+  UPDATE_METHOD_LOADERS
+} from '../state/method/MethodReducer';
+import { methodService } from '../services/method.service';
+import { CardsContext } from '../state/cards/CardsContext';
+import type { ILevel, IMethodCourse } from '../state/method/MethodInterfaces';
+import { LibraryCard } from '../commons/cards/LibraryCard';
+import { LevelBanner } from './LevelBanner';
+import ActionModal from '../commons/modals/ActionModal';
+import { userService } from '../services/user.service';
+
+interface ILevelProps {
+  mobile_app_url: string;
+}
+
+export const Level: React.FC<ILevelProps> = ({ mobile_app_url }) => {
+  const { theme } = useContext(ThemeContext);
+  const { addCards } = useContext(CardsContext);
+
+  const [{ level, refreshing }, dispatch] = useReducer(methodReducer, {
+    refreshing: true
+  });
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
+  const [isAddedToMyList, setIsAddedToMyList] = useState(false);
+  const isMounted = useRef(true);
+  const abortC = useRef(new AbortController());
+
+  let styles = setStyles(theme);
+  useEffect(() => {
+    styles = setStyles(theme);
+  }, [theme]);
+
+  useEffect(() => {
+    isMounted.current = true;
+    abortC.current = new AbortController();
+    setLevel();
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
+  }, []);
+
+  const setLevel = (): Promise<void> =>
+    methodService
+      .getLevel(mobile_app_url, abortC.current.signal)
+      .then(levelRes => {
+        if (isMounted.current) {
+          const castLevel: ILevel = levelRes as ILevel;
+          addCards([castLevel.next_lesson]);
+          addCards(castLevel.courses);
+          setIsAddedToMyList(castLevel.is_added_to_primary_playlist);
+          dispatch({
+            type: SET_LEVEL,
+            level: castLevel,
+            refreshing: false
+          });
+        }
+      });
+
+  const refresh = () => {
+    abortC.current.abort();
+    abortC.current = new AbortController();
+    dispatch({
+      type: UPDATE_METHOD_LOADERS,
+      refreshing: true
+    });
+    setLevel();
+  };
+
+  const toggleMyList = useCallback(() => {
+    if (level) {
+      if (isAddedToMyList) {
+        if (showRemoveModal) {
+          userService.removeFromMyList(level.id);
+          setShowRemoveModal(false);
+          setIsAddedToMyList(false);
+        } else {
+          setShowRemoveModal(true);
+        }
+      } else {
+        userService.addToMyList(level.id);
+        setIsAddedToMyList(true);
+      }
+    }
+  }, [level, isAddedToMyList, showRemoveModal]);
+
+  return (
+    <View style={styles.container}>
+      <StatusBar
+        backgroundColor={themeStyles[theme].background}
+        barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
+      />
+      {!!level?.id ? (
+        <React.Fragment>
+          <ScrollView
+            style={{ flex: 1 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={refresh}
+                colors={[utils.color]}
+                tintColor={utils.color}
+              />
+            }
+          >
+            <LevelBanner
+              {...level}
+              is_added_to_primary_playlist={isAddedToMyList}
+              onToggleMyList={toggleMyList}
+              onMainBtnPress={() => {}}
+            />
+            <View style={styles.container}>
+              {!level.courses?.length && (
+                <Text style={styles.emptyText}>There are no courses</Text>
+              )}
+              {level.courses.map((c: IMethodCourse) => (
+                <LibraryCard
+                  key={c.id}
+                  item={c}
+                  subtitle={`Level ${c.level_rank}`}
+                  onBtnPress={() => {}}
+                />
+              ))}
+            </View>
+          </ScrollView>
+          {level.next_lesson && (
+            <NextLesson
+              item={level.next_lesson.id}
+              text={`METHOD - ${level.progress_percent.toFixed(2)}% COMPLETE `}
+              progress={level.progress_percent}
+            />
+          )}
+        </React.Fragment>
+      ) : (
+        <ActivityIndicator
+          size={'large'}
+          style={{ flex: 1 }}
+          color={utils.color}
+        />
+      )}
+      {showRemoveModal && (
+        <ActionModal
+          title='Hold your horses...'
+          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
+          btnText='REMOVE'
+          onAction={toggleMyList}
+          onCancel={() => setShowRemoveModal(false)}
+        />
+      )}
+    </View>
+  );
+};
+
+const setStyles = (theme: string, current = themeStyles[theme]) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: current.background
+    },
+    emptyText: {
+      textAlign: 'center',
+      marginTop: 100,
+      color: utils.color,
+      height: '100%',
+      fontSize: 14,
+      fontFamily: 'OpenSans'
+    }
+  });

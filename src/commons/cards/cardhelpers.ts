@@ -22,14 +22,17 @@ const contentTypes = [
 const fallbackThumb =
   'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
 
-const secondsToHms = (d: number | string): string => {
-  d = Number(d);
-  var m = Math.floor(d / 60);
-  var s = d - m * 60;
-  if (s >= 30) m++;
-  var mDisplay = m !== 0 && m === 1 ? m + ' MIN' : m + ' MINS';
+const secondsToHms = (d: number | string | undefined): string => {
+  if (d) {
+    d = Number(d);
+    var m = Math.floor(d / 60);
+    var s = d - m * 60;
+    if (s >= 30) m++;
+    var mDisplay = m !== 0 && m === 1 ? m + ' MIN' : m + ' MINS';
 
-  return mDisplay;
+    return mDisplay;
+  }
+  return '';
 };
 
 const dateToLocaleString = function (date: Date, options: any): string {
@@ -108,18 +111,22 @@ export const decideSubtitle = (props: {
   //   return null;
   if (route?.match(/^(live|schedule)$/)) return type;
   if (route?.match(/^(coachOverview)$/))
-    return `${(length_in_seconds / 60) >> 0} mins`;
-  if (route?.match(/^(coaches)$/)) return `${type} / ${instructors.join(', ')}`;
+    return length_in_seconds ? `${(length_in_seconds / 60) >> 0} mins` : '';
+  if (route?.match(/^(coaches)$/))
+    return `${type} / ${instructors?.join(', ')}`;
   return transformText(type);
 };
 
-const transformText = (text: string, showBar?: boolean): string => {
-  if (text === 'learning-path-level') text = 'Drumeo Method';
-  if (text === 'learning-path-lesson') text = 'Drumeo Method Lesson';
-  try {
-    text = text.replace(/-/g, ' ');
-    text = text.replace(/\b\w/g, l => l.toUpperCase());
-  } catch (e) {}
-  if (showBar) text = text + '  /  ';
-  return text;
+const transformText = (text?: string, showBar?: boolean): string => {
+  if (text) {
+    if (text === 'learning-path-level') text = 'Drumeo Method';
+    if (text === 'learning-path-lesson') text = 'Drumeo Method Lesson';
+    try {
+      text = text.replace(/-/g, ' ');
+      text = text.replace(/\b\w/g, l => l.toUpperCase());
+    } catch (e) {}
+    if (showBar) text = text + '  /  ';
+    return text;
+  }
+  return '';
 };

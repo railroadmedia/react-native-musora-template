@@ -42,6 +42,32 @@ export interface ILevel {
   next_lesson: Card;
 }
 
+export interface IMethodCourse {
+  id: number;
+  type: string;
+  is_added_to_primary_playlist: boolean;
+  lessons: [];
+  started: boolean;
+  completed: boolean;
+  thumbnail_url: string;
+  description: string;
+  title: string;
+  progress_percent: number;
+  published_on: string;
+  xp: number;
+  total_xp: number;
+  instructors: any;
+  next_lesson: any;
+  next_lesson_url: string;
+  total_length_in_seconds: number;
+  level_position: number;
+  course_position: number;
+  level_rank: string;
+  banner_button_url: string;
+  is_liked_by_current_user: boolean;
+  like_count: number;
+}
+
 export interface IInstructor {
   biography: string;
   head_shot_picture_url: string;
@@ -57,12 +83,14 @@ interface IVideo {
 
 export interface MethodState {
   method?: IMethod;
+  level?: ILevel;
   refreshing: boolean;
 }
 
 interface MethodAction {
   type: string;
   method?: IMethod;
+  level?: ILevel;
   refreshing?: boolean;
 }
 export interface MethodReducer {

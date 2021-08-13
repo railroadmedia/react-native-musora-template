@@ -15,7 +15,7 @@ import {
 import { utils } from '../utils';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
-import { Banner } from '../commons/Banner';
+import { MethodBanner } from '../commons/MethodBanner';
 import { profileReducer } from '../state/profile/ProfileReducer';
 import { UserContext } from '../state/user/UserContext';
 import { completedCircle, inProgressCircle } from '../images/svgs';
@@ -69,7 +69,6 @@ export const Method: React.FC = () => {
       abortC.current.abort();
     };
   }, []);
-
   const setMethod = (): Promise<void> =>
     methodService.getMethod(abortC.current.signal).then(methodRes => {
       if (isMounted.current) {
@@ -103,7 +102,7 @@ export const Method: React.FC = () => {
     <View style={styles.container}>
       <StatusBar
         backgroundColor={themeStyles[theme].background}
-        barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}
+        barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
       />
 
       {method?.id ? (
@@ -119,7 +118,7 @@ export const Method: React.FC = () => {
               />
             }
           >
-            <Banner
+            <MethodBanner
               {...method}
               isBig={false}
               onRightBtnPress={() => {}}

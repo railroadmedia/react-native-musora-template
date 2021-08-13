@@ -1,8 +1,6 @@
 import { utils } from '../utils';
 import { call } from './auth.service';
 
-import type { Args } from './interfaces';
-
 export const methodService = {
   getMethod: function (signal: AbortSignal) {
     return call({

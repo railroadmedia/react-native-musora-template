@@ -22,7 +22,7 @@ interface Props {
   description?: string;
 }
 
-export const Banner: React.FC<Props> = ({
+export const MethodBanner: React.FC<Props> = ({
   thumbnail_url,
   onLeftBtnPress,
   onRightBtnPress,

@@ -1,0 +1,180 @@
+import React, { useContext, useEffect } from 'react';
+import {
+  ImageBackground,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions
+} from 'react-native';
+
+import { ThemeContext } from '../../state/theme/ThemeContext';
+import { utils } from '../../utils';
+import { themeStyles } from '../../themeStyles';
+import {
+  completedCircle,
+  inProgressCircle,
+  lock,
+  plus,
+  x
+} from 'src/images/svgs';
+import { CardImage } from './CardImage';
+import type { IMethodCourse } from 'src/state/method/MethodInterfaces';
+import { CardIcon } from './CardIcon';
+
+const window = Dimensions.get('window');
+let windowW = window.width < window.height ? window.width : window.height;
+const iconStyle = {
+  fill: '#ffffff',
+  width: windowW / 10,
+  height: windowW / 10
+};
+const coloredIcon = { fill: utils.color, height: 25, width: 25 };
+
+interface ILibraryCard {
+  item: IMethodCourse;
+  subtitle: string;
+  onBtnPress: () => void;
+  isLocked?: boolean;
+}
+
+export const LibraryCard: React.FC<ILibraryCard> = ({
+  item,
+  subtitle,
+  onBtnPress,
+  isLocked
+}) => {
+  const {
+    id,
+    type,
+    title,
+    thumbnail_url,
+    progress_percent,
+    is_added_to_primary_playlist,
+    completed,
+    published_on
+  } = item;
+  const { theme } = useContext(ThemeContext);
+
+  let styles = setStyles(theme);
+  useEffect(() => {
+    styles = setStyles(theme);
+  }, [theme]);
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity style={styles.btn} onPress={onBtnPress}>
+        <View
+          style={[
+            styles.behindCoursesEffect,
+            {
+              marginTop:
+                (((windowW / 3) * 9) / 16) * 0.8 - ((windowW / 3) * 9) / 16
+            }
+          ]}
+        />
+        <View
+          style={[
+            styles.behindCoursesEffect,
+            {
+              marginTop:
+                (((windowW / 3) * 9) / 16) * 0.9 - ((windowW / 3) * 9) / 16,
+              opacity: 1,
+              transform: [{ scale: 0.9 }]
+            }
+          ]}
+        />
+
+        <CardImage
+          type={type}
+          thumbnail_url={thumbnail_url}
+          published_on={published_on}
+          completed={completed}
+          progress_percent={progress_percent}
+          size={windowW / 10}
+          route={''}
+          isLocked={isLocked}
+        />
+        <View style={styles.titleContainer}>
+          <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
+            {title}
+          </Text>
+          <Text style={styles.subtitle}>{subtitle}</Text>
+        </View>
+      </TouchableOpacity>
+      <CardIcon
+        item={{ id, published_on, is_added_to_primary_playlist, type, title }}
+      />
+    </View>
+  );
+};
+
+const setStyles = (theme: string, current = themeStyles[theme]) =>
+  StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      height: 85,
+      marginVertical: 10,
+      marginHorizontal: 10
+    },
+    btn: {
+      flex: 1,
+      flexDirection: 'row'
+    },
+    behindCoursesEffect: {
+      opacity: 0.5,
+      borderRadius: 5,
+      height: '100%',
+      aspectRatio: 16 / 9,
+      position: 'absolute',
+      backgroundColor: utils.color,
+      transform: [
+        {
+          scale: 0.8
+        }
+      ]
+    },
+    progressOverlay: {
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: 5,
+      position: 'absolute',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    image: {
+      width: windowW / 3,
+      aspectRatio: 16 / 9
+    },
+    lockContainer: {
+      position: 'absolute',
+      backgroundColor: 'rgba(255,255,255,.3)',
+      height: '100%',
+      width: '100%',
+      alignItems: 'flex-end'
+    },
+    titleContainer: {
+      justifyContent: 'center',
+      flex: 1,
+      padding: 10,
+      paddingRight: 0
+    },
+    myListBtn: {
+      padding: 10,
+      paddingRight: 15,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    title: {
+      fontSize: 14,
+      fontFamily: 'OpenSans-Bold',
+      color: current.textColor
+    },
+    subtitle: {
+      fontSize: 12,
+      fontFamily: 'OpenSans',
+      color: current.contrastTextColor
+    }
+  });

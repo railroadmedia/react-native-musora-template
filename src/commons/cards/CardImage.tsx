@@ -5,10 +5,10 @@ import { getImageUri } from './cardhelpers';
 
 interface CardImageProps {
   type: string;
-  thumbnail_url: string;
+  thumbnail_url?: string;
   published_on: string;
-  completed: boolean;
-  progress_percent: number;
+  completed?: boolean;
+  progress_percent?: number;
   size: number;
   route: string;
   isLocked?: boolean;

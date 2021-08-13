@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Banner } from '../commons/Banner';
+import { MethodBanner } from '../commons/MethodBanner';
 
 import { CardsContext } from '../state/cards/CardsContext';
 
@@ -103,7 +103,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       }));
 
   const renderFLMethodBanner = () => (
-    <Banner
+    <MethodBanner
       {...method}
       isBig={true}
       onRightBtnPress={() => {}}

@@ -68,17 +68,21 @@ const authenticate: Auth = async function (email, password, purchases) {
 
 const call: Call = async function ({ url, method, signal, body }) {
   try {
-    let response = await fetch(utils.rootUrl + url, {
-      method: method || 'GET',
-      headers: {
-        Authorization: token,
-        'Content-Type': 'application/json'
-      },
-      ...(signal ? { signal } : null),
-      ...(body ? { body: JSON.stringify(body) } : null)
-    });
+    let response = await fetch(
+      url.includes(utils.rootUrl) ? url : utils.rootUrl + url,
+      {
+        method: method || 'GET',
+        headers: {
+          Authorization: token,
+          'Content-Type': 'application/json'
+        },
+        ...(signal ? { signal } : null),
+        ...(body ? { body: JSON.stringify(body) } : null)
+      }
+    );
     if (response.status === 204) return {};
     let json = await response.json();
+
     if (json.error?.match(/^(TOKEN_EXPIRED|Token not provided)$/)) {
       await authenticate();
       return call({ url, method, signal, body });
