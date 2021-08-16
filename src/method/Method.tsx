@@ -27,13 +27,13 @@ import type {
   IMethod
 } from '../state/method/MethodInterfaces';
 import { methodService } from '../services/method.service';
-import {
-  methodReducer,
-  UPDATE_METHOD_LOADERS
-} from '../state/method/MethodReducer';
-import { SET_METHOD } from '../state/method/MethodReducer';
 import { NextLesson } from '../commons/NextLesson';
 import { CardsContext } from '../state/cards/CardsContext';
+import {
+  catalogueReducer,
+  SET_METHOD,
+  UPDATE_CATALOGUE_LOADERS
+} from '../state/catalogue/CatalogueReducer';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
@@ -47,8 +47,9 @@ export const Method: React.FC = () => {
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
 
-  const [{ method, refreshing }, dispatch] = useReducer(methodReducer, {
-    refreshing: true
+  const [{ method, refreshing }, dispatch] = useReducer(catalogueReducer, {
+    refreshing: true,
+    loadingMore: false
   });
 
   const [{ user }] = useReducer(profileReducer, {
@@ -77,6 +78,7 @@ export const Method: React.FC = () => {
         dispatch({
           type: SET_METHOD,
           method: castMethod,
+          scene: 'home',
           refreshing: false
         });
       }
@@ -86,8 +88,10 @@ export const Method: React.FC = () => {
     abortC.current.abort();
     abortC.current = new AbortController();
     dispatch({
-      type: UPDATE_METHOD_LOADERS,
-      refreshing: true
+      type: UPDATE_CATALOGUE_LOADERS,
+      refreshing: true,
+      loadingMore: false,
+      scene: 'home'
     });
     setMethod();
   };

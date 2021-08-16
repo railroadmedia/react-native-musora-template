@@ -29,5 +29,17 @@ export const userService = {
       url: `/musora-api/reset?content_id=${id}`,
       method: 'PUT'
     });
+  },
+  likeContent: function (id: number) {
+    return call({
+      url: `/api/railcontent/content-like?content_id=${id}`,
+      method: 'PUT'
+    });
+  },
+  dislikeContent: function (id: number) {
+    return call({
+      url: `/api/railcontent/content-like?content_id=${id}`,
+      method: 'DELETE'
+    });
   }
 };

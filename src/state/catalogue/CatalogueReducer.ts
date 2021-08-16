@@ -9,6 +9,7 @@ export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
 export const ADD_RECENTLY_VIEWED = 'ADD_RECENTLY_VIEWED';
 export const SET_CATALOGUE_AND_CACHE = 'SET_CATALOGUE_AND_CACHE';
 export const UPDATE_CATALOGUE_LOADERS = 'UPDATE_CATALOGUE_LOADERS';
+export const SET_METHOD: string = 'SET_METHOD';
 
 const add: Add = (currentItem, nextItem) => [
   ...(currentItem || []),
@@ -62,6 +63,8 @@ export const catalogueReducer: CatalogueReducer = (
       return newState;
     case SET_CATALOGUE_FROM_CACHE:
       return { ...newState, ...cache };
+    case SET_METHOD:
+      return { ...newState, method };
     default:
       return state;
   }

@@ -56,7 +56,7 @@ export interface IMethodCourse {
   published_on: string;
   xp: number;
   total_xp: number;
-  instructors: any;
+  instructors: IInstructor[];
   next_lesson: any;
   next_lesson_url: string;
   total_length_in_seconds: number;
@@ -79,20 +79,4 @@ interface IVideo {
   file: string;
   height: number;
   width: number;
-}
-
-export interface MethodState {
-  method?: IMethod;
-  level?: ILevel;
-  refreshing: boolean;
-}
-
-interface MethodAction {
-  type: string;
-  method?: IMethod;
-  level?: ILevel;
-  refreshing?: boolean;
-}
-export interface MethodReducer {
-  (state: MethodState, action: MethodAction): MethodState;
 }

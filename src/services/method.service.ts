@@ -11,7 +11,7 @@ export const methodService = {
   getLevel: function (url: string, signal: AbortSignal) {
     return call({ url, signal });
   },
-  getLevelCourse: function (
+  getMethodCourse: function (
     url: string,
     signal: AbortSignal,
     forDownload: boolean

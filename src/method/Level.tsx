@@ -19,11 +19,6 @@ import { ThemeContext } from '../state/theme/ThemeContext';
 import { utils } from '../utils';
 import { themeStyles } from '../themeStyles';
 import { NextLesson } from '../commons/NextLesson';
-import {
-  methodReducer,
-  SET_LEVEL,
-  UPDATE_METHOD_LOADERS
-} from '../state/method/MethodReducer';
 import { methodService } from '../services/method.service';
 import { CardsContext } from '../state/cards/CardsContext';
 import type { ILevel, IMethodCourse } from '../state/method/MethodInterfaces';
@@ -40,11 +35,9 @@ export const Level: React.FC<ILevelProps> = ({ mobile_app_url }) => {
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
-  const [{ level, refreshing }, dispatch] = useReducer(methodReducer, {
-    refreshing: true
-  });
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [isAddedToMyList, setIsAddedToMyList] = useState(false);
+  const [level, setLevel] = useState({} as ILevel);
+  const [refreshing, setRefreshing] = useState(false);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
 
@@ -56,14 +49,14 @@ export const Level: React.FC<ILevelProps> = ({ mobile_app_url }) => {
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
-    setLevel();
+    getLevel();
     return () => {
       isMounted.current = false;
       abortC.current.abort();
     };
   }, []);
 
-  const setLevel = (): Promise<void> =>
+  const getLevel = (): Promise<void> =>
     methodService
       .getLevel(mobile_app_url, abortC.current.signal)
       .then(levelRes => {
@@ -71,41 +64,34 @@ export const Level: React.FC<ILevelProps> = ({ mobile_app_url }) => {
           const castLevel: ILevel = levelRes as ILevel;
           addCards([castLevel.next_lesson]);
           addCards(castLevel.courses);
-          setIsAddedToMyList(castLevel.is_added_to_primary_playlist);
-          dispatch({
-            type: SET_LEVEL,
-            level: castLevel,
-            refreshing: false
-          });
+          setLevel(castLevel);
+          setRefreshing(false);
         }
       });
 
   const refresh = () => {
     abortC.current.abort();
     abortC.current = new AbortController();
-    dispatch({
-      type: UPDATE_METHOD_LOADERS,
-      refreshing: true
-    });
-    setLevel();
+    setRefreshing(true);
+    getLevel();
   };
 
   const toggleMyList = useCallback(() => {
     if (level) {
-      if (isAddedToMyList) {
+      if (level.is_added_to_primary_playlist) {
         if (showRemoveModal) {
           userService.removeFromMyList(level.id);
           setShowRemoveModal(false);
-          setIsAddedToMyList(false);
+          setLevel({ ...level, is_added_to_primary_playlist: false });
         } else {
           setShowRemoveModal(true);
         }
       } else {
         userService.addToMyList(level.id);
-        setIsAddedToMyList(true);
+        setLevel({ ...level, is_added_to_primary_playlist: true });
       }
     }
-  }, [level, isAddedToMyList, showRemoveModal]);
+  }, [level.is_added_to_primary_playlist, showRemoveModal]);
 
   return (
     <View style={styles.container}>
@@ -128,7 +114,7 @@ export const Level: React.FC<ILevelProps> = ({ mobile_app_url }) => {
           >
             <LevelBanner
               {...level}
-              is_added_to_primary_playlist={isAddedToMyList}
+              is_added_to_primary_playlist={level.is_added_to_primary_playlist}
               onToggleMyList={toggleMyList}
               onMainBtnPress={() => {}}
             />
