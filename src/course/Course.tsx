@@ -440,7 +440,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginRight: 15,
       marginLeft: 15,
       padding: 5,
-      fontSize: 24,
+      fontSize: utils.figmaFontSizeScaler(24),
       fontFamily: 'OpenSans-Bold',
       color: current.textColor
     },
@@ -474,7 +474,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       flex: 1,
       paddingVertical: 10,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans-Semibold',
       color: current.contrastTextColor
     },
@@ -487,25 +487,25 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     detailText: {
       color: current.textColor,
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold'
     },
     underDetailText: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans',
       color: current.textColor
     },
     belowIconText: {
       marginTop: 5,
       color: current.textColor,
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans'
     },
     emptyListText: {
       textAlign: 'center',
       marginTop: 100,
       color: utils.color,
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     },
     rowCardContainer: {
@@ -514,7 +514,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     myListText: {
       color: utils.color,
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans'
     },
     mainBtn: {
@@ -530,7 +530,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     mainBtnText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: 'white',
       marginLeft: 10
     }

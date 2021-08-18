@@ -12,6 +12,13 @@ export const userService = {
       signal
     });
   },
+  changeNotificationSettings: function (body: any) {
+    return call({
+      url: `/usora/api/profile/update`,
+      method: 'POST',
+      body
+    });
+  },
   addToMyList: function (id: number) {
     return call({
       url: `/api/railcontent/add-to-my-list?content_id=${id}`,

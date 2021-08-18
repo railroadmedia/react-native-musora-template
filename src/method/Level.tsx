@@ -171,7 +171,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginTop: 100,
       color: utils.color,
       height: '100%',
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     }
   });

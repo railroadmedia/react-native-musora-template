@@ -175,7 +175,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     levelTitle: {
       color: current.textColor,
-      fontSize: 50,
+      fontSize: utils.figmaFontSizeScaler(50),
       fontFamily: 'OpenSans-Bold',
       textAlign: 'center'
     },
