@@ -119,7 +119,6 @@ export const Course: React.FC<CourseProps> = ({ isMethod, mobile_app_url }) => {
   const handleBackPress = (): void => {};
 
   const likeOrDislikeContent = useCallback(() => {
-    console.log(course);
     if (course.is_liked_by_current_user) {
       userService.dislikeContent(course.id);
       setCourse({

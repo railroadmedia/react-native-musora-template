@@ -1,19 +1,10 @@
 import React, { useCallback, useContext, useEffect, useReducer } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Switch,
-  Animated
-} from 'react-native';
+import { View, Text, ScrollView, StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { utils } from '../utils';
 import { themeStyles } from '../themeStyles';
 import { UserContext } from '../state/user/UserContext';
-import { profileReducer } from '../state/profile/ProfileReducer';
 import { userService } from '../services/user.service';
 import { CustomSwitch } from '../commons/CustomSwitch';
 
@@ -21,15 +12,11 @@ interface NotificationSettingsProps {}
 
 export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
   const { theme } = useContext(ThemeContext);
-  const { user: cachedUser } = useContext(UserContext);
-  const [{ user }] = useReducer(profileReducer, {
-    user: cachedUser
-  });
+  const { user, updateUser } = useContext(UserContext);
   const {
     notify_weekly_update,
     notify_on_lesson_comment_reply,
     notify_on_lesson_comment_like,
-    notify_on_forum_followed_thread_reply,
     notify_on_forum_post_like,
     notify_on_forum_post_reply,
     notifications_summary_frequency_minutes
@@ -46,20 +33,19 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
       notify_weekly_update,
       notify_on_lesson_comment_reply,
       notify_on_lesson_comment_like,
-      notify_on_forum_followed_thread_reply,
       notify_on_forum_post_like,
-      notify_on_forum_post_reply
+      notify_on_forum_post_reply,
+      notifications_summary_frequency_minutes
     } = data;
-
-    // this.props.setLoggedInUser({
-    //   ...this.props.user,
-    //   notify_weekly_update,
-    //   notify_on_lesson_comment_reply,
-    //   notify_on_lesson_comment_like,
-    //   notify_on_forum_followed_thread_reply,
-    //   notify_on_forum_post_like,
-    //   notify_on_forum_post_reply
-    // });
+    updateUser({
+      ...user,
+      notify_weekly_update,
+      notify_on_lesson_comment_reply,
+      notify_on_lesson_comment_like,
+      notify_on_forum_post_like,
+      notify_on_forum_post_reply,
+      notifications_summary_frequency_minutes
+    });
 
     const body = {
       data: {
@@ -89,9 +75,9 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
               changeNotificationStatus({
                 notify_on_lesson_comment_reply,
                 notify_on_lesson_comment_like,
-                notify_on_forum_followed_thread_reply,
                 notify_on_forum_post_like,
                 notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes,
                 notify_weekly_update: !notify_weekly_update
               })
             }
@@ -108,9 +94,9 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
               changeNotificationStatus({
                 notify_weekly_update,
                 notify_on_lesson_comment_like,
-                notify_on_forum_followed_thread_reply,
                 notify_on_forum_post_like,
                 notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes,
                 notify_on_lesson_comment_reply: !notify_on_lesson_comment_reply
               })
             }
@@ -127,9 +113,9 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
               changeNotificationStatus({
                 notify_weekly_update,
                 notify_on_lesson_comment_reply,
-                notify_on_forum_followed_thread_reply,
                 notify_on_forum_post_like,
                 notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes,
                 notify_on_lesson_comment_like: !notify_on_lesson_comment_like
               })
             }
@@ -147,8 +133,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
                 notify_weekly_update,
                 notify_on_lesson_comment_reply,
                 notify_on_lesson_comment_like,
-                notify_on_forum_followed_thread_reply,
                 notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes,
                 notify_on_forum_post_like: !notify_on_forum_post_like
               })
             }
@@ -166,8 +152,8 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
                 notify_weekly_update,
                 notify_on_lesson_comment_reply,
                 notify_on_lesson_comment_like,
-                notify_on_forum_followed_thread_reply,
                 notify_on_forum_post_like,
+                notifications_summary_frequency_minutes,
                 notify_on_forum_post_reply: !notify_on_forum_post_reply
               })
             }
@@ -177,11 +163,20 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
         <View style={styles.textContainer}>
           <Text style={styles.text}>Immediate</Text>
           <CustomSwitch
-            value={notifications_summary_frequency_minutes == null}
+            value={notifications_summary_frequency_minutes === null}
             width={40}
             height={20}
             showIcon={true}
-            onSlide={() => {}}
+            onSlide={(isOn?: boolean) =>
+              changeNotificationStatus({
+                notify_weekly_update,
+                notify_on_lesson_comment_reply,
+                notify_on_lesson_comment_like,
+                notify_on_forum_post_like,
+                notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes: isOn ? null : 1440
+              })
+            }
           />
         </View>
         <View style={styles.textContainer}>
@@ -191,7 +186,16 @@ export const NotificationSettings: React.FC<NotificationSettingsProps> = () => {
             width={40}
             height={20}
             showIcon={true}
-            onSlide={() => {}}
+            onSlide={(isOn?: boolean) =>
+              changeNotificationStatus({
+                notify_weekly_update,
+                notify_on_lesson_comment_reply,
+                notify_on_lesson_comment_like,
+                notify_on_forum_post_like,
+                notify_on_forum_post_reply,
+                notifications_summary_frequency_minutes: isOn ? 1440 : null
+              })
+            }
           />
         </View>
       </ScrollView>

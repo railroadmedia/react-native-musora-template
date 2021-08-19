@@ -37,11 +37,13 @@ import { AnimatedCustomAlert } from '../commons/AnimatedCustomAlert';
 import { Loading } from '../commons/Loading';
 import { UserContext } from '../state/user/UserContext';
 import { profileReducer } from '../state/profile/ProfileReducer';
+import { ProfileSettings } from './ProfileSettings';
 
 interface SettingsProps {}
 
 export const Settings: React.FC<SettingsProps> = () => {
   const [alertBtnText, setAlertBtnText] = useState('');
+  const [showProfileSettings, setShowProfileSettings] = useState(true);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { user: cachedUser } = useContext(UserContext);
   const [{ user }] = useReducer(profileReducer, {
@@ -61,8 +63,8 @@ export const Settings: React.FC<SettingsProps> = () => {
   const navigationItems = useMemo(() => {
     return [
       { title: 'Profile Settings', icon: profile({ icon: iconStyle }) },
-      { title: 'Notification Settings', icon: bell({ icon: iconStyle }) },
-      { title: 'Support', icon: phone({ icon: iconStyle }) },
+      { title: 'Notification Settings', icon: bell({ icon: iconStyle }) }, //done
+      { title: 'Support', icon: phone({ icon: iconStyle }) }, //done
       { title: 'Manage Subscription', icon: folder({ icon: iconStyle }) }, // done
       { title: 'Terms of Use', icon: termsOfUse({ icon: iconStyle }) }, // done
       { title: 'Privacy Policy', icon: privacy({ icon: iconStyle }) }, // done
@@ -78,10 +80,10 @@ export const Settings: React.FC<SettingsProps> = () => {
   const onButtonPress = useCallback((title: string) => {
     if (title === 'Manage Subscription') manageSubscription();
     else if (title === 'Restore Purchases') restorePurchases();
+    else if (title === 'Profile Settings') setShowProfileSettings(true);
   }, []);
 
   const manageSubscription = useCallback(() => {
-    console.log('manageSubscription');
     let { isAppleAppSubscriber, isGoogleAppSubscriber } = user || {};
     if (utils.isiOS) {
       if (isAppleAppSubscriber) {
@@ -214,6 +216,9 @@ export const Settings: React.FC<SettingsProps> = () => {
           <Text style={styles.additionalBtnText}>OK</Text>
         </TouchableOpacity>
       </AnimatedCustomAlert>
+      {showProfileSettings && (
+        <ProfileSettings closeModal={() => setShowProfileSettings(false)} />
+      )}
     </View>
   );
 };

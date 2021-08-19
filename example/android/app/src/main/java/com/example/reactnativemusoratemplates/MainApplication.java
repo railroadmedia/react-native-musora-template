@@ -19,6 +19,8 @@ import com.learnium.RNDeviceInfo.RNDeviceInfo;
 import org.wonday.orientation.OrientationPackage;
 import org.wonday.orientation.OrientationActivityLifecycle;
 import com.vonovak.AddCalendarEventPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -41,6 +43,8 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNDeviceInfo());
           packages.add(new OrientationPackage());
           packages.add(new AddCalendarEventPackage());
+          packages.add(new ImagePickerPackage());
+          packages.add(new PickerPackage());
           
           return packages;
         }
