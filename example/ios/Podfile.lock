@@ -320,6 +320,15 @@ PODS:
     - React-Core
   - RNGestureHandler (1.10.3):
     - React-Core
+  - RNImageCropPicker (0.36.2):
+    - React-Core
+    - React-RCTImage
+    - RNImageCropPicker/QBImagePickerController (= 0.36.2)
+    - TOCropViewController
+  - RNImageCropPicker/QBImagePickerController (0.36.2):
+    - React-Core
+    - React-RCTImage
+    - TOCropViewController
   - RNKeychain (7.0.0):
     - React-Core
   - RNReanimated (2.2.0):
@@ -356,6 +365,7 @@ PODS:
     - React-RCTImage
   - RNSVG (12.1.1):
     - React
+  - TOCropViewController (2.6.0)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -413,6 +423,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../../node_modules/@react-native-async-storage/async-storage`)"
   - RNDeviceInfo (from `../../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
+  - RNImageCropPicker (from `../../node_modules/react-native-image-crop-picker`)
   - RNKeychain (from `../../node_modules/react-native-keychain`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -434,6 +445,7 @@ SPEC REPOS:
     - FlipperKit
     - libevent
     - OpenSSL-Universal
+    - TOCropViewController
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -499,6 +511,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/react-native-device-info"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
+  RNImageCropPicker:
+    :path: "../../node_modules/react-native-image-crop-picker"
   RNKeychain:
     :path: "../../node_modules/react-native-keychain"
   RNReanimated:
@@ -555,13 +569,15 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8324611026e8dc3706f829953aa6e3899f581589
   RNDeviceInfo: 93e4281fb95d158efdeccd7112277e44a098e63b
   RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
+  RNImageCropPicker: 35a3ceb837446fa11547704709bb22b5fac6d584
   RNKeychain: f75b8c8b2f17d3b2aa1f25b4a0ac5b83d947ff8f
   RNReanimated: d9da990fc90123f4ffbfdda93d00fc15174863a8
   RNScreens: 01ab149b5dd5c27f5ff26741b1d2bdf2cee1af35
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
+  TOCropViewController: 3105367e808b7d3d886a74ff59bf4804e7d3ab38
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: c99ac9af082a85f9fe65f57f64793e9e2ed528a8
+PODFILE CHECKSUM: ede9ef89c871f4b92af3645492cefcb9e1ece2b6
 
 COCOAPODS: 1.10.1

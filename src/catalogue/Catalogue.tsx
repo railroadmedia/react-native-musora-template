@@ -18,7 +18,7 @@ import { provider } from '../services/catalogueSceneProvider.service';
 import {
   ADD_ALL,
   SET_CATALOGUE_FROM_CACHE,
-  SET_CATALOGUE_AND_CACHE,
+  SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
   UPDATE_CATALOGUE_LOADERS
 } from '../state/catalogue/CatalogueReducer';
@@ -90,7 +90,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         if (isMounted.current) {
           addCardsAndCache(all?.data);
           dispatch({
-            type: SET_CATALOGUE_AND_CACHE,
+            type: SET_CATALOGUE_THEN_CACHE,
             scene,
             method: method as IMethod,
             all: all?.data,

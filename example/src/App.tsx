@@ -173,6 +173,17 @@ export default function App() {
                   >
                     {props => <Catalogue {...props} scene='forum' />}
                   </Stack.Screen>
+                  <Stack.Screen
+                    name='courses'
+                    listeners={{
+                      focus: () => {
+                        BottomNav.changeActiveBtn?.();
+                        BottomNav.setVisibility?.(true);
+                      }
+                    }}
+                  >
+                    {props => <Catalogue {...props} scene='courses' />}
+                  </Stack.Screen>
                 </Stack.Navigator>
               </NavigationContainer>
               <BottomNav
@@ -188,7 +199,10 @@ export default function App() {
                   navigate('forum');
                   BottomNav.setVisibility?.(true);
                 }}
-                onMenuPress={() => {}}
+                onMenuPress={() => {
+                  navigate('courses');
+                  BottomNav.setVisibility?.(true);
+                }}
               />
             </>
           )}
