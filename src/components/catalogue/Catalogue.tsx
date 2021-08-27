@@ -29,6 +29,7 @@ import { utils } from '../../utils';
 import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
+import RowCard from '../../common_components/cards/RowCard';
 
 interface Props {
   scene: string;
@@ -175,9 +176,10 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   );
 
   const renderFLItem = ({ item }: { item: number }) => (
-    <View style={{ height: 50, backgroundColor: 'red', marginVertical: 5 }}>
-      <Text>{item}</Text>
-    </View>
+    // <View style={{ height: 50, backgroundColor: 'red', marginVertical: 5 }}>
+    //   <Text>{item}</Text>
+    // </View>
+    <RowCard id={item} route={scene} />
   );
 
   const renderFLEmpty = () => (
@@ -236,7 +238,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         });
     });
   };
-  // Brau user pe home tableta mai multe info
+
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <FlatList

@@ -47,12 +47,11 @@ export const Profile: React.FC = () => {
   const [flHeaderHeight, setFLHeaderHeight] = useState(0);
 
   const { headerNavHeight } = useContext(HeaderContext);
-  const { user: cachedUser, updateUserAndCache } = useContext(UserContext);
+  const { user, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
 
-  const [{ notifications, user, loadingMore, refreshing }, dispatchProfile] =
+  const [{ notifications, loadingMore, refreshing }, dispatchProfile] =
     useReducer(profileReducer, {
-      user: cachedUser,
       notifications: [],
       loadingMore: false,
       refreshing: true
@@ -89,7 +88,6 @@ export const Profile: React.FC = () => {
           type: SET_PROFILE,
           loadingMore: false,
           refreshing: false,
-          user: userDetails,
           notifications: data || []
         });
       }

@@ -37,7 +37,7 @@ export const Method: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
-  const { user: cachedUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -45,10 +45,6 @@ export const Method: React.FC = () => {
   const [{ method, refreshing }, dispatch] = useReducer(catalogueReducer, {
     refreshing: true,
     loadingMore: false
-  });
-
-  const [{ user }] = useReducer(profileReducer, {
-    user: cachedUser
   });
 
   let styles = setStyles(theme);
