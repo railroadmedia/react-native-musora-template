@@ -1,4 +1,4 @@
 import { createContext } from 'react';
-import type { IUserContext } from './UserInterfaces';
+import type { UserContext as I_UserContext } from '../../interfaces/user.interfaces';
 
-export const UserContext = createContext(<IUserContext>{});
+export const UserContext = createContext(<I_UserContext>{});

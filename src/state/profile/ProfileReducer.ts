@@ -2,7 +2,7 @@ import type {
   ProfileReducer,
   UpdateNotif,
   UpdateUser
-} from './ProfileInterfaces';
+} from '../../interfaces/profile.interfaces';
 
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SET_PROFILE = 'SET_PROFILE';

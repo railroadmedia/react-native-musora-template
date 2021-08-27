@@ -1,31 +1,24 @@
+import type { MethodService } from '../interfaces/service.interfaces';
 import { utils } from '../utils';
 import { call } from './auth.service';
 
-export const methodService = {
-  getMethod: function (signal: AbortSignal) {
+export const methodService: MethodService = {
+  getMethod: function (signal) {
     return call({
       url: `/musora-api/learning-paths/${utils.brand}-method`,
       signal
     });
   },
-  getLevel: function (url: string, signal: AbortSignal) {
+  getLevel: function (url, signal) {
     return call({ url, signal });
   },
-  getMethodCourse: function (
-    url: string,
-    signal: AbortSignal,
-    forDownload: boolean
-  ) {
+  getMethodCourse: function (url, signal, forDownload) {
     return call({
       url: forDownload ? url + '?download=true' : url,
       signal
     });
   },
-  getContent: function (
-    url: string,
-    signal: AbortSignal,
-    forDownload: boolean
-  ) {
+  getContent: function (url, signal, forDownload) {
     return call({
       url: forDownload ? url + '?download=true' : url,
       signal

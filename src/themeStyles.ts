@@ -1,20 +1,10 @@
+import type { Theme } from './interfaces/theme.interfaces';
+
 export const LIGHT = 'LIGHT';
 export const DARK = 'DARK';
 export const OTHER = 'OTHER';
 
-interface Themes {
-  [theme: string]: {
-    background?: string;
-    textColor?: string;
-    iconColor?: string;
-    headerNavColor?: string;
-    contrastBackground?: string;
-    contrastTextColor?: string;
-    borderColor?: string;
-    textBoxColor?: string;
-  };
-}
-export const themeStyles: Themes = {
+export const themeStyles: Theme = {
   [LIGHT]: {
     background: 'white',
     textColor: 'black',

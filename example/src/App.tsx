@@ -159,7 +159,7 @@ export default function App() {
                       }
                     }}
                   >
-                    {props => <Profile {...props} />}
+                    {props => <Profile />}
                   </Stack.Screen>
                   <Stack.Screen
                     name='forum'

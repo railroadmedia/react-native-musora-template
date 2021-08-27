@@ -1,5 +1,4 @@
 import { createContext } from 'react';
+import type { CardsContext as I_CardsContext } from '../../interfaces/card.interfaces';
 
-import type { ICardsContext } from './CardsInterfaces';
-
-export const CardsContext = createContext(<ICardsContext>{});
+export const CardsContext = createContext(<I_CardsContext>{});

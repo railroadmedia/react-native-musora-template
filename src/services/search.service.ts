@@ -1,10 +1,9 @@
+import type { SearchService } from '../interfaces/service.interfaces';
 import { utils } from '../utils';
 import { call } from './auth.service';
 
-import type { Args } from './interfaces';
-
-export const searchService = {
-  search: function (term: string, { page, filters, signal }: Args) {
+export const searchService: SearchService = {
+  search: function (term, { page, filters, signal }) {
     return call({
       url: `/musora-api/search?limit=10&page=${
         page || 1

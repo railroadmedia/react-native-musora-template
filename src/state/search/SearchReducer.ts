@@ -1,10 +1,13 @@
-import type { Add, SearchReducer } from './SearchInterfaces';
+import type {
+  AddSearch,
+  SearchReducer
+} from '../../interfaces/search.interfaces';
 
 export const ADD_SEARCH = 'ADD_SEARCH';
 export const SET_SEARCH = 'SET_SEARCH';
 export const UPDATE_SEARCH_LOADERS = 'UPDATE_SEARCH_LOADERS';
 
-const add: Add = (currentItem, nextItem) => [
+const add: AddSearch = (currentItem, nextItem) => [
   ...(currentItem || []),
   ...(nextItem || []).map(ni => ni.id)
 ];

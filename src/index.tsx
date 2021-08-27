@@ -2,14 +2,14 @@ export * from './utils';
 
 export * from './services/exporter';
 
-export * from './catalogue/Catalogue';
-export * from './myList/MyList';
-export * from './downloads/Downloads';
-export * from './profile/Profile';
-export * from './search/Search';
-export * from './header/Header';
-export * from './header/BackHeader';
-export * from './header/MainHeader';
-export * from './bottomNav/BottomNav';
+export * from './components/catalogue/Catalogue';
+export * from './components/myList/MyList';
+export * from './components/downloads/Downloads';
+export * from './components/profile/Profile';
+export * from './components/search/Search';
+export * from './components/header/Header';
+export * from './components/header/BackHeader';
+export * from './components/header/MainHeader';
+export * from './components/bottomNav/BottomNav';
 
 export * from './state/Store';

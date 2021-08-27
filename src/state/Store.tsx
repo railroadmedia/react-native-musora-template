@@ -23,7 +23,8 @@ import {
   cardsReducer,
   UPDATE_CARD
 } from './cards/CardsReducer';
-import type { Card } from './cards/CardsInterfaces';
+import { methodReducer } from './method/MethodReducer';
+import type { Card } from '../interfaces/card.interfaces';
 
 export const State: React.FC = props => {
   const [theme, setTheme] = useState('');
@@ -33,6 +34,7 @@ export const State: React.FC = props => {
   );
   const [cards, dispatchCards] = useReducer(cardsReducer, {});
   const [user, dispatchUser] = useReducer(userReducer, {});
+  // const [method, dispatchMethod] = useReducer(methodReducer, {});
 
   useEffect(() => {
     Orientation.addOrientationListener(updateOrientation);

@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import type { Add, CatalogueReducer } from './CatalogueInterfaces';
+import type {
+  CatalogueAdd,
+  CatalogueReducer
+} from '../../interfaces/catalogue.interfaces';
 
 export const SET_CATALOGUE_FROM_CACHE = 'SET_CATALOGUE_FROM_CACHE';
 export const ADD_ALL = 'ADD_ALL';
@@ -11,7 +13,7 @@ export const SET_CATALOGUE_THEN_CACHE = 'SET_CATALOGUE_THEN_CACHE';
 export const UPDATE_CATALOGUE_LOADERS = 'UPDATE_CATALOGUE_LOADERS';
 export const SET_METHOD: string = 'SET_METHOD';
 
-const add: Add = (currentItem, nextItem) => [
+const add: CatalogueAdd = (currentItem, nextItem) => [
   ...(currentItem || []),
   ...(nextItem || []).map(ni => ni.id)
 ];

@@ -2,10 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { call } from './auth.service';
 
-import type { Args } from './interfaces';
+import type { SceneService } from '../interfaces/service.interfaces';
 
-export const coursesService = {
-  getAll: function ({ page, filters, sort, signal }: Args) {
+export const coursesService: SceneService = {
+  getAll: function ({ page, filters, sort, signal }) {
     return call({
       url: `/musora-api/all?included_types[]=course&statuses[]=published&statuses[]=scheduled&future&sort=${
         sort || '-published_on'
@@ -13,7 +13,7 @@ export const coursesService = {
       signal
     });
   },
-  getInProgress: function ({ page, filters, sort, signal }: Args) {
+  getInProgress: function ({ page, filters, sort, signal }) {
     return call({
       url: `/musora-api/in-progress?included_types[]=course&limit=40&sort=${
         sort || '-published_on'
@@ -21,7 +21,7 @@ export const coursesService = {
       signal
     });
   },
-  getNew: function ({ page, filters, sort, signal }: Args) {
+  getNew: function ({ page, filters, sort, signal }) {
     return call({
       url: `/musora-api/all?included_types[]=course&limit=40&sort=${
         sort || '-published_on'
@@ -29,11 +29,13 @@ export const coursesService = {
       signal
     });
   },
-  getCatalogue: function (params: Args) {
+  getCatalogue: function (params) {
     return Promise.all([
       this.getAll(params),
-      this.getNew(params),
-      this.getInProgress(params)
+      this.getNew?.(params),
+      this.getInProgress?.(params),
+      undefined,
+      undefined
     ]);
   },
   getCache: async function () {

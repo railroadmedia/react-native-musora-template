@@ -3,39 +3,20 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
-import type { IUserContext } from '../state/user/UserInterfaces';
+import type { Method } from '../interfaces/method.interfaces';
+
+import type {
+  Authenticate,
+  Call,
+  CatalogueSection
+} from '../interfaces/service.interfaces';
+import type { User } from '../interfaces/user.interfaces';
 
 import { utils } from '../utils';
 
 let token = '';
 
-interface Auth {
-  (email?: string, password?: string, purchases?: []): Promise<{
-    token?: string;
-    userId?: number;
-    isEdge?: boolean;
-    title?: string;
-    message?: string;
-  }>;
-}
-
-export interface Response {
-  title?: string;
-  message?: string;
-  data?: [];
-  meta?: any;
-}
-
-interface Call {
-  ({}: {
-    url: string;
-    method?: string;
-    signal?: AbortSignal;
-    body?: {};
-  }): Promise<Response & IUserContext['user']>;
-}
-
-const authenticate: Auth = async function (email, password, purchases) {
+const authenticate: Authenticate = async function (email, password, purchases) {
   try {
     if (!email || !password) {
       let cred = await getGenericPassword();

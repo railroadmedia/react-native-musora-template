@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-import type { Add, MyListReducer } from './MyListInterfaces';
+import type {
+  AddMyList,
+  MyListReducer
+} from '../../interfaces/myList.interfaces';
 
 export const SET_MY_LIST_FROM_CACHE: string = 'SET_MY_LIST_FROM_CACHE';
 export const SET_IN_PROGRESS: string = 'SET_IN_PROGRESS';
@@ -14,7 +16,7 @@ export const ADD_IN_PROGRESS: string = 'ADD_IN_PROGRESS';
 export const SET_MY_LIST_AND_CACHE: string = 'SET_MY_LIST_AND_CACHE';
 export const UPDATE_MY_LIST_LOADERS: string = 'UPDATE_MY_LIST_LOADERS';
 
-const add: Add = (currentItem, nextItem) => [
+const add: AddMyList = (currentItem, nextItem) => [
   ...(currentItem || []),
   ...(nextItem || []).map(ni => ni.id)
 ];
