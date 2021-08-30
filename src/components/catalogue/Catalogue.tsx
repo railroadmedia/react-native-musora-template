@@ -88,7 +88,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
         if (isMounted.current) {
-          addCardsAndCache(all?.data);
+          addCardsAndCache(
+            all?.data
+              ?.concat(newContent?.data || [])
+              .concat(inProgress?.data || [])
+              .concat(recentlyViewed?.data || [])
+          );
           dispatch({
             type: SET_CATALOGUE_THEN_CACHE,
             scene,
@@ -176,9 +181,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   );
 
   const renderFLItem = ({ item }: { item: number }) => (
-    // <View style={{ height: 50, backgroundColor: 'red', marginVertical: 5 }}>
-    //   <Text>{item}</Text>
-    // </View>
     <RowCard id={item} route={scene} />
   );
 

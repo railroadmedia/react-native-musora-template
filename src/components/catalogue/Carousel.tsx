@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { FlatList, View } from 'react-native';
+import SliderCard from '../../common_components/cards/SliderCard';
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import { utils } from '../../utils';
 
@@ -30,13 +31,7 @@ export const Carousel: React.FC<Props> = ({ items }) => {
       renderItem={({ item, index }) => (
         <View style={{ width: `${100 / items?.length}%` }}>
           <View style={{ width: `${100 * items?.length}%` }}>
-            <View
-              style={{
-                width: '99%',
-                aspectRatio: 16 / 9,
-                backgroundColor: 'red'
-              }}
-            />
+            <SliderCard id={item} route={'home'} />
           </View>
         </View>
       )}
