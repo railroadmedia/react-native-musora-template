@@ -8,7 +8,7 @@ export const homeService: SceneService = {
   },
   getAll: function ({ page, filters, sort, signal }) {
     return call({
-      url: `/musora-api/all?limit=40&statuses[]=published&included_types[]=coach-stream&included_types[]=course&included_types[]=play-along&included_types[]=song&included_types[]=student-focus&included_types[]=semester-pack&included_types[]=pack&included_types[]=learning-path&included_types[]=shows&sort=${
+      url: `/musora-api/all?limit=40&statuses[]=published&included_types[]=coach-stream&included_types[]=course&included_types[]=play-along&included_types[]=student-focus&included_types[]=semester-pack&included_types[]=pack&included_types[]=learning-path&included_types[]=shows&sort=${
         sort || '-published_on'
       }&page=${page || 1}${filters || ''}`,
       signal
