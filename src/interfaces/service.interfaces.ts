@@ -1,7 +1,12 @@
 import type { Card } from './card.interfaces';
 import type { Level, Method, MethodCourse } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
-import type { BannerPack, Pack } from './packs.interfaces';
+import type {
+  BannerPack,
+  Pack,
+  PackBundle,
+  PackLessonBundle
+} from './packs.interfaces';
 import type { User, UserAvatar } from './user.interfaces';
 
 export interface CatalogueSection {
@@ -132,7 +137,10 @@ export interface SearchService {
 
 export interface PacksService {
   allPacks: (signal: AbortSignal) => Promise<PacksSection>;
-  getPack: (url: string, signal: AbortSignal) => Promise<{}>;
+  getPack: (
+    url: string,
+    signal: AbortSignal
+  ) => Promise<PackBundle | PackLessonBundle>;
   getContent: (
     url: string,
     getLessonsVideos: boolean,

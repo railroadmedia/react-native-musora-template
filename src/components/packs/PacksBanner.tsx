@@ -1,9 +1,3 @@
-/**
- * PROPS:  bannerDetails, isFullScreen
- * bannerDetails: @object that contains all the fields that are displayed on the banner
- * isFullScreen: @boolean that tells if the banner should be in full screen
- */
-
 import React, {
   useCallback,
   useContext,
@@ -94,31 +88,30 @@ export const PacksBanner: React.FC<Props> = ({
     setShowInfo(!showInfo);
   }, [showInfo]);
 
-  const renderColoredBtn = () => (
-    <TouchableOpacity
-      style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : {}]}
-      onPress={onMainBtnClick}
-    >
-      {!is_owned
-        ? plus({ icon: iconStyle })
-        : started && !completed
-        ? play({ icon: iconStyle })
-        : completed
-        ? reset({ icon: iconStyle })
-        : null}
-      <Text style={styles.buttonText} numberOfLines={2}>
+  const renderColoredBtn = () => {
+    console.log(started, completed);
+    return (
+      <TouchableOpacity
+        style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : { flex: 1 }]}
+        onPress={onMainBtnClick}
+      >
         {!is_owned
-          ? isMainPacksPage
-            ? 'SEE DETAILS'
-            : 'PURCHASE TRAINING PACK'
-          : started && !completed
-          ? 'NEXT LESSON'
-          : completed
-          ? 'RESTART'
-          : ''}
-      </Text>
-    </TouchableOpacity>
-  );
+          ? plus({ icon: iconStyle })
+          : !completed
+          ? play({ icon: iconStyle })
+          : reset({ icon: iconStyle })}
+        <Text style={styles.buttonText} numberOfLines={2}>
+          {!is_owned
+            ? isMainPacksPage
+              ? 'SEE DETAILS'
+              : 'PURCHASE TRAINING PACK'
+            : !completed
+            ? 'NEXT LESSON'
+            : 'RESTART'}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <>
