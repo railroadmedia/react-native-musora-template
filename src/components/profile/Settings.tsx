@@ -45,10 +45,7 @@ export const Settings: React.FC<Props> = () => {
   const [alertBtnText, setAlertBtnText] = useState('');
   const [showProfileSettings, setShowProfileSettings] = useState(true);
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const { user: cachedUser } = useContext(UserContext);
-  const [{ user }] = useReducer(profileReducer, {
-    user: cachedUser
-  });
+  const { user } = useContext(UserContext);
   const loadingRef = createRef<any>();
   const animatedAlert = createRef<any>();
   const restoreAlert = createRef<any>();

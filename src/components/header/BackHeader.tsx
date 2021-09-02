@@ -8,19 +8,23 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { back, settings } from '../../images/svgs';
 import { utils } from '../../utils';
 import { HeaderContext } from '../../state/header/HeaderContext';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {
-  onBack: Function;
   title: string;
   transparent?: boolean;
-  onSettings?: Function;
+  settingsVisible?: boolean;
 }
 export const BackHeader: React.FC<Props> = ({
-  onBack,
   title,
   transparent,
-  onSettings
+  settingsVisible
 }) => {
+  const { navigate, goBack } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string) => void;
+    }
+  >();
   let { top, left, right } = useSafeAreaInsets();
   const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
@@ -60,13 +64,13 @@ export const BackHeader: React.FC<Props> = ({
             paddingVertical: 7.5,
             paddingRight: 20
           },
-          onPress: onBack
+          onPress: goBack
         })}
-        {!!onSettings &&
+        {!!settingsVisible &&
           settings({
             icon: { height: 20, fill: themeStyles[theme].headerNavColor },
             container: { paddingVertical: 7.5, paddingLeft: 20 },
-            onPress: onSettings
+            onPress: () => navigate('settings')
           })}
       </View>
     </View>
@@ -88,6 +92,7 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       position: 'absolute',
       alignSelf: 'center',
       width: '100%',
-      textAlign: 'center'
+      textAlign: 'center',
+      textTransform: 'capitalize'
     }
   });

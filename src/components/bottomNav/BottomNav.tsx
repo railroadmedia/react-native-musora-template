@@ -1,4 +1,7 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NavigationProp } from '@react-navigation/native';
 import React, { useContext, useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -12,17 +15,18 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 
 interface Props {
-  onHomePress: Function;
-  onSearchPress: Function;
-  onForumPress: Function;
-  onMenuPress: Function;
+  visibleOn: string[];
 }
+export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
+  const { addListener, navigate, getCurrentRoute } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      getCurrentRoute: () => { name: string };
+      navigate: (scene: string) => void;
+    }
+  >();
 
-export const BottomNav: React.FC<Props> & {
-  changeActiveBtn?: (btnName?: 'home' | 'search' | 'forum' | 'menu') => void;
-  setVisibility?: (visible: boolean) => void;
-} = ({ onHomePress, onSearchPress, onForumPress, onMenuPress }) => {
   const { bottom, left, right } = useSafeAreaInsets();
+
   const translateX = useRef(new Animated.Value(0));
   const scaleX = useRef(new Animated.Value(0));
   const translateY = useRef(new Animated.Value(300));
@@ -37,9 +41,17 @@ export const BottomNav: React.FC<Props> & {
   const homeIndexCorespondent: { [key: string]: number } = {
     home: 0,
     search: 1,
-    forum: 2,
-    menu: 3
+    forum: 2
   };
+
+  let navListener;
+  useEffect(() => {
+    navListener = addListener('state', () => {
+      changeActiveBtn(getCurrentRoute().name);
+      setVisibility(visibleOn.includes(getCurrentRoute().name));
+    });
+    return navListener;
+  }, []);
 
   const onLayout = ({ nativeEvent: ne }: LayoutChangeEvent, btn: string) => {
     layouts.current[btn] = { x: ne.layout.x, width: ne.layout.width };
@@ -68,12 +80,12 @@ export const BottomNav: React.FC<Props> & {
     ]).start();
   };
 
-  BottomNav.changeActiveBtn = btnName => {
+  const changeActiveBtn = (btnName: string) => {
     setSelected(btnName ? homeIndexCorespondent[btnName] : -1);
     movePill(btnName);
   };
 
-  BottomNav.setVisibility = visible => {
+  const setVisibility = (visible: boolean) => {
     if (position === 'relative') setPosition(visible ? 'relative' : 'absolute');
     Animated.timing(translateY.current, {
       toValue: visible ? 0 : 300,
@@ -122,8 +134,8 @@ export const BottomNav: React.FC<Props> & {
           },
           container: { padding: 20 },
           onPress: () => {
-            BottomNav.changeActiveBtn?.('home');
-            onHomePress();
+            changeActiveBtn?.('home');
+            navigate('home');
           }
         })}
       </View>
@@ -138,8 +150,8 @@ export const BottomNav: React.FC<Props> & {
           },
           container: { padding: 20 },
           onPress: () => {
-            BottomNav.changeActiveBtn?.('search');
-            onSearchPress();
+            changeActiveBtn?.('search');
+            navigate('search');
           }
         })}
       </View>
@@ -154,8 +166,8 @@ export const BottomNav: React.FC<Props> & {
           },
           container: { padding: 20 },
           onPress: () => {
-            BottomNav.changeActiveBtn?.('forum');
-            onForumPress();
+            changeActiveBtn?.('forum');
+            navigate('forum');
           }
         })}
       </View>
@@ -170,8 +182,8 @@ export const BottomNav: React.FC<Props> & {
           },
           container: { padding: 20 },
           onPress: () => {
-            BottomNav.changeActiveBtn?.('menu');
-            onMenuPress();
+            changeActiveBtn?.('menu');
+            navigate('courses');
           }
         })}
       </View>

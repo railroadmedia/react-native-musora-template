@@ -36,7 +36,7 @@ interface ProviderFunctionArgs {
   signal?: AbortSignal;
 }
 
-interface ServiceFunction<Response> {
+export interface ServiceFunction<Response> {
   ({}: ProviderFunctionArgs): Promise<Response>;
 }
 

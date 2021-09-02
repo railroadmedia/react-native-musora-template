@@ -13,3 +13,5 @@ export * from './components/header/MainHeader';
 export * from './components/bottomNav/BottomNav';
 
 export * from './state/Store';
+
+export * from './Router';
