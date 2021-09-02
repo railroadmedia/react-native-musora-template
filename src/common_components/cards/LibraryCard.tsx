@@ -11,28 +11,16 @@ import {
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
-import {
-  completedCircle,
-  inProgressCircle,
-  lock,
-  plus,
-  x
-} from 'src/images/svgs';
 import { CardImage } from './CardImage';
 import { CardIcon } from './CardIcon';
 import type { MethodCourse } from '../../interfaces/method.interfaces';
+import type { PackLessonBundle } from 'src/interfaces/packs.interfaces';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
-const iconStyle = {
-  fill: '#ffffff',
-  width: windowW / 10,
-  height: windowW / 10
-};
-const coloredIcon = { fill: utils.color, height: 25, width: 25 };
 
 interface Props {
-  item: MethodCourse;
+  item: MethodCourse | PackLessonBundle;
   subtitle: string;
   onBtnPress: () => void;
   isLocked?: boolean;
@@ -48,10 +36,10 @@ export const LibraryCard: React.FC<Props> = ({
     id,
     type,
     title,
-    thumbnail_url,
     progress_percent,
     is_added_to_primary_playlist,
     completed,
+    thumbnail_url,
     published_on
   } = item;
   const { theme } = useContext(ThemeContext);

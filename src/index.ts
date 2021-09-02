@@ -11,6 +11,8 @@ export * from './components/header/Header';
 export * from './components/header/BackHeader';
 export * from './components/header/MainHeader';
 export * from './components/bottomNav/BottomNav';
+export * from './components/packs/Packs';
+export * from './components/packs/PackOverview';
 
 export * from './state/Store';
 

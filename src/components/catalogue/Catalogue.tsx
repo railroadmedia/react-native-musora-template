@@ -274,19 +274,10 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={all}
-        renderItem={renderFLItem}
-        keyExtractor={id => id.toString()}
-        ListHeaderComponent={renderFLHeader()}
-        ListEmptyComponent={renderFLEmpty()}
-        ListFooterComponent={renderFLFooter()}
-        refreshControl={renderFLRefreshControl()}
-        onEndReached={loadMore}
-      />
-    </SafeAreaView>
+    <SafeAreaView
+      style={styles.container}
+      edges={['left', 'right']}
+    ></SafeAreaView>
   );
 };
 
