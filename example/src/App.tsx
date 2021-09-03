@@ -3,10 +3,8 @@ import React, { useEffect } from 'react';
 import { utils, Router } from 'react-native-musora-templates';
 
 export default function App() {
-  useEffect(() => {
-    utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
-    utils.brand = 'drumeo';
-  }, []);
+  utils.rootUrl = 'https://staging.drumeo.com/laravel/public';
+  utils.brand = 'drumeo';
 
   return (
     <Router
