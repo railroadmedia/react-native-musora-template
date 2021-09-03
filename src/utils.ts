@@ -26,7 +26,7 @@ class Utils implements UtilsInterface {
   rootUrl = '';
   isiOS = Platform.OS === 'ios';
   isTablet = DeviceInfo.isTablet();
-  navigationAnimationSpeed = 200;
+  navigationAnimationSpeed = 250;
   fallbackAvatar =
     'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
 

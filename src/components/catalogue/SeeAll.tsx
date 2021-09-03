@@ -4,11 +4,11 @@ import { useReducer } from 'react';
 import {
   ActivityIndicator,
   FlatList,
+  RefreshControl,
   StyleSheet,
   Text,
   View
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import RowCard from '../../common_components/cards/RowCard';
 import { provider } from '../../services/catalogueSceneProvider.service';
 import { CardsContext } from '../../state/cards/CardsContext';
@@ -44,6 +44,7 @@ export const SeeAll: React.FC<Props> = ({
     }
   }
 }) => {
+  const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
@@ -58,13 +59,26 @@ export const SeeAll: React.FC<Props> = ({
   let styles = setStyles(theme);
 
   useEffect(() => {
+    isMounted.current = true;
+    abortC.current = new AbortController();
+    setContent();
+    return () => {
+      isMounted.current = false;
+      abortC.current.abort();
+    };
+  }, []);
+
+  const setContent = () => {
     refreshPromise.current = provider[scene][fetcherName]?.({
       page: page.current,
       signal: abortC.current.signal
-    }).then(({ data }) =>
-      dispatch({ type: ADD_CONTENT, content: data || [], refreshing: false })
-    );
-  }, []);
+    }).then(({ data }) => {
+      if (isMounted.current) {
+        addCards(data);
+        dispatch({ type: ADD_CONTENT, content: data || [], refreshing: false });
+      }
+    });
+  };
 
   const renderFLHeader = () => (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -79,7 +93,7 @@ export const SeeAll: React.FC<Props> = ({
 
   const renderFLEmpty = () =>
     refreshing ? (
-      <ActivityIndicator size='large' color={utils.color} style={{ flex: 1 }} />
+      <></>
     ) : (
       <Text style={styles.emptyListText}>There is no content.</Text>
     );
@@ -93,7 +107,23 @@ export const SeeAll: React.FC<Props> = ({
     />
   );
 
-  const renderFLRefreshControl = () => <></>;
+  const renderFLRefreshControl = () => (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={refreshing}
+    />
+  );
+
+  const refresh = () => {
+    page.current = 1;
+    abortC.current.abort();
+    abortC.current = new AbortController();
+    dispatch({ type: ADD_CONTENT, loadingMore: false, refreshing: true });
+    setContent();
+  };
 
   const loadMore = () => {
     dispatch({ type: ADD_CONTENT, loadingMore: true });
@@ -113,7 +143,7 @@ export const SeeAll: React.FC<Props> = ({
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <View style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={content}
@@ -125,7 +155,7 @@ export const SeeAll: React.FC<Props> = ({
         refreshControl={renderFLRefreshControl()}
         onEndReached={loadMore}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

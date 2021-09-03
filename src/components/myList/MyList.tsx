@@ -17,7 +17,6 @@ import {
   RefreshControl,
   BackHandler
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -307,7 +306,7 @@ export const MyList: React.FC<Props> = ({}) => {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+    <View style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={
@@ -326,7 +325,7 @@ export const MyList: React.FC<Props> = ({}) => {
         refreshControl={renderFLRefreshControl()}
         renderItem={renderFLItem}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 

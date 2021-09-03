@@ -8,5 +8,10 @@ export default function App() {
     utils.brand = 'drumeo';
   }, []);
 
-  return <Router catalogues={['home', 'courses']} />;
+  return (
+    <Router
+      catalogues={['home', 'courses']}
+      bottomNavVisibleOn={['home', 'search', 'forum', 'courses']}
+    />
+  );
 }
