@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import {
-  NavigationContainer,
-  ParamListBase,
-  RouteProp
-} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   createStackNavigator,
   StackHeaderProps
@@ -19,10 +15,11 @@ import { Search } from './components/search/Search';
 
 import { authenticate } from './services/auth.service';
 
-import { State } from './state/Store';
+import { Store } from './state/Store';
 import { BottomNav } from './components/bottomNav/BottomNav';
 import { Header } from './components/header/Header';
 import { SeeAll } from './components/catalogue/SeeAll';
+import { utils } from './utils';
 import { Settings } from './components/profile/Settings';
 import { NotificationSettings } from './components/profile/NotificationSettings';
 import { Support } from './components/profile/Support';
@@ -34,15 +31,19 @@ import { PackOverview } from './components/packs/PackOverview';
 import { ShowOverview } from './components/show/ShowOverview';
 import type { Show } from './interfaces/show.interfaces';
 
+type Scenes =
+  | 'home'
+  | 'courses'
+  | 'songs'
+  | 'playAlongs'
+  | 'coaches'
+  | 'shows'
+  | 'search'
+  | 'forum'
+  | 'seeAll';
 interface Props {
-  catalogues: (
-    | 'home'
-    | 'courses'
-    | 'songs'
-    | 'playAlongs'
-    | 'coaches'
-    | 'shows'
-  )[];
+  bottomNavVisibleOn: Scenes[];
+  catalogues: Scenes[];
 }
 
 const Stack = createStackNavigator<{
@@ -65,7 +66,7 @@ const Stack = createStackNavigator<{
   };
 }>();
 
-export const Router: React.FC<Props> = ({ catalogues }) => {
+export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -78,7 +79,7 @@ export const Router: React.FC<Props> = ({ catalogues }) => {
 
   return (
     <SafeAreaProvider>
-      <State>
+      <Store>
         {authenticated && (
           <>
             <NavigationContainer>
@@ -96,6 +97,16 @@ export const Router: React.FC<Props> = ({ catalogues }) => {
                         }
                       />
                     );
+                  },
+                  transitionSpec: {
+                    open: {
+                      config: { duration: utils.navigationAnimationSpeed },
+                      animation: 'timing'
+                    },
+                    close: {
+                      config: { duration: utils.navigationAnimationSpeed },
+                      animation: 'timing'
+                    }
                   }
                 }}
               >
@@ -156,12 +167,11 @@ export const Router: React.FC<Props> = ({ catalogues }) => {
                   {props => <PrivacyPolicy />}
                 </Stack.Screen>
               </Stack.Navigator>
-
-              <BottomNav visibleOn={['home', 'search', 'forum', 'courses']} />
+              <BottomNav visibleOn={bottomNavVisibleOn} />
             </NavigationContainer>
           </>
         )}
-      </State>
+      </Store>
     </SafeAreaProvider>
   );
 };

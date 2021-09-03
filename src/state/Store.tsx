@@ -25,8 +25,9 @@ import {
 } from './cards/CardsReducer';
 import { methodReducer } from './method/MethodReducer';
 import type { Card } from '../interfaces/card.interfaces';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export const State: React.FC = props => {
+export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
   const [headerNavHeight, setHeaderNavHeight] = useState(0);
   const [orientation, setOrientation] = useState(
@@ -79,7 +80,10 @@ export const State: React.FC = props => {
   const updateOrientation = (o: OrientationType) => setOrientation(o);
 
   return (
-    <View style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}
+      edges={['right', 'left']}
+    >
       <CardsContext.Provider
         value={{ cards, addCards, updateCard, addCardsAndCache }}
       >
@@ -101,6 +105,6 @@ export const State: React.FC = props => {
           </ThemeContext.Provider>
         </UserContext.Provider>
       </CardsContext.Provider>
-    </View>
+    </SafeAreaView>
   );
 };

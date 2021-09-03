@@ -58,14 +58,12 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
     movePill(
       Object.keys(homeIndexCorespondent).find(
         key => homeIndexCorespondent[key] === selected
-      )
+      ) || ''
     );
   };
 
-  const movePill = (btn: string | undefined) => {
-    let { width, x } = btn
-      ? layouts.current[btn] || { width: 0, x: 0 }
-      : { width: 0, x: 0 };
+  const movePill = (btn: string) => {
+    let { width, x } = layouts.current[btn] || { width: 0, x: 0 };
     Animated.parallel([
       Animated.timing(translateX.current, {
         toValue: (width - 1) / 2 + x,

@@ -9,7 +9,6 @@ import {
   RefreshControl,
   TouchableOpacity
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MethodBanner } from '../../common_components/MethodBanner';
 
@@ -216,9 +215,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     <RowCard id={item} route={scene} />
   );
 
-  const renderFLEmpty = () => (
-    <Text style={styles.emptyListText}>There is no content.</Text>
-  );
+  const renderFLEmpty = () =>
+    refreshing ? (
+      <></>
+    ) : (
+      <Text style={styles.emptyListText}>There is no content.</Text>
+    );
 
   const renderFLFooter = () => (
     <ActivityIndicator
@@ -274,10 +276,19 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   };
 
   return (
-    <SafeAreaView
-      style={styles.container}
-      edges={['left', 'right']}
-    ></SafeAreaView>
+    <View style={styles.container}>
+      <FlatList
+        showsVerticalScrollIndicator={false}
+        data={all}
+        renderItem={renderFLItem}
+        keyExtractor={id => id.toString()}
+        ListHeaderComponent={renderFLHeader()}
+        ListEmptyComponent={renderFLEmpty()}
+        ListFooterComponent={renderFLFooter()}
+        refreshControl={renderFLRefreshControl()}
+        onEndReached={loadMore}
+      />
+    </View>
   );
 };
 
