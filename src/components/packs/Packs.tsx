@@ -8,7 +8,6 @@ import React, {
   useState
 } from 'react';
 import {
-  SectionList,
   StyleSheet,
   View,
   Image,
@@ -19,6 +18,8 @@ import {
   ImageBackground,
   FlatList
 } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
 import { PacksBanner } from './PacksBanner';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -32,7 +33,6 @@ import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
 import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
@@ -117,7 +117,7 @@ export const Packs: React.FC<Props> = () => {
           paddingTop: 0,
           paddingRight: index % multiplier < multiplier - 1 ? 0 : 10
         }}
-        onPress={() => {}}
+        onPress={() => goToPack(item.mobile_app_url)}
       >
         <ImageBackground
           style={styles.image}
@@ -241,6 +241,10 @@ export const Packs: React.FC<Props> = () => {
     navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
   }, [topHeaderPack?.mobile_app_url]);
 
+  const goToPack = useCallback((mobile_app_url: string) => {
+    navigate('packOverview', { mobile_app_url });
+  }, []);
+
   const onMainBtnClick = useCallback(() => {
     if (topHeaderPack?.completed) {
       setShowResetModal(true);
@@ -309,11 +313,11 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     subtitle: {
       color: current.textColor,
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold'
     },
     price: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans-Bold',
       color: current.contrastTextColor,
       alignSelf: 'center'
@@ -335,7 +339,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       justifyContent: 'space-between'
     },
     newText: {
-      fontSize: 6,
+      fontSize: utils.figmaFontSizeScaler(6),
       paddingVertical: 2,
       paddingHorizontal: 8
     },
@@ -347,7 +351,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignSelf: 'center',
       alignItems: 'center',
       justifyContent: 'center',
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans'
     },
     title: {
@@ -355,7 +359,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       padding: 15
     },
     emptyPacksText: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans',
       flex: 1,
       padding: 10,

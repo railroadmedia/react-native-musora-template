@@ -7,6 +7,7 @@ import type {
   PackBundle,
   PackLessonBundle
 } from './packs.interfaces';
+import type { Show, ShowLessons } from './show.interfaces';
 import type { User, UserAvatar } from './user.interfaces';
 
 export interface CatalogueSection {
@@ -146,4 +147,15 @@ export interface PacksService {
     getLessonsVideos: boolean,
     signal: AbortSignal
   ) => Promise<{}>;
+}
+
+export interface ShowService {
+  getAll: () => Promise<Show>;
+  getLessons: (
+    type: string,
+    page: number,
+    filters: string,
+    sort: string,
+    signal: AbortSignal
+  ) => Promise<ShowLessons>;
 }

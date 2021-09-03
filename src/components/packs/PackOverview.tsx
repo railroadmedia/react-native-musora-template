@@ -68,12 +68,11 @@ export const PackOverview: React.FC<Props> = ({
       abortC.current.abort();
     };
   }, []);
-
   const getPack = (): Promise<void> =>
     packsService
       .getPack(mobile_app_url, abortC.current.signal)
       .then((packRes: I_PackBundle | I_PackLessonBundle) => {
-        addCards([packRes.next_lesson]);
+        if (packRes.next_lesson) addCards([packRes.next_lesson]);
         if ((packRes as I_PackLessonBundle).lessons) {
           addCards((packRes as I_PackLessonBundle).lessons);
         } else {

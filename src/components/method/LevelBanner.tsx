@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import {
   back,
   info,
@@ -47,6 +49,8 @@ export const LevelBanner: React.FC<Props> = ({
   is_added_to_primary_playlist,
   level_number
 }) => {
+  const { goBack } = useNavigation();
+
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
@@ -63,7 +67,7 @@ export const LevelBanner: React.FC<Props> = ({
           uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco/${thumbnail_url}`
         }}
       >
-        <TouchableOpacity style={styles.backBtnContainer}>
+        <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
           {back({
             icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
           })}

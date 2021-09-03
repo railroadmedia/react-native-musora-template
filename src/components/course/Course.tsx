@@ -14,12 +14,13 @@ import {
   StatusBar,
   StyleSheet,
   ScrollView,
-  BackHandler,
   RefreshControl,
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
@@ -49,6 +50,8 @@ interface Props {
 }
 
 export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
+  const { goBack } = useNavigation();
+
   const [course, setCourse] = useState<MethodCourse>();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -189,7 +192,7 @@ export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
               />
             }
           >
-            <TouchableOpacity style={styles.backBtnContainer}>
+            <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
               {back({
                 icon: {
                   fill: themeStyles[theme].textColor,
@@ -369,7 +372,7 @@ export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
           </ScrollView>
         ) : (
           <>
-            <TouchableOpacity style={styles.backBtnContainer}>
+            <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
               {back({
                 icon: {
                   fill: themeStyles[theme].textColor,

@@ -14,6 +14,8 @@ import {
   TouchableOpacity,
   Dimensions
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
@@ -52,7 +54,6 @@ export const PacksBanner: React.FC<Props> = ({
   isMainPacksPage,
   price,
   pack_logo,
-  started,
   is_owned,
   thumbnail,
   completed,
@@ -60,6 +61,8 @@ export const PacksBanner: React.FC<Props> = ({
   onMainBtnClick,
   onSeeMoreBtnClick
 }) => {
+  const { goBack } = useNavigation();
+
   const { isLandscape } = useContext(OrientationContext);
   const { theme } = useContext(ThemeContext);
 
@@ -116,14 +119,9 @@ export const PacksBanner: React.FC<Props> = ({
   return (
     <>
       {!isMainPacksPage && (
-        <TouchableOpacity
-          onPress={() => {
-            //   TBD
-          }}
-          style={styles.backBtnContainer}
-        >
+        <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
           {back({
-            icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
+            icon: { fill: themeStyles[theme].background, height: 15, width: 15 }
           })}
         </TouchableOpacity>
       )}
@@ -134,24 +132,21 @@ export const PacksBanner: React.FC<Props> = ({
             greaterWDim >> 0
           },ar_${getAspectRatio},c_fill,g_face/${thumbnail}`
         }}
-        style={{
-          width: '100%',
-          alignItems: 'center',
-          justifyContent: 'flex-end',
-          aspectRatio: getAspectRatio
-        }}
+        style={[styles.image, { aspectRatio: thumbnail ? getAspectRatio : 2 }]}
       >
-        <View style={styles.gradientContainer}>
-          <Gradient
-            colors={[
-              'transparent',
-              utils.getColorWithAlpha(30),
-              themeStyles[theme].background || ''
-            ]}
-            height={'100%'}
-            width={'100%'}
-          />
-        </View>
+        {thumbnail && (
+          <View style={styles.gradientContainer}>
+            <Gradient
+              colors={[
+                'transparent',
+                utils.getColorWithAlpha(30),
+                themeStyles[theme].background || ''
+              ]}
+              height={'100%'}
+              width={'100%'}
+            />
+          </View>
+        )}
         <View style={styles.imageTextContainer}>
           <Image
             style={styles.logo}
@@ -214,6 +209,12 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       top: 0,
       zIndex: 0
     },
+    image: {
+      width: '100%',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      backgroundColor: 'rgba(3, 29, 54, 1)'
+    },
     imageTextContainer: {
       padding: 20,
       width: '100%',
@@ -238,8 +239,9 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       justifyContent: 'center',
       borderColor: '#FFFFFF',
       borderWidth: 2,
-      flex: 2,
-      marginHorizontal: 3
+      paddingHorizontal: 20,
+      marginHorizontal: 3,
+      flex: 2
     },
     overlay: {
       width: '100%',
@@ -250,7 +252,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     infoText: {
       color: '#FFFFFF',
       fontFamily: 'OpenSans',
-      fontSize: 12
+      fontSize: utils.figmaFontSizeScaler(12)
     },
     logo: {
       height: 50,
@@ -260,15 +262,15 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     description: {
       padding: 20,
       paddingTop: 0,
-      color: 'white',
+      color: current.textColor,
       textAlign: 'center',
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     },
     whiteText: {
       color: '#ffffff',
       marginHorizontal: 10,
-      fontSize: 24,
+      fontSize: utils.figmaFontSizeScaler(24),
       fontFamily: 'OpenSans-Bold'
     },
     iconBtn: {
@@ -280,7 +282,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginHorizontal: 5,
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15
+      fontSize: utils.figmaFontSizeScaler(15)
     },
     gradientContainer: {
       height: '100%',

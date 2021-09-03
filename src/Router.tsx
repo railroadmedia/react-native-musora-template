@@ -31,6 +31,8 @@ import { PrivacyPolicy } from './components/profile/PrivacyPolicy';
 import { Level } from './components/method/Level';
 import { Packs } from './components/packs/Packs';
 import { PackOverview } from './components/packs/PackOverview';
+import { ShowOverview } from './components/show/ShowOverview';
+import type { Show } from './interfaces/show.interfaces';
 
 interface Props {
   catalogues: (
@@ -58,15 +60,17 @@ const Stack = createStackNavigator<{
   packOverview: {
     mobile_app_url: string;
   };
+  showOverview: {
+    show: Show;
+  };
 }>();
 
 export const Router: React.FC<Props> = ({ catalogues }) => {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    authenticate('roxana.riza@artsoft-consult.ro', '12345678')
+    authenticate()
       .then(auth => {
-        console.log(auth);
         if (auth?.token) setAuthenticated(true);
       })
       .catch(() => {});
@@ -126,6 +130,9 @@ export const Router: React.FC<Props> = ({ catalogues }) => {
                 </Stack.Screen>
                 <Stack.Screen name='packOverview'>
                   {props => <PackOverview {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name='showOverview'>
+                  {props => <ShowOverview {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name='settings' options={{ title: 'Settings' }}>
                   {props => <Settings />}

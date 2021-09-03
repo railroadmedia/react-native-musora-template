@@ -44,7 +44,7 @@ export const CardImage: React.FC<Props> = ({
         )}
         {completed && <View style={styles.completedOverlay} />}
 
-        {completed
+        {completed || progress_percent === 100
           ? completedCircle({
               icon: {
                 height: size,
