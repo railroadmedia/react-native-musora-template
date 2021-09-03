@@ -32,11 +32,17 @@ import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
 import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
 const greaterWDim = Dimensions.get('screen').width;
 export const Packs: React.FC<Props> = () => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
   const { theme } = useContext(ThemeContext);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -232,8 +238,8 @@ export const Packs: React.FC<Props> = () => {
   }, [allPacks, myPacks]);
 
   const onSeeMore = useCallback(() => {
-    // TODO: add navigation to pack overview
-  }, []);
+    navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
+  }, [topHeaderPack?.mobile_app_url]);
 
   const onMainBtnClick = useCallback(() => {
     if (topHeaderPack?.completed) {

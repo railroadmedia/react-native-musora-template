@@ -180,12 +180,13 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     modalBackground: {
       flex: 1,
-      backgroundColor: 'rgba(0,0,0,.5)'
+      backgroundColor: 'rgba(0,0,0,.8)'
     },
     container: {
       padding: 10,
-      borderRadius: 10,
-      margin: 5,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      marginTop: 20,
       flex: 1,
       backgroundColor: current.background
     },

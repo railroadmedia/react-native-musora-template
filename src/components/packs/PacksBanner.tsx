@@ -57,7 +57,8 @@ export const PacksBanner: React.FC<Props> = ({
   thumbnail,
   completed,
   description,
-  onMainBtnClick
+  onMainBtnClick,
+  onSeeMoreBtnClick
 }) => {
   const { isLandscape } = useContext(OrientationContext);
   const { theme } = useContext(ThemeContext);
@@ -169,7 +170,7 @@ export const PacksBanner: React.FC<Props> = ({
           {isMainPacksPage ? (
             <View style={styles.btnContainer1}>
               {renderColoredBtn()}
-              <TouchableOpacity style={styles.btn}>
+              <TouchableOpacity style={styles.btn} onPress={onSeeMoreBtnClick}>
                 {arrowRight({ icon: iconStyle })}
                 <Text style={styles.buttonText}>More Info</Text>
               </TouchableOpacity>

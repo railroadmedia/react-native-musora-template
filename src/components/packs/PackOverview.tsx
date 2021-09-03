@@ -13,6 +13,7 @@ import {
   ScrollView,
   StatusBar
 } from 'react-native';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -32,10 +33,18 @@ import RowCard from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
 
 interface Props {
-  mobile_app_url: string;
+  route: RouteProp<ParamListBase, 'packOverview'> & {
+    params: {
+      mobile_app_url: string;
+    };
+  };
 }
 
-export const PackOverview: React.FC<Props> = ({ mobile_app_url }) => {
+export const PackOverview: React.FC<Props> = ({
+  route: {
+    params: { mobile_app_url }
+  }
+}) => {
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 

@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   StyleSheet
 } from 'react-native';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
@@ -28,10 +29,18 @@ import { userService } from '../../services/user.service';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
 
 interface Props {
-  mobile_app_url: string;
+  route: RouteProp<ParamListBase, 'level'> & {
+    params: {
+      mobile_app_url: string;
+    };
+  };
 }
 
-export const Level: React.FC<Props> = ({ mobile_app_url }) => {
+export const Level: React.FC<Props> = ({
+  route: {
+    params: { mobile_app_url }
+  }
+}) => {
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 

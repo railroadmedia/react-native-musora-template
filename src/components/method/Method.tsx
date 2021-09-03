@@ -12,11 +12,12 @@ import {
   ActivityIndicator,
   Image
 } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { MethodBanner } from '../../common_components/MethodBanner';
-import { profileReducer } from '../../state/profile/ProfileReducer';
 import { UserContext } from '../../state/user/UserContext';
 import { completedCircle, inProgressCircle } from '../../images/svgs';
 import { getImageUri } from '../../common_components/cards/cardhelpers';
@@ -34,6 +35,12 @@ const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
 
 export const Method: React.FC = () => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
+
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
@@ -86,11 +93,11 @@ export const Method: React.FC = () => {
     setMethod();
   };
 
-  const onLevelPress = (
-    mobile_app_url: string,
-    published_on: string,
-    level_rank: string
-  ): void => {};
+  const onLevelPress = (mobile_app_url: string, published_on: string): void => {
+    if (new Date() > new Date(published_on)) {
+      navigate('level', { mobile_app_url });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -130,13 +137,7 @@ export const Method: React.FC = () => {
               {method?.levels?.map((l, index: number) => (
                 <TouchableOpacity
                   key={l.id}
-                  onPress={() =>
-                    onLevelPress(
-                      l.mobile_app_url,
-                      l.published_on,
-                      method?.level_rank || ''
-                    )
-                  }
+                  onPress={() => onLevelPress(l.mobile_app_url, l.published_on)}
                   style={styles.levelBtn}
                 >
                   <ImageBackground
