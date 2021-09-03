@@ -6,7 +6,8 @@ import {
   Image,
   Text,
   ActivityIndicator,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -30,12 +31,19 @@ import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
 import RowCard from '../../common_components/cards/RowCard';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {
   scene: string;
 }
 
 export const Catalogue: React.FC<Props> = ({ scene }) => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
+
   const hasMethodBanner = scene.match(/^(home)$/),
     hasUserInfo = scene.match(/^(home)$/);
 
@@ -116,13 +124,37 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     />
   );
 
-  const renderCarousel = (items: number[] | undefined, title: string) =>
-    items?.length ? (
+  const renderCarousel = (items: number[] | undefined, title: string) => {
+    let seeAllFetcher = 'getInProgress';
+    switch (title) {
+      case 'Recently Viewed':
+        seeAllFetcher = 'getRecentlyViewed';
+        break;
+      case 'Continue':
+        seeAllFetcher = 'getInProgress';
+        break;
+      case 'New Lessons':
+        seeAllFetcher = 'getNew';
+    }
+    return items?.length ? (
       <>
-        <Text style={styles.sectionTitle}>{title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={styles.sectionTitle}>{title}</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigate('seeAll', {
+                title,
+                fetcher: { scene, fetcherName: seeAllFetcher }
+              })
+            }
+          >
+            <Text style={{ color: utils.color, padding: 10 }}>See All</Text>
+          </TouchableOpacity>
+        </View>
         <Carousel items={items} />
       </>
     ) : null;
+  };
 
   const renderFLHeader = () => (
     <>

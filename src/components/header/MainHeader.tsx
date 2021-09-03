@@ -17,19 +17,11 @@ import { downloads, myList } from '../../images/svgs';
 import { UserContext } from '../../state/user/UserContext';
 import { HeaderContext } from '../../state/header/HeaderContext';
 import { userService } from '../../services/user.service';
+import { useNavigation } from '@react-navigation/native';
 
-interface Props {
-  onLogoPress: Function;
-  onDownloadsPress: Function;
-  onMyListPress: Function;
-  onProfilePress: Function;
-}
-export const MainHeader: React.FC<Props> = ({
-  onLogoPress,
-  onDownloadsPress,
-  onMyListPress,
-  onProfilePress
-}) => {
+export const MainHeader: React.FC = () => {
+  const { navigate } = useNavigation<{ navigate: (scene: string) => void }>();
+
   const { top, left, right } = useSafeAreaInsets();
   const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
@@ -72,22 +64,22 @@ export const MainHeader: React.FC<Props> = ({
       <View style={{ flex: 1 }}>
         {utils.svgBrand({
           icon: { height: 30, fill: utils.color },
-          onPress: onLogoPress
+          onPress: () => navigate('home')
         })}
       </View>
       {downloads({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
-        onPress: onDownloadsPress
+        onPress: () => navigate('downloads')
       })}
       {myList({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
-        onPress: onMyListPress
+        onPress: () => navigate('myList')
       })}
       <TouchableOpacity
         style={{ paddingLeft: 10 }}
-        onPress={() => onProfilePress()}
+        onPress={() => navigate('profile')}
       >
         <Image
           source={{ uri: user.avatarUrl || utils.fallbackAvatar }}

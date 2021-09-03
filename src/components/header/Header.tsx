@@ -1,41 +1,24 @@
 import React from 'react';
-import { View } from 'react-native';
 import { BackHeader } from './BackHeader';
 import { MainHeader } from './MainHeader';
 
 interface Props {
-  onLogoPress: Function;
-  onDownloadsPress: Function;
-  onMyListPress: Function;
-  onProfilePress: Function;
-  onBack?: Function;
   title?: string;
   transparent?: boolean;
-  onSettings?: Function;
+  settingsVisible?: boolean;
 }
 export const Header: React.FC<Props> = ({
-  onBack,
   title,
   transparent,
-  onSettings,
-  onDownloadsPress,
-  onLogoPress,
-  onMyListPress,
-  onProfilePress
+  settingsVisible
 }) => {
-  return onBack ? (
+  return title ? (
     <BackHeader
-      onBack={onBack}
-      title={title || ''}
+      title={title}
       transparent={transparent}
-      onSettings={onSettings}
+      settingsVisible={settingsVisible}
     />
   ) : (
-    <MainHeader
-      onDownloadsPress={onDownloadsPress}
-      onLogoPress={onLogoPress}
-      onMyListPress={onMyListPress}
-      onProfilePress={onProfilePress}
-    />
+    <MainHeader />
   );
 };

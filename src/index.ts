@@ -15,3 +15,5 @@ export * from './components/packs/Packs';
 export * from './components/packs/PackOverview';
 
 export * from './state/Store';
+
+export * from './Router';
