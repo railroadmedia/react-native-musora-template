@@ -57,7 +57,8 @@ export const PacksBanner: React.FC<Props> = ({
   thumbnail,
   completed,
   description,
-  onMainBtnClick
+  onMainBtnClick,
+  onSeeMoreBtnClick
 }) => {
   const { isLandscape } = useContext(OrientationContext);
   const { theme } = useContext(ThemeContext);
@@ -89,7 +90,6 @@ export const PacksBanner: React.FC<Props> = ({
   }, [showInfo]);
 
   const renderColoredBtn = () => {
-    console.log(started, completed);
     return (
       <TouchableOpacity
         style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : { flex: 1 }]}
@@ -170,7 +170,7 @@ export const PacksBanner: React.FC<Props> = ({
           {isMainPacksPage ? (
             <View style={styles.btnContainer1}>
               {renderColoredBtn()}
-              <TouchableOpacity style={styles.btn}>
+              <TouchableOpacity style={styles.btn} onPress={onSeeMoreBtnClick}>
                 {arrowRight({ icon: iconStyle })}
                 <Text style={styles.buttonText}>More Info</Text>
               </TouchableOpacity>
@@ -227,7 +227,8 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginHorizontal: 3
+      marginHorizontal: 3,
+      paddingHorizontal: 20
     },
     btn: {
       borderRadius: 25,

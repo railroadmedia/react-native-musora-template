@@ -4,14 +4,12 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState
 } from 'react';
 import {
   Text,
   View,
-  Alert,
   Linking,
   StatusBar,
   ScrollView,
@@ -36,16 +34,23 @@ import {
 import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
-import { profileReducer } from '../../state/profile/ProfileReducer';
 import { ProfileSettings } from './ProfileSettings';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
 export const Settings: React.FC<Props> = () => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
+
   const [alertBtnText, setAlertBtnText] = useState('');
-  const [showProfileSettings, setShowProfileSettings] = useState(true);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
   const { theme, toggleTheme } = useContext(ThemeContext);
-  const { user } = useContext(UserContext);
+  const { user: cachedUser } = useContext(UserContext);
+
   const loadingRef = createRef<any>();
   const animatedAlert = createRef<any>();
   const restoreAlert = createRef<any>();
@@ -60,13 +65,25 @@ export const Settings: React.FC<Props> = () => {
   const navigationItems = useMemo(() => {
     return [
       { title: 'Profile Settings', icon: profile({ icon: iconStyle }) },
-      { title: 'Notification Settings', icon: bell({ icon: iconStyle }) }, //done
-      { title: 'Support', icon: phone({ icon: iconStyle }) }, //done
-      { title: 'Manage Subscription', icon: folder({ icon: iconStyle }) }, // done
-      { title: 'Terms of Use', icon: termsOfUse({ icon: iconStyle }) }, // done
-      { title: 'Privacy Policy', icon: privacy({ icon: iconStyle }) }, // done
+      {
+        title: 'Notification Settings',
+        icon: bell({ icon: iconStyle }),
+        route: 'notificationSettings'
+      },
+      { title: 'Support', icon: phone({ icon: iconStyle }), route: 'support' },
+      { title: 'Manage Subscription', icon: folder({ icon: iconStyle }) },
+      {
+        title: 'Terms of Use',
+        icon: termsOfUse({ icon: iconStyle }),
+        route: 'terms'
+      },
+      {
+        title: 'Privacy Policy',
+        icon: privacy({ icon: iconStyle }),
+        route: 'privacyPolicy'
+      },
       { title: 'Restore Purchases', icon: creditCard({ icon: iconStyle }) }, // tbd
-      { title: 'Log out', icon: turnOff({ icon: iconStyle }) } //TBD
+      { title: 'Log out', icon: turnOff({ icon: iconStyle }) }
     ];
   }, []);
 
@@ -74,26 +91,31 @@ export const Settings: React.FC<Props> = () => {
     styles = setStyles(theme);
   }, [theme]);
 
-  const onButtonPress = useCallback((title: string) => {
+  const onButtonPress = useCallback((title: string, route?: string) => {
     if (title === 'Manage Subscription') manageSubscription();
     else if (title === 'Restore Purchases') restorePurchases();
     else if (title === 'Profile Settings') setShowProfileSettings(true);
+    else if (title === 'Log out') {
+      // TODO
+    } else if (route) {
+      navigate(route, {});
+    }
   }, []);
 
   const manageSubscription = useCallback(() => {
-    let { isAppleAppSubscriber, isGoogleAppSubscriber } = user || {};
+    let { isAppleAppSubscriber, isGoogleAppSubscriber } = cachedUser || {};
     if (utils.isiOS) {
       if (isAppleAppSubscriber) {
         setAlertBtnText('View Subscriptions');
         alertBtn.current = 'viewiOS';
-        animatedAlert.current.toggle(
+        animatedAlert.current?.toggle(
           'Manage Subscription',
           'You have an Apple App Store subscription that can only be managed through the Apple I.D. used to purchase it.'
         );
       } else {
         setAlertBtnText('Got it!');
         alertBtn.current = 'gotIt';
-        animatedAlert.current.toggle(
+        animatedAlert.current?.toggle(
           'Manage Subscription',
           'Sorry! You can only manage your Apple App Store based subscriptions here.'
         );
@@ -102,14 +124,14 @@ export const Settings: React.FC<Props> = () => {
       if (isGoogleAppSubscriber) {
         setAlertBtnText('View Subscriptions');
         alertBtn.current = 'viewAndroid';
-        animatedAlert.current.toggle(
+        animatedAlert.current?.toggle(
           'Manage Subscription',
           'You have a Google Play subscription that can only be managed through the Google Account used to purchase it.'
         );
       } else {
         setAlertBtnText('Got it!');
         alertBtn.current = 'gotIt';
-        animatedAlert.current.toggle(
+        animatedAlert.current?.toggle(
           'Manage Subscription',
           `You can only manage Google Play subscriptions here. Please sign in to ${utils.brand} on your original subscription platform to manage your settings.`
         );
@@ -121,7 +143,7 @@ export const Settings: React.FC<Props> = () => {
 
   const onContactSupport = useCallback(() => {
     alertBtn.current = '';
-    animatedAlert.current.toggle();
+    animatedAlert.current?.toggle();
     Linking.openURL(`mailto:support@${utils.brand}.com`);
   }, []);
 
@@ -130,7 +152,7 @@ export const Settings: React.FC<Props> = () => {
       Linking.openURL('itms-apps://apps.apple.com/account/subscriptions');
     else if (alertBtn.current === 'viewAndroid')
       Linking.openURL('https://play.google.com/store/account/subscriptions');
-    animatedAlert.current.toggle();
+    animatedAlert.current?.toggle();
     alertBtn.current = '';
   }, []);
 
@@ -145,7 +167,7 @@ export const Settings: React.FC<Props> = () => {
           <TouchableOpacity
             key={index}
             style={styles.button}
-            onPress={() => onButtonPress(item.title)}
+            onPress={() => onButtonPress(item.title, item.route)}
           >
             <View style={styles.iconContainer}>
               {item.icon}
@@ -196,18 +218,18 @@ export const Settings: React.FC<Props> = () => {
       <AnimatedCustomAlert
         ref={restoreAlert}
         onClose={() => {
-          if (loadingRef) loadingRef.current.toggleLoading(false);
+          if (loadingRef) loadingRef.current?.toggleLoading(false);
         }}
       />
       <Loading ref={loadingRef} />
       <AnimatedCustomAlert
         ref={restoreSuccessfull}
         onClose={() => {
-          if (loadingRef) loadingRef.current.toggleLoading(false);
+          if (loadingRef) loadingRef.current?.toggleLoading(false);
         }}
       >
         <TouchableOpacity
-          onPress={() => restoreSuccessfull.current.toggle()}
+          onPress={() => restoreSuccessfull.current?.toggle()}
           style={styles.additionalBtn}
         >
           <Text style={styles.additionalBtnText}>OK</Text>

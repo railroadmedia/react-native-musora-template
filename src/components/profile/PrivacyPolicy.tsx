@@ -37,7 +37,7 @@ const tableData = [
 ];
 
 interface Props {
-  from: string;
+  from?: string;
 }
 
 export const PrivacyPolicy: React.FC<Props> = ({ from }) => {

@@ -30,17 +30,26 @@ import type {
 } from '../../interfaces/packs.interfaces';
 import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
+import ActionModal from '../../common_components/modals/ActionModal';
+import { userService } from '../../services/user.service';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
 const greaterWDim = Dimensions.get('screen').width;
 export const Packs: React.FC<Props> = () => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
   const { theme } = useContext(ThemeContext);
 
   const [refreshing, setRefreshing] = useState(false);
   const [topHeaderPack, setTopHeaderPack] = useState<BannerPack>();
   const [allPacks, setAllPacks] = useState<any>();
   const [myPacks, setMyPacks] = useState<I_Pack[]>();
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -164,13 +173,13 @@ export const Packs: React.FC<Props> = () => {
         : (((allPacks.length / multiplier) >> 0) + 1) * multiplier -
           allPacks.length;
       let myTitle: { id: string; title: string | null; styles?: any }[] = [
-        { id: '0myP', title: 'Packs', styles: { flex: 1, padding: 15 } }
+        { id: '0myP', title: 'Packs', styles: styles.title }
       ];
       let moreTitle: { id: string; title: string | null; styles?: any }[] = [
         {
           id: '0moreP',
           title: 'MORE PACKS',
-          styles: { flex: 1, padding: 15 }
+          styles: styles.title
         }
       ];
       for (let i = 1; i < multiplier; i++) {
@@ -183,14 +192,7 @@ export const Packs: React.FC<Props> = () => {
         packsList.push({
           id: '0noMyPacks',
           title: `You haven't purchased any packs yet!`,
-          styles: {
-            fontSize: 14,
-            fontFamily: 'OpenSans',
-            flex: 1,
-            padding: 10,
-            color: utils.color,
-            textAlign: 'center'
-          }
+          styles: styles.emptyPacksText
         });
         for (let i = 1; i < multiplier; i++) {
           packsList.push({
@@ -213,14 +215,7 @@ export const Packs: React.FC<Props> = () => {
         packsList.push({
           id: '0noMorePacks',
           title: `Packs are not available.`,
-          styles: {
-            fontSize: 14,
-            fontFamily: 'OpenSans',
-            flex: 1,
-            padding: 10,
-            color: utils.color,
-            textAlign: 'center'
-          }
+          styles: styles.emptyPacksText
         });
         for (let i = 1; i < multiplier; i++) {
           packsList.push({
@@ -242,29 +237,62 @@ export const Packs: React.FC<Props> = () => {
     return [];
   }, [allPacks, myPacks]);
 
+  const onSeeMore = useCallback(() => {
+    navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
+  }, [topHeaderPack?.mobile_app_url]);
+
+  const onMainBtnClick = useCallback(() => {
+    if (topHeaderPack?.completed) {
+      setShowResetModal(true);
+    } else {
+      // TODO: add navigation to topHeaderPack?.next_lesson_url
+    }
+  }, [topHeaderPack]);
+
+  const resetProgress = useCallback(() => {
+    if (topHeaderPack) {
+      userService.resetProgress(topHeaderPack.id);
+      refresh();
+    }
+  }, [topHeaderPack]);
+
   return (
-    <FlatList
-      windowSize={10}
-      style={styles.container}
-      initialNumToRender={5}
-      maxToRenderPerBatch={10}
-      numColumns={utils.isTablet ? 6 : 3}
-      removeClippedSubviews={true}
-      keyExtractor={item => item.id.toString()}
-      data={formatListsContent()}
-      keyboardShouldPersistTaps='handled'
-      refreshControl={renderFLRefreshControl()}
-      ListEmptyComponent={renderFLEmpty()}
-      ListHeaderComponent={() => (
-        <PacksBanner
-          {...topHeaderPack}
-          isMainPacksPage={true}
-          onMainBtnClick={() => {}}
-          onSeeMoreBtnClick={() => {}}
+    <>
+      <FlatList
+        windowSize={10}
+        style={styles.container}
+        initialNumToRender={5}
+        maxToRenderPerBatch={10}
+        numColumns={utils.isTablet ? 6 : 3}
+        removeClippedSubviews={true}
+        keyExtractor={item => item.id.toString()}
+        data={formatListsContent()}
+        keyboardShouldPersistTaps='handled'
+        refreshControl={renderFLRefreshControl()}
+        ListEmptyComponent={renderFLEmpty()}
+        ListHeaderComponent={() => (
+          <PacksBanner
+            {...topHeaderPack}
+            isMainPacksPage={true}
+            onMainBtnClick={onMainBtnClick}
+            onSeeMoreBtnClick={onSeeMore}
+          />
+        )}
+        renderItem={renderFLItem}
+      />
+      {showResetModal && (
+        <ActionModal
+          title='Hold your horses...'
+          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+          btnText='RESET'
+          onAction={() => {
+            setShowResetModal(false);
+            resetProgress();
+          }}
+          onCancel={() => setShowResetModal(false)}
         />
       )}
-      renderItem={renderFLItem}
-    />
+    </>
   );
 };
 
@@ -321,5 +349,17 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       justifyContent: 'center',
       fontSize: 10,
       fontFamily: 'OpenSans'
+    },
+    title: {
+      flex: 1,
+      padding: 15
+    },
+    emptyPacksText: {
+      fontSize: 14,
+      fontFamily: 'OpenSans',
+      flex: 1,
+      padding: 10,
+      color: utils.color,
+      textAlign: 'center'
     }
   });

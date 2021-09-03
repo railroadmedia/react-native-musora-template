@@ -21,6 +21,10 @@ import org.wonday.orientation.OrientationActivityLifecycle;
 import com.vonovak.AddCalendarEventPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
+import com.swmansion.reanimated.ReanimatedPackage;
+import com.swmansion.rnscreens.RNScreensPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -45,6 +49,9 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new AddCalendarEventPackage());
           packages.add(new ImagePickerPackage());
           packages.add(new PickerPackage());
+          packages.add(new ReanimatedPackage());
+          packages.add(new RNScreensPackage());
+          packages.add(new RNGestureHandlerPackage());
           
           return packages;
         }

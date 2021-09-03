@@ -5,10 +5,10 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 
 interface Props {
-  from: string;
+  from?: string;
 }
 
-export const TermsPrivacy: React.FC<Props> = ({ from }) => {
+export const TermsOfUse: React.FC<Props> = ({ from }) => {
   const { theme } = useContext(ThemeContext);
 
   let styles = setStyles(theme);

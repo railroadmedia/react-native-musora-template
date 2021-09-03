@@ -190,6 +190,10 @@ dependencies {
     implementation project(':react-native-add-calendar-event')
     implementation project(':react-native-image-picker')
     implementation project(':react-native-image-crop-picker')
+    implementation project(':react-native-reanimated')
+    implementation project(':react-native-screens')
+    implementation project(':react-native-gesture-handler')
+
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion

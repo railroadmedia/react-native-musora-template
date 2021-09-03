@@ -75,8 +75,9 @@ export interface MethodCourse {
   xp: number;
   total_xp: number;
   instructors: { name: string }[];
-  next_lesson: any;
+  next_lesson: Card;
   next_lesson_url: string;
+  mobile_app_url: string;
   total_length_in_seconds: number;
   level_position: number;
   course_position: number;
