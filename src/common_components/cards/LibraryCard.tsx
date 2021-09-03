@@ -22,7 +22,7 @@ let windowW = window.width < window.height ? window.width : window.height;
 interface Props {
   item: MethodCourse | PackLessonBundle;
   subtitle: string;
-  onBtnPress: () => void;
+  onBtnPress: (url: string) => void;
   isLocked?: boolean;
 }
 
@@ -40,7 +40,8 @@ export const LibraryCard: React.FC<Props> = ({
     is_added_to_primary_playlist,
     completed,
     thumbnail_url,
-    published_on
+    published_on,
+    mobile_app_url
   } = item;
   const { theme } = useContext(ThemeContext);
 
@@ -51,7 +52,10 @@ export const LibraryCard: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.btn} onPress={onBtnPress}>
+      <TouchableOpacity
+        style={styles.btn}
+        onPress={() => onBtnPress(mobile_app_url)}
+      >
         <View
           style={[
             styles.behindCoursesEffect,

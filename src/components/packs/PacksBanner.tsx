@@ -89,7 +89,6 @@ export const PacksBanner: React.FC<Props> = ({
   }, [showInfo]);
 
   const renderColoredBtn = () => {
-    console.log(started, completed);
     return (
       <TouchableOpacity
         style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : { flex: 1 }]}
@@ -227,7 +226,8 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      marginHorizontal: 3
+      marginHorizontal: 3,
+      paddingHorizontal: 20
     },
     btn: {
       borderRadius: 25,

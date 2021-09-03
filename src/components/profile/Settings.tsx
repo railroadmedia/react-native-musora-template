@@ -4,14 +4,12 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState
 } from 'react';
 import {
   Text,
   View,
-  Alert,
   Linking,
   StatusBar,
   ScrollView,
@@ -36,7 +34,6 @@ import {
 import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
-import { profileReducer } from '../../state/profile/ProfileReducer';
 import { ProfileSettings } from './ProfileSettings';
 
 interface Props {}
@@ -46,9 +43,7 @@ export const Settings: React.FC<Props> = () => {
   const [showProfileSettings, setShowProfileSettings] = useState(true);
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { user: cachedUser } = useContext(UserContext);
-  const [{ user }] = useReducer(profileReducer, {
-    user: cachedUser
-  });
+
   const loadingRef = createRef<any>();
   const animatedAlert = createRef<any>();
   const restoreAlert = createRef<any>();
@@ -84,7 +79,7 @@ export const Settings: React.FC<Props> = () => {
   }, []);
 
   const manageSubscription = useCallback(() => {
-    let { isAppleAppSubscriber, isGoogleAppSubscriber } = user || {};
+    let { isAppleAppSubscriber, isGoogleAppSubscriber } = cachedUser || {};
     if (utils.isiOS) {
       if (isAppleAppSubscriber) {
         setAlertBtnText('View Subscriptions');

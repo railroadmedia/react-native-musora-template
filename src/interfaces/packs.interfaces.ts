@@ -20,6 +20,8 @@ export interface Pack {
   full_price: string;
   description: string;
   is_added_to_primary_playlist: boolean;
+  current_lesson_index: number;
+  next_lesson: Card;
 }
 
 export interface BannerPack extends Pack {
@@ -27,14 +29,11 @@ export interface BannerPack extends Pack {
 }
 
 export interface PackBundle extends Pack {
-  next_lesson: Card;
   bundles: PackLessonBundle[];
   bundle_number: number;
-  current_lesson_index: number;
 }
 
 export interface PackLessonBundle extends Pack {
-  next_lesson: Card;
   lessons: Card[];
   lesson_count: number;
 }

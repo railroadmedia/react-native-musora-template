@@ -26,6 +26,10 @@ import type {
 import { PacksBanner } from './PacksBanner';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { CardsContext } from '../../state/cards/CardsContext';
+import ActionModal from '../../common_components/modals/ActionModal';
+import { userService } from '../../services/user.service';
+import RowCard from '../../common_components/cards/RowCard';
+import type { Card } from '../../interfaces/card.interfaces';
 
 interface Props {
   mobile_app_url: string;
@@ -36,6 +40,7 @@ export const PackOverview: React.FC<Props> = ({ mobile_app_url }) => {
   const { addCards } = useContext(CardsContext);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [pack, setPack] = useState<I_PackBundle | I_PackLessonBundle>();
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -59,13 +64,39 @@ export const PackOverview: React.FC<Props> = ({ mobile_app_url }) => {
     packsService
       .getPack(mobile_app_url, abortC.current.signal)
       .then((packRes: I_PackBundle | I_PackLessonBundle) => {
-        console.log(packRes);
         addCards([packRes.next_lesson]);
-        addCards((packRes as I_PackBundle).bundles);
+        if ((packRes as I_PackLessonBundle).lessons) {
+          addCards((packRes as I_PackLessonBundle).lessons);
+        } else {
+          addCards((packRes as I_PackBundle).bundles);
+        }
         setPack(packRes);
+        setRefreshing(false);
       });
 
-  const refresh = useCallback(() => {}, []);
+  const refresh = useCallback(() => {
+    setRefreshing(true);
+    getPack();
+  }, []);
+
+  const onMainBtnClick = useCallback(() => {
+    if (pack?.completed) {
+      setShowResetModal(true);
+    } else {
+      // TODO: add navigation to pack?.next_lesson
+    }
+  }, [pack]);
+
+  const resetProgress = useCallback(() => {
+    if (pack) {
+      userService.resetProgress(pack.id);
+      refresh();
+    }
+  }, [pack]);
+
+  const onBundlePress = useCallback((url: string) => {
+    // TODO add navigation to url
+  }, []);
 
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
@@ -88,20 +119,22 @@ export const PackOverview: React.FC<Props> = ({ mobile_app_url }) => {
           <PacksBanner
             {...pack}
             isMainPacksPage={false}
-            onMainBtnClick={() => {}}
+            onMainBtnClick={onMainBtnClick}
           />
-
-          {(pack as I_PackBundle).bundles?.map((b: I_PackLessonBundle) => (
-            <View key={b.id} style={styles.cardContainer}>
+          <View style={styles.cardContainer}>
+            {(pack as I_PackBundle).bundles?.map((b: I_PackLessonBundle) => (
               <LibraryCard
                 key={b.id}
                 item={b}
                 subtitle={`${b.lesson_count} lessons`}
-                onBtnPress={() => {}}
+                onBtnPress={url => onBundlePress(url)}
                 isLocked={!pack.is_owned}
               />
-            </View>
-          ))}
+            ))}
+            {(pack as I_PackLessonBundle).lessons?.map((l: Card) => (
+              <RowCard key={l.id} id={l.id} route='packs' />
+            ))}
+          </View>
         </ScrollView>
       ) : (
         <ActivityIndicator
@@ -114,10 +147,26 @@ export const PackOverview: React.FC<Props> = ({ mobile_app_url }) => {
       {pack?.is_owned && pack.next_lesson?.id && (
         <NextLesson
           item={pack.next_lesson.id}
-          text={`BUNDLE ${(pack as I_PackBundle).bundle_number} - LESSON ${
-            (pack as I_PackBundle).current_lesson_index + 1
-          }`}
+          text={
+            pack.type === 'pack-bundle'
+              ? `BUNDLE ${(pack as I_PackBundle).bundle_number} - LESSON ${
+                  pack.current_lesson_index + 1
+                }`
+              : `LESSON ${pack.current_lesson_index + 1}`
+          }
           progress={pack.progress_percent}
+        />
+      )}
+      {showResetModal && (
+        <ActionModal
+          title='Hold your horses...'
+          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+          btnText='RESET'
+          onAction={() => {
+            setShowResetModal(false);
+            resetProgress();
+          }}
+          onCancel={() => setShowResetModal(false)}
         />
       )}
     </SafeAreaView>
