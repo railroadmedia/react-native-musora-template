@@ -14,6 +14,7 @@ import {
   StatusBar
 } from 'react-native';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -45,6 +46,12 @@ export const PackOverview: React.FC<Props> = ({
     params: { mobile_app_url }
   }
 }) => {
+  const { push } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      push: (scene: string, props: {}) => void;
+    }
+  >();
+
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
@@ -68,6 +75,7 @@ export const PackOverview: React.FC<Props> = ({
       abortC.current.abort();
     };
   }, []);
+
   const getPack = (): Promise<void> =>
     packsService
       .getPack(mobile_app_url, abortC.current.signal)
@@ -102,8 +110,8 @@ export const PackOverview: React.FC<Props> = ({
     }
   }, [pack]);
 
-  const onBundlePress = useCallback((url: string) => {
-    // TODO add navigation to url
+  const onBundlePress = useCallback((mobile_app_url: string) => {
+    push('packOverview', { mobile_app_url });
   }, []);
 
   return (

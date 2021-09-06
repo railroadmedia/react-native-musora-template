@@ -16,7 +16,8 @@ import {
   TouchableOpacity,
   Dimensions,
   ImageBackground,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
@@ -262,28 +263,37 @@ export const Packs: React.FC<Props> = () => {
 
   return (
     <>
-      <FlatList
-        windowSize={10}
-        style={styles.container}
-        initialNumToRender={5}
-        maxToRenderPerBatch={10}
-        numColumns={utils.isTablet ? 6 : 3}
-        removeClippedSubviews={true}
-        keyExtractor={item => item.id.toString()}
-        data={formatListsContent()}
-        keyboardShouldPersistTaps='handled'
-        refreshControl={renderFLRefreshControl()}
-        ListEmptyComponent={renderFLEmpty()}
-        ListHeaderComponent={() => (
-          <PacksBanner
-            {...topHeaderPack}
-            isMainPacksPage={true}
-            onMainBtnClick={onMainBtnClick}
-            onSeeMoreBtnClick={onSeeMore}
-          />
-        )}
-        renderItem={renderFLItem}
-      />
+      {topHeaderPack?.id ? (
+        <FlatList
+          windowSize={10}
+          style={styles.container}
+          initialNumToRender={5}
+          maxToRenderPerBatch={10}
+          numColumns={utils.isTablet ? 6 : 3}
+          removeClippedSubviews={true}
+          keyExtractor={item => item.id.toString()}
+          data={formatListsContent()}
+          keyboardShouldPersistTaps='handled'
+          refreshControl={renderFLRefreshControl()}
+          ListEmptyComponent={renderFLEmpty()}
+          ListHeaderComponent={() => (
+            <PacksBanner
+              {...topHeaderPack}
+              isMainPacksPage={true}
+              onMainBtnClick={onMainBtnClick}
+              onSeeMoreBtnClick={onSeeMore}
+            />
+          )}
+          renderItem={renderFLItem}
+        />
+      ) : (
+        <ActivityIndicator
+          size='large'
+          animating={true}
+          color={utils.color}
+          style={{ flex: 1 }}
+        />
+      )}
       {showResetModal && (
         <ActionModal
           title='Hold your horses...'

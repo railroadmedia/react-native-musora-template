@@ -30,6 +30,9 @@ import { Packs } from './components/packs/Packs';
 import { PackOverview } from './components/packs/PackOverview';
 import { ShowOverview } from './components/show/ShowOverview';
 import type { Show } from './interfaces/show.interfaces';
+import { NavigationMenu } from './common_components/NavigationMenu';
+import { Method } from './components/method/Method';
+import { CourseOverview } from './components/course/CourseOverview';
 
 type Scenes =
   | 'home'
@@ -64,6 +67,13 @@ const Stack = createStackNavigator<{
   showOverview: {
     show: Show;
   };
+  navigationMenu: {
+    activeButton: string;
+  };
+  courseOverview: {
+    mobile_app_url: string;
+    isMethod: boolean;
+  };
 }>();
 
 export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
@@ -86,6 +96,11 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               <Stack.Navigator
                 screenOptions={{
                   header: ({ options: { title } }: StackHeaderProps) => {
+                    if (
+                      !!title?.toLowerCase()?.match(/^(level)$/) ||
+                      !!title?.toLowerCase()?.includes('overview')
+                    )
+                      return null;
                     return (
                       <Header
                         title={title}
@@ -115,6 +130,10 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                     {props => <Catalogue {...props} scene={c} />}
                   </Stack.Screen>
                 ))}
+
+                <Stack.Screen name='navigationMenu'>
+                  {props => <NavigationMenu {...props} />}
+                </Stack.Screen>
                 <Stack.Screen name='search' options={{ title: 'Search' }}>
                   {props => <Search {...props} />}
                 </Stack.Screen>
@@ -133,26 +152,39 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                 >
                   {props => <SeeAll {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name='level'>
+                <Stack.Screen name='method'>{props => <Method />}</Stack.Screen>
+                <Stack.Screen name='level' options={{ title: 'Level' }}>
                   {props => <Level {...props} />}
+                </Stack.Screen>
+                <Stack.Screen
+                  name='courseOverview'
+                  options={{ title: 'CourseOverview' }}
+                >
+                  {props => <CourseOverview {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name='packs'>
                   {props => <Packs {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name='packOverview'>
+                <Stack.Screen
+                  name='packOverview'
+                  options={{ title: 'PackOverview' }}
+                >
                   {props => <PackOverview {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name='showOverview'>
+                <Stack.Screen
+                  name='showOverview'
+                  options={{ title: 'ShowOverview' }}
+                >
                   {props => <ShowOverview {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name='settings' options={{ title: 'Settings' }}>
-                  {props => <Settings />}
+                  {props => <Settings {...props} />}
                 </Stack.Screen>
                 <Stack.Screen
                   name='notificationSettings'
                   options={{ title: 'Notification Settings' }}
                 >
-                  {props => <NotificationSettings />}
+                  {props => <NotificationSettings {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name='support' options={{ title: 'Support' }}>
                   {props => <Support />}
