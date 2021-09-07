@@ -33,6 +33,7 @@ import type { Show } from './interfaces/show.interfaces';
 import { NavigationMenu } from './common_components/NavigationMenu';
 import { Method } from './components/method/Method';
 import { CourseOverview } from './components/course/CourseOverview';
+import { StudentReview } from './components/forms/StudentReview';
 
 type Scenes =
   | 'home'
@@ -98,7 +99,8 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                   header: ({ options: { title } }: StackHeaderProps) => {
                     if (
                       !!title?.toLowerCase()?.match(/^(level)$/) ||
-                      !!title?.toLowerCase()?.includes('overview')
+                      !!title?.toLowerCase()?.includes('overview') ||
+                      !!title?.toLowerCase()?.includes('studentreview')
                     )
                       return null;
                     return (
@@ -197,6 +199,12 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                   options={{ title: 'Privacy Policy' }}
                 >
                   {props => <PrivacyPolicy />}
+                </Stack.Screen>
+                <Stack.Screen
+                  name='studentReview'
+                  options={{ title: 'StudentReview' }}
+                >
+                  {props => <StudentReview {...props} />}
                 </Stack.Screen>
               </Stack.Navigator>
               <BottomNav visibleOn={bottomNavVisibleOn} />

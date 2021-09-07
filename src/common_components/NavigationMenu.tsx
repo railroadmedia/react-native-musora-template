@@ -123,7 +123,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: utils.color
     },
     smallTitle: {
-      fontSize: 24,
+      fontSize: utils.figmaFontSizeScaler(24),
       fontFamily: 'OpenSans-Bold'
     }
   });

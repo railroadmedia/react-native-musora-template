@@ -159,3 +159,7 @@ export interface ShowService {
     signal: AbortSignal
   ) => Promise<ShowLessons>;
 }
+
+export interface StudentFocuService {
+  submitStudentReview: (body: any) => Promise<any>;
+}

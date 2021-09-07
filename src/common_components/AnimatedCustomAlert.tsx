@@ -69,11 +69,7 @@ export const AnimatedCustomAlert = forwardRef<RefObject<any>, Props>(
         onRequestClose={closeModal}
         supportedOrientations={['portrait', 'landscape']}
       >
-        <TouchableOpacity
-          testID='modalBackground'
-          style={styles.modalBackground}
-          onPress={closeModal}
-        >
+        <TouchableOpacity style={styles.modalBackground} onPress={closeModal}>
           <Animated.View
             style={[
               styles.animatedView,

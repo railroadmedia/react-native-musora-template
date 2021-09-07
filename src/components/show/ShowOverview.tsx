@@ -263,7 +263,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: current.background
     },
     subtitle: {
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold',
       color: current.textColor
     },
@@ -273,7 +273,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignSelf: 'center',
       color: '#ffffff',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15
+      fontSize: utils.figmaFontSizeScaler(15)
     },
     center: {
       flexDirection: 'row',
@@ -289,7 +289,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       marginTop: 100,
       color: utils.color,
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     },
     extraBtn: {
