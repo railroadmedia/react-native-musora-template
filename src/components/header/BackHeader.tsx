@@ -14,11 +14,13 @@ interface Props {
   title: string;
   transparent?: boolean;
   settingsVisible?: boolean;
+  onBack?: () => void;
 }
 export const BackHeader: React.FC<Props> = ({
   title,
   transparent,
-  settingsVisible
+  settingsVisible,
+  onBack
 }) => {
   const { navigate, goBack } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
@@ -64,7 +66,7 @@ export const BackHeader: React.FC<Props> = ({
             paddingVertical: 7.5,
             paddingRight: 20
           },
-          onPress: goBack
+          onPress: onBack || goBack
         })}
         {!!settingsVisible &&
           settings({

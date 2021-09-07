@@ -68,7 +68,7 @@ const call: Call = async function ({ url, method, signal, body }) {
       await authenticate();
       return call({ url, method, signal, body });
     } else return json;
-  } catch (error) {
+  } catch (error: any) {
     if (error.toString() === 'AbortError: Aborted') return;
     return utils.serverDownError;
   }

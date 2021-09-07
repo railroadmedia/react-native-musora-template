@@ -206,7 +206,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       >
         <Text style={styles.sectionTitle}>All Lessons</Text>
         <Sort onPress={() => {}} />
-        <Filters onPress={() => {}} />
+        <Filters />
       </View>
     </>
   );
