@@ -1,4 +1,11 @@
-import React, { useContext, useEffect, useReducer, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  useState
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -20,7 +27,8 @@ import {
   SET_CATALOGUE_FROM_CACHE,
   SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
-  UPDATE_CATALOGUE_LOADERS
+  UPDATE_CATALOGUE_LOADERS,
+  SET_METHOD
 } from '../../state/catalogue/CatalogueReducer';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -31,6 +39,9 @@ import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
 import RowCard from '../../common_components/cards/RowCard';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import ActionModal from '../../common_components/modals/ActionModal';
+import { userService } from '../../services/user.service';
+import { methodService } from '../../services/method.service';
 
 interface Props {
   scene: string;
@@ -39,7 +50,7 @@ interface Props {
 export const Catalogue: React.FC<Props> = ({ scene }) => {
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props: {}) => void;
+      navigate: (scene: string, props?: {}) => void;
     }
   >();
 
@@ -49,6 +60,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
+  const [showResetModal, setShowResetModal] = useState(false);
   let styles = setStyles(theme);
 
   const [
@@ -114,12 +126,48 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         }
       }));
 
+  const onBannerRightBtnPress = useCallback(() => {
+    navigate('method');
+  }, []);
+
+  const onBannerLefttBtnPress = useCallback(() => {
+    if (method?.completed) {
+      setShowResetModal(true);
+    } else {
+      // TODO: navigate to method.next_lesson
+    }
+  }, [method?.completed]);
+
+  const resetMethodProgress = useCallback(() => {
+    dispatch({
+      type: UPDATE_CATALOGUE_LOADERS,
+      scene,
+      loadingMore: false,
+      refreshing: true
+    });
+    if (method) {
+      userService.resetProgress(method.id);
+      setShowResetModal(false);
+      methodService.getMethod(abortC.current.signal).then(methodRes => {
+        if (isMounted.current) {
+          addCards([methodRes.next_lesson]);
+          dispatch({
+            type: SET_METHOD,
+            method: methodRes,
+            scene: 'home',
+            refreshing: false
+          });
+        }
+      });
+    }
+  }, [method]);
+
   const renderFLMethodBanner = () => (
     <MethodBanner
       {...method}
       isBig={true}
-      onRightBtnPress={() => {}}
-      onLeftBtnPress={() => {}}
+      onRightBtnPress={onBannerRightBtnPress}
+      onLeftBtnPress={onBannerLefttBtnPress}
     />
   );
 
@@ -288,6 +336,15 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         refreshControl={renderFLRefreshControl()}
         onEndReached={loadMore}
       />
+      {showResetModal && (
+        <ActionModal
+          title='Hold your horses...'
+          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+          btnText='RESET'
+          onAction={resetMethodProgress}
+          onCancel={() => setShowResetModal(false)}
+        />
+      )}
     </View>
   );
 };

@@ -16,6 +16,8 @@ import {
   StyleSheet
 } from 'react-native';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
@@ -41,6 +43,12 @@ export const Level: React.FC<Props> = ({
     params: { mobile_app_url }
   }
 }) => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
+
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
@@ -100,6 +108,14 @@ export const Level: React.FC<Props> = ({
     }
   }, [level?.is_added_to_primary_playlist, showRemoveModal]);
 
+  const onMainBtnPress = useCallback(() => {
+    // TODO navigate to next lesson
+  }, []);
+
+  const goToMethodCourse = useCallback((mobile_app_url: string) => {
+    navigate('courseOverview', { mobile_app_url, isMethod: true });
+  }, []);
+
   return (
     <View style={styles.container}>
       <StatusBar
@@ -123,7 +139,7 @@ export const Level: React.FC<Props> = ({
               {...level}
               is_added_to_primary_playlist={level.is_added_to_primary_playlist}
               onToggleMyList={toggleMyList}
-              onMainBtnPress={() => {}}
+              onMainBtnPress={onMainBtnPress}
             />
             <View style={styles.container}>
               {!level.courses?.length && (
@@ -134,7 +150,7 @@ export const Level: React.FC<Props> = ({
                   key={c.id}
                   item={c}
                   subtitle={`Level ${c.level_rank}`}
-                  onBtnPress={() => {}}
+                  onBtnPress={() => goToMethodCourse(c.mobile_app_url)}
                 />
               ))}
             </View>

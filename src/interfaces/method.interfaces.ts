@@ -33,7 +33,7 @@ export interface Level {
 }
 
 export interface Method {
-  id?: number;
+  id: number;
   started?: boolean;
   level_rank?: string;
   title?: string;

@@ -36,6 +36,8 @@ import {
   x,
   play
 } from '../../images/svgs';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
+
 import RowCard from '../../common_components/cards/RowCard';
 import { NextLesson } from '../../common_components/NextLesson';
 import { methodService } from '../../services/method.service';
@@ -45,11 +47,19 @@ import type { Card } from '../../interfaces/card.interfaces';
 import type { MethodCourse } from '../../interfaces/method.interfaces';
 
 interface Props {
-  isMethod: boolean;
-  mobile_app_url: string;
+  route: RouteProp<ParamListBase, 'courseOverview'> & {
+    params: {
+      mobile_app_url: string;
+      isMethod: boolean;
+    };
+  };
 }
 
-export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
+export const CourseOverview: React.FC<Props> = ({
+  route: {
+    params: { isMethod, mobile_app_url }
+  }
+}) => {
   const { goBack } = useNavigation();
 
   const [course, setCourse] = useState<MethodCourse>();
@@ -84,7 +94,7 @@ export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
       .getMethodCourse(mobile_app_url, abortC.current.signal, false)
       .then(courseRes => {
         if (isMounted.current) {
-          addCards([courseRes.next_lesson]);
+          if (courseRes.next_lesson) addCards([courseRes.next_lesson]);
           addCards(courseRes.lessons);
           setCourse(courseRes);
           setRefreshing(false);
@@ -195,7 +205,7 @@ export const Course: React.FC<Props> = ({ isMethod, mobile_app_url }) => {
             <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
               {back({
                 icon: {
-                  fill: themeStyles[theme].textColor,
+                  fill: themeStyles[theme].background,
                   height: 15,
                   width: 15
                 }

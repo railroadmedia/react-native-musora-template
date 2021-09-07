@@ -62,7 +62,7 @@ export const ShowOverview: React.FC<Props> = ({
 
   const [refreshing, setRefreshing] = useState(false);
   const [animateLessons, setAnimateLessons] = useState(true);
-  const [showLessons, setShowLessons] = useState<Card[]>();
+  const [showLessons, setShowLessons] = useState<Card[]>([]);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
@@ -93,16 +93,40 @@ export const ShowOverview: React.FC<Props> = ({
       )
       .then((showRes: ShowLessons) => {
         if (showRes) {
-          setShowLessons(showRes.data);
           addCards(showRes.data);
+          setShowLessons(showRes.data);
           setRefreshing(false);
           setAnimateLessons(false);
         }
       });
 
-  const loadMore = useCallback(() => {}, []);
+  const loadMore = useCallback(() => {
+    setAnimateLessons(true);
+    showService
+      .getLessons(
+        show.type,
+        ++page.current,
+        '',
+        '-published_on',
+        abortC.current.signal
+      )
+      .then((showRes: ShowLessons) => {
+        if (showRes) {
+          addCards(showRes.data);
+          const lessons = [...showLessons, ...showRes.data];
+          setShowLessons([...showLessons, ...showRes.data]);
+          setAnimateLessons(false);
+        }
+      });
+  }, [showLessons]);
 
-  const refresh = useCallback(() => {}, []);
+  const refresh = useCallback(() => {
+    abortC.current.abort();
+    abortC.current = new AbortController();
+    page.current = 1;
+    setRefreshing(true);
+    getShow();
+  }, []);
 
   const renderFListHeader = (): ReactElement => (
     <>
@@ -124,7 +148,6 @@ export const ShowOverview: React.FC<Props> = ({
         />
         {show.type === 'question-and-answer' && (
           <TouchableOpacity
-            testID='questionBtn'
             style={styles.extraBtn}
             onPress={() => {
               // navigate('askQuestion')
@@ -135,7 +158,6 @@ export const ShowOverview: React.FC<Props> = ({
         )}
         {show.type === 'student-collaborations' && (
           <TouchableOpacity
-            testID='studentCollabBtn'
             style={styles.extraBtn}
             onPress={() => {
               // navigate('submitCollabVideo')
@@ -146,7 +168,7 @@ export const ShowOverview: React.FC<Props> = ({
         )}
 
         <Text style={styles.description}>
-          {show.description.replace(/\s+/g, ' ')}
+          {show.description?.replace(/\s+/g, ' ')}
         </Text>
       </View>
       <View style={styles.subtitleContainer}>
@@ -182,30 +204,30 @@ export const ShowOverview: React.FC<Props> = ({
         backgroundColor={themeStyles[theme].background}
         barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
       />
-
-      <FlatList
-        testID='flatList'
-        style={styles.container}
-        data={showLessons}
-        key='flatlist'
-        keyboardShouldPersistTaps='handled'
-        keyExtractor={lesson => lesson.id.toString()}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.01}
-        removeClippedSubviews={true}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refresh}
-            colors={[utils.color]}
-            tintColor={utils.color}
-          />
-        }
-        ListHeaderComponent={renderFListHeader()}
-        ListEmptyComponent={renderFListEmpty()}
-        ListFooterComponent={renderFListFooter()}
-        renderItem={renderFListItem}
-      />
+      {showLessons && (
+        <FlatList
+          style={styles.container}
+          data={showLessons}
+          key='flatlist'
+          keyboardShouldPersistTaps='handled'
+          keyExtractor={lesson => lesson.id.toString()}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.01}
+          removeClippedSubviews={true}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={refresh}
+              colors={[utils.color]}
+              tintColor={utils.color}
+            />
+          }
+          ListHeaderComponent={renderFListHeader()}
+          ListEmptyComponent={renderFListEmpty()}
+          ListFooterComponent={renderFListFooter()}
+          renderItem={renderFListItem}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -241,9 +263,9 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: current.background
     },
     subtitle: {
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold',
-      color: current.contrastTextColor
+      color: current.textColor
     },
     buttonText: {
       padding: 15,
@@ -251,7 +273,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignSelf: 'center',
       color: '#ffffff',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15
+      fontSize: utils.figmaFontSizeScaler(15)
     },
     center: {
       flexDirection: 'row',
@@ -267,7 +289,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       marginTop: 100,
       color: utils.color,
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     },
     extraBtn: {

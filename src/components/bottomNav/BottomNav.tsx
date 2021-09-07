@@ -21,7 +21,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const { addListener, navigate, getCurrentRoute } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       getCurrentRoute: () => { name: string };
-      navigate: (scene: string) => void;
+      navigate: (scene: string, props?: {}) => void;
     }
   >();
 
@@ -181,7 +181,9 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
           container: { padding: 20 },
           onPress: () => {
             changeActiveBtn?.('menu');
-            navigate('courses');
+            navigate('navigationMenu', {
+              activeButton: getCurrentRoute().name
+            });
           }
         })}
       </View>

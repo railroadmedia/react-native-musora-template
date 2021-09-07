@@ -392,6 +392,52 @@ export const play = (props: Props) =>
     )
   });
 
+export const arrowUp = (props: Props) =>
+  touchifySvg({
+    ...props,
+    children: (
+      <Svg
+        viewBox='0 0 32 32'
+        fillRule='evenodd'
+        clipRule='evenodd'
+        strokeLinejoin='round'
+        style={{
+          width: props.icon.width,
+          height: props.icon.height
+        }}
+        fill={props.icon.fill}
+      >
+        <Path
+          id='arrow-up'
+          d='M16,11.05l-12.021,12.021c-0.391,0.39 -1.024,0.39 -1.415,0c-0.39,-0.39 -0.39,-1.024 0,-1.414l12.728,-12.728c0.196,-0.195 0.452,-0.293 0.708,-0.293c0.256,0 0.512,0.098 0.708,0.293l12.728,12.728c0.39,0.39 0.39,1.024 0,1.414c-0.391,0.39 -1.024,0.39 -1.415,0l-12.021,-12.021Z'
+        />
+      </Svg>
+    )
+  });
+
+export const arrowDown = (props: Props) =>
+  touchifySvg({
+    ...props,
+    children: (
+      <Svg
+        viewBox='0 0 32 32'
+        fillRule='evenodd'
+        clipRule='evenodd'
+        strokeLinejoin='round'
+        style={{
+          width: props.icon.width,
+          height: props.icon.height
+        }}
+        fill={props.icon.fill}
+      >
+        <Path
+          id='arrow-down'
+          d='M16,20.95l12.021,-12.021c0.391,-0.39 1.024,-0.39 1.415,0c0.39,0.39 0.39,1.024 0,1.414l-12.728,12.728c-0.196,0.195 -0.452,0.293 -0.708,0.293c-0.256,0 -0.512,-0.098 -0.708,-0.293l-12.728,-12.728c-0.39,-0.39 -0.39,-1.024 0,-1.414c0.391,-0.39 1.024,-0.39 1.415,0l12.021,12.021Z'
+        />
+      </Svg>
+    )
+  });
+
 export const arrowRight = (props: Props) =>
   touchifySvg({
     ...props,

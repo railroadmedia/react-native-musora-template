@@ -95,7 +95,7 @@ export const PacksBanner: React.FC<Props> = ({
   const renderColoredBtn = () => {
     return (
       <TouchableOpacity
-        style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : { flex: 1 }]}
+        style={[styles.coloredBtn, isMainPacksPage ? { flex: 2 } : {}]}
         onPress={onMainBtnClick}
       >
         {!is_owned
@@ -103,7 +103,7 @@ export const PacksBanner: React.FC<Props> = ({
           : !completed
           ? play({ icon: iconStyle })
           : reset({ icon: iconStyle })}
-        <Text style={styles.buttonText} numberOfLines={2}>
+        <Text style={styles.buttonText} numberOfLines={1}>
           {!is_owned
             ? isMainPacksPage
               ? 'SEE DETAILS'
