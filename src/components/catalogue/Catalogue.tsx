@@ -83,6 +83,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const abortC = useRef(new AbortController());
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
+  const filters = useRef<{} | undefined>();
 
   useEffect(() => {
     styles = setStyles(theme);
@@ -106,6 +107,9 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     (refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
+        filters.current = all?.meta?.filterOptions;
+        console.log(all);
+
         if (isMounted.current) {
           addCardsAndCache(
             all?.data
@@ -254,7 +258,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       >
         <Text style={styles.sectionTitle}>All Lessons</Text>
         <Sort onPress={() => {}} />
-        <Filters />
+        <Filters options={filters.current} />
       </View>
     </>
   );

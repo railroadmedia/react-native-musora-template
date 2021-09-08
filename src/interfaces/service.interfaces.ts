@@ -10,11 +10,24 @@ import type {
 import type { Show, ShowLessons } from './show.interfaces';
 import type { User, UserAvatar } from './user.interfaces';
 
+export interface Filters {
+  content_type?: string[];
+  difficulty?: string[];
+  instructor?: {
+    head_shot_picture_url: string;
+    id: number;
+    name: string;
+    type: string;
+  }[];
+  showSkillLevel?: boolean;
+  style?: string[];
+  topic?: string[];
+}
 export interface CatalogueSection {
   title?: string;
   message?: string;
   data?: Card[];
-  meta?: any;
+  meta?: { filterOptions: Filters };
 }
 
 export interface PacksSection {
