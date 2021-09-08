@@ -85,6 +85,17 @@ export const StudentReview: React.FC<Props> = () => {
     styles = setStyles(theme);
   }, [theme]);
 
+  const dimChange = useCallback(e => {
+    setWidth(e.window.width);
+  }, []);
+
+  useEffect(() => {
+    Dimensions.addEventListener('change', dimChange);
+    return () => {
+      Dimensions.removeEventListener('change', dimChange);
+    };
+  }, [dimChange]);
+
   const onNext = useCallback(async () => {
     Keyboard.dismiss();
     let disabled = false;
@@ -425,7 +436,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       color: current.contrastTextColor
     },
     detail: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans',
       color: current.contrastTextColor
     },
@@ -462,16 +473,16 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       flex: 1,
       color: current.textColor,
-      fontSize: 24,
+      fontSize: utils.figmaFontSizeScaler(24),
       fontFamily: 'OpenSans-Bold'
     },
     subtitle: {
       color: current.textColor,
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold'
     },
     bigTextInput: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       borderWidth: 1,
       borderRadius: 10,
@@ -484,7 +495,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: current.borderColor
     },
     smallTextInput: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       borderWidth: 1,
       borderRadius: 50,
@@ -498,7 +509,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     buttonText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15
+      fontSize: utils.figmaFontSizeScaler(15)
     },
     drop: {
       borderColor: current.contrastTextColor,

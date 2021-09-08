@@ -8,6 +8,12 @@ import type {
   PackLessonBundle
 } from './packs.interfaces';
 import type { Show, ShowLessons } from './show.interfaces';
+import type {
+  AskQuestionBody,
+  FormResp,
+  StudentReviewBody,
+  SubmitCollabVideoBody
+} from './studentFocus.interfaces';
 import type { User, UserAvatar } from './user.interfaces';
 
 export interface CatalogueSection {
@@ -161,5 +167,7 @@ export interface ShowService {
 }
 
 export interface StudentFocuService {
-  submitStudentReview: (body: any) => Promise<any>;
+  submitStudentReview: (body: StudentReviewBody) => Promise<FormResp>;
+  askQuestion: (body: AskQuestionBody) => Promise<FormResp>;
+  submitCollabVideo: (body: SubmitCollabVideoBody) => Promise<FormResp>;
 }

@@ -8,5 +8,19 @@ export const studentFocuService: StudentFocuService = {
       method: 'POST',
       body
     });
+  },
+  askQuestion: function (body: any) {
+    return call({
+      url: `/musora-api/submit-question`,
+      method: 'POST',
+      body
+    });
+  },
+  submitCollabVideo: function (body: any) {
+    return call({
+      url: `/musora-api/submit-video`,
+      method: 'POST',
+      body
+    });
   }
 };

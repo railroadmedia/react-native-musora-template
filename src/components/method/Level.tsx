@@ -29,6 +29,7 @@ import { LevelBanner } from './LevelBanner';
 import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
+import { method } from '../../images/svgs';
 
 interface Props {
   route: RouteProp<ParamListBase, 'level'> & {
@@ -140,6 +141,18 @@ export const Level: React.FC<Props> = ({
               is_added_to_primary_playlist={level.is_added_to_primary_playlist}
               onToggleMyList={toggleMyList}
               onMainBtnPress={onMainBtnPress}
+              customTitle={`LEVEL ${level.level_number}`}
+              renderCustomLogo={() => (
+                <>
+                  {utils.svgBrand({
+                    icon: { width: '15%', fill: utils.color }
+                  })}
+                  {method({
+                    icon: { width: '25%', fill: 'white' },
+                    container: { paddingTop: 5 }
+                  })}
+                </>
+              )}
             />
             <View style={styles.container}>
               {!level.courses?.length && (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -34,6 +34,8 @@ import { NavigationMenu } from './common_components/NavigationMenu';
 import { Method } from './components/method/Method';
 import { CourseOverview } from './components/course/CourseOverview';
 import { StudentReview } from './components/forms/StudentReview';
+import { AskQuestion } from './components/forms/AskQuestion';
+import { SubmitCollabVideo } from './components/forms/SubmitCollabVideo';
 
 type Scenes =
   | 'home'
@@ -88,6 +90,19 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       .catch(() => {});
   }, []);
 
+  const hideHeader = useCallback((title: string) => {
+    const titleExceptions: string[] = [
+      'level',
+      'showoverview',
+      'courseoverview',
+      'packoverview',
+      'studentreview',
+      'askquestion',
+      'submitcollabvideo'
+    ];
+    return titleExceptions.includes(title?.toLowerCase());
+  }, []);
+
   return (
     <SafeAreaProvider>
       <Store>
@@ -97,12 +112,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               <Stack.Navigator
                 screenOptions={{
                   header: ({ options: { title } }: StackHeaderProps) => {
-                    if (
-                      !!title?.toLowerCase()?.match(/^(level)$/) ||
-                      !!title?.toLowerCase()?.includes('overview') ||
-                      !!title?.toLowerCase()?.includes('studentreview')
-                    )
-                      return null;
+                    if (title && hideHeader(title)) return null;
                     return (
                       <Header
                         title={title}
@@ -205,6 +215,18 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                   options={{ title: 'StudentReview' }}
                 >
                   {props => <StudentReview {...props} />}
+                </Stack.Screen>
+                <Stack.Screen
+                  name='askQuestion'
+                  options={{ title: 'AskQuestion' }}
+                >
+                  {props => <AskQuestion {...props} />}
+                </Stack.Screen>
+                <Stack.Screen
+                  name='submitCollabVideo'
+                  options={{ title: 'SubmitCollabVideo' }}
+                >
+                  {props => <SubmitCollabVideo {...props} />}
                 </Stack.Screen>
               </Stack.Navigator>
               <BottomNav visibleOn={bottomNavVisibleOn} />
