@@ -8,15 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import {
-  back,
-  info,
-  infoFilled,
-  method,
-  play,
-  plus,
-  x
-} from '../../images/svgs';
+import { back, info, infoFilled, play, plus, x } from '../../images/svgs';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
@@ -36,7 +28,8 @@ interface Props {
   completed?: boolean;
   description?: string;
   is_added_to_primary_playlist?: boolean;
-  level_number: number;
+  customTitle: string;
+  renderCustomLogo: () => any;
 }
 
 export const LevelBanner: React.FC<Props> = ({
@@ -47,7 +40,8 @@ export const LevelBanner: React.FC<Props> = ({
   completed,
   description,
   is_added_to_primary_playlist,
-  level_number
+  customTitle,
+  renderCustomLogo
 }) => {
   const { goBack } = useNavigation();
 
@@ -84,12 +78,8 @@ export const LevelBanner: React.FC<Props> = ({
             width={'100%'}
           />
         </View>
-        {utils.svgBrand({ icon: { width: '15%', fill: utils.color } })}
-        {method({
-          icon: { width: '25%', fill: 'white' },
-          container: { paddingTop: 5 }
-        })}
-        <Text style={styles.levelTitle}>LEVEL {level_number}</Text>
+        {renderCustomLogo()}
+        <Text style={styles.levelTitle}>{customTitle}</Text>
         <View style={styles.btnsContainer}>
           <TouchableOpacity style={styles.placeHolder} onPress={onToggleMyList}>
             {is_added_to_primary_playlist
