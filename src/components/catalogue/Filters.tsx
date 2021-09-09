@@ -7,10 +7,12 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHeader } from '../..';
-import { filters } from '../../images/svgs';
+import { filters, arrowDown, arrowUp } from '../../images/svgs';
 import type { Filters as I_Filters } from '../../interfaces/service.interfaces';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -25,11 +27,16 @@ export const Filters: React.FC<Props> = ({ options }) => {
   const { contrastTextColor } = themeStyles[theme];
 
   const [isVisible, setIsVisible] = useState(false);
+  const [scrollable, setScrollable] = useState(true);
   const [skillLevel, setSkillLevel] = useState(0);
   const [maxTouchableOpacityTextHeight, setMaxTouchableOpacityTextHeight] =
     useState(0);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
+  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
+  const [selectedProgress, setSelectedProgress] = useState<string[]>([]);
+  const [isTeacherSectionOpened, setTeacherSectionOpened] = useState(false);
+  const [isProgressSectionOpened, setProgressSectionOpened] = useState(false);
 
   const skillLevelWidth = useRef(0);
   const panResponder = useRef(
@@ -39,6 +46,9 @@ export const Filters: React.FC<Props> = ({ options }) => {
       onMoveShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponderCapture: () => true,
       onShouldBlockNativeResponder: () => true,
+      onPanResponderGrant: () => setScrollable(false),
+      onPanResponderRelease: () => setScrollable(true),
+      onPanResponderTerminate: () => setScrollable(true),
       onPanResponderMove: (_, { x0, dx }) => {
         const level =
           parseInt((((x0 + dx) / skillLevelWidth.current) * 10).toFixed(0)) - 1;
@@ -46,6 +56,8 @@ export const Filters: React.FC<Props> = ({ options }) => {
       }
     })
   ).current;
+
+  const touchableFiller = () => {};
 
   const renderSkillLevel = () => {
     return (
@@ -70,7 +82,7 @@ export const Filters: React.FC<Props> = ({ options }) => {
         </View>
         {!!skillLevel && (
           <Text style={styles.levelDescription}>
-            {utils.filtersLevelDescription(skillLevel)}
+            {utils.filterLabels().level[skillLevel]}
           </Text>
         )}
         <TouchableOpacity
@@ -106,44 +118,42 @@ export const Filters: React.FC<Props> = ({ options }) => {
             ? 'WHAT DO YOU WANT TO WORK ON?'
             : 'WHAT STYLE DO YOU WANT TO PLAY?'}
         </Text>
-        <View style={styles.unexpandableListContainer}>
-          {options?.[filterKey]?.map(f => {
+        <View style={styles.listContainer}>
+          {options?.[filterKey]?.map((f, i) => {
             f = f.toLowerCase();
             const isSel = sel.includes(f) || (f === 'all' && !sel.length);
             return (
-              <View style={{ width: `${100 / 3}%`, padding: 2.5 }}>
-                <TouchableOpacity
-                  onPress={() => {
-                    if (f === 'all') setSel([]);
-                    else if (sel.includes(f))
-                      setSel(sel.filter(st => st !== f));
-                    else setSel([...sel, f]);
-                  }}
+              <TouchableOpacity
+                key={`${f}${i}`}
+                onPress={() => {
+                  if (f === 'all') setSel([]);
+                  else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
+                  else setSel([...sel, f]);
+                }}
+                style={{
+                  ...styles.pressable,
+                  backgroundColor: isSel ? utils.color : 'transparent',
+                  borderColor: isSel ? 'transparent' : contrastTextColor,
+                  height: maxTouchableOpacityTextHeight
+                }}
+              >
+                <Text
+                  numberOfLines={
+                    f.split(' ').length > 1 ||
+                    f.split('/').length > 1 ||
+                    f.split('.').length > 1
+                      ? 2
+                      : 1
+                  }
                   style={{
-                    ...styles.pressable,
-                    backgroundColor: isSel ? utils.color : 'transparent',
-                    borderColor: isSel ? 'transparent' : contrastTextColor,
-                    height: maxTouchableOpacityTextHeight
+                    ...styles.pressableText,
+                    paddingHorizontal: maxTouchableOpacityTextHeight / 4,
+                    color: isSel ? 'white' : contrastTextColor
                   }}
                 >
-                  <Text
-                    numberOfLines={
-                      f.split(' ').length > 1 ||
-                      f.split('/').length > 1 ||
-                      f.split('.').length > 1
-                        ? 2
-                        : 1
-                    }
-                    style={{
-                      ...styles.pressableText,
-                      paddingHorizontal: maxTouchableOpacityTextHeight / 4,
-                      color: isSel ? 'white' : contrastTextColor
-                    }}
-                  >
-                    {f}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  {f}
+                </Text>
+              </TouchableOpacity>
             );
           })}
         </View>
@@ -152,7 +162,121 @@ export const Filters: React.FC<Props> = ({ options }) => {
   };
 
   const renderExpandableList = (filterKey: 'teacher' | 'progress') => {
-    return <></>;
+    const isOpened =
+      filterKey === 'teacher'
+        ? isTeacherSectionOpened
+        : isProgressSectionOpened;
+    const setIsOpened =
+      filterKey === 'teacher'
+        ? setTeacherSectionOpened
+        : setProgressSectionOpened;
+    const sel =
+      filterKey === 'teacher' ? selectedInstructors : selectedProgress;
+    const setSel =
+      filterKey === 'teacher' ? setSelectedInstructors : setSelectedProgress;
+    return (
+      <View style={styles.sectionContainer}>
+        <TouchableOpacity
+          onPress={() => setIsOpened(isOpened ? false : true)}
+          style={{ flexDirection: 'row', alignItems: 'center' }}
+        >
+          <Text style={styles.sectionTitle}>
+            {filterKey === 'teacher'
+              ? utils.filterLabels().teacherSectionTitle
+              : 'CHOOSE YOUR PROGRESS'}
+          </Text>
+          {(isOpened ? arrowUp : arrowDown)({
+            icon: {
+              width: 20,
+              height: 20,
+              fill: themeStyles[theme].contrastTextColor
+            }
+          })}
+        </TouchableOpacity>
+        <View
+          style={[styles.listContainer, { maxHeight: isOpened ? 10000 : 0 }]}
+        >
+          {filterKey === 'teacher'
+            ? options?.instructor?.map(
+                ({ id, head_shot_picture_url, name }) => {
+                  const isSel = sel.includes(`${id}`);
+                  return (
+                    <TouchableOpacity
+                      style={{
+                        width: '24%',
+                        alignItems: 'center',
+                        margin: '.5%',
+                        backgroundColor: isSel ? utils.color : 'transparent'
+                      }}
+                      onPress={() => {
+                        if (sel.includes(`${id}`))
+                          setSel(sel.filter(st => st !== `${id}`));
+                        else setSel([...sel, `${id}`]);
+                      }}
+                    >
+                      <Image
+                        style={styles.instructorImg}
+                        source={{
+                          uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco,ar_1,c_fill,g_face/${head_shot_picture_url}`
+                        }}
+                      />
+                      <Text
+                        numberOfLines={2}
+                        style={[
+                          styles.pressableText,
+                          {
+                            height: maxTouchableOpacityTextHeight,
+                            color: isSel ? 'white' : contrastTextColor
+                          }
+                        ]}
+                      >
+                        {name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                }
+              )
+            : ['all', 'in progress', 'completed'].map((f, i) => {
+                f = f.toLowerCase();
+                const isSel = sel.includes(f) || (f === 'all' && !sel.length);
+                return (
+                  <TouchableOpacity
+                    key={`${f}${i}`}
+                    onPress={() => {
+                      if (f === 'all') setSel([]);
+                      else if (sel.includes(f))
+                        setSel(sel.filter(st => st !== f));
+                      else setSel([...sel, f]);
+                    }}
+                    style={{
+                      ...styles.pressable,
+                      backgroundColor: isSel ? utils.color : 'transparent',
+                      borderColor: isSel ? 'transparent' : contrastTextColor,
+                      height: maxTouchableOpacityTextHeight
+                    }}
+                  >
+                    <Text
+                      numberOfLines={
+                        f.split(' ').length > 1 ||
+                        f.split('/').length > 1 ||
+                        f.split('.').length > 1
+                          ? 2
+                          : 1
+                      }
+                      style={{
+                        ...styles.pressableText,
+                        paddingHorizontal: maxTouchableOpacityTextHeight / 4,
+                        color: isSel ? 'white' : contrastTextColor
+                      }}
+                    >
+                      {f}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+        </View>
+      </View>
+    );
   };
 
   return (
@@ -186,11 +310,13 @@ export const Filters: React.FC<Props> = ({ options }) => {
             style={{ padding: 15 }}
           />
         ) : (
-          <ScrollView style={styles.scrollview} bounces={false}>
+          <ScrollView style={styles.scrollview} scrollEnabled={scrollable}>
             {renderSkillLevel()}
             {renderUnexpandableList('topic')}
             {renderUnexpandableList('style')}
             {renderExpandableList('teacher')}
+            {renderExpandableList('progress')}
+            <SafeAreaView edges={['bottom']} />
           </ScrollView>
         )}
       </Modal>
@@ -208,7 +334,8 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     sectionTitle: {
       fontSize: 20,
       fontFamily: 'RobotoCondensed-Bold',
-      color: current.contrastTextColor
+      color: current.contrastTextColor,
+      flex: 1
     },
     levelText: {
       color: current.textColor,
@@ -251,11 +378,25 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginTop: 20,
       textAlign: 'center'
     },
-    unexpandableListContainer: {
+    listContainer: {
+      overflow: 'hidden',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      alignItems: 'center'
     },
-    pressable: { borderWidth: 1, borderRadius: 99, justifyContent: 'center' },
-    pressableText: { textAlign: 'center', textTransform: 'uppercase' }
+    pressable: {
+      borderWidth: 1,
+      borderRadius: 99,
+      justifyContent: 'center',
+      width: `${100 / 3 - 1}%`,
+      margin: '.5%'
+    },
+    pressableText: {
+      textAlign: 'center',
+      textTransform: 'uppercase',
+      fontFamily: 'OpenSans-Semibold',
+      color: current.contrastTextColor
+    },
+    instructorImg: { width: '50%', aspectRatio: 1, borderRadius: 99 }
   });
