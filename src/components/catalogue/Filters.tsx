@@ -57,7 +57,39 @@ export const Filters: React.FC<Props> = ({ options }) => {
     })
   ).current;
 
-  const touchableFiller = () => {};
+  const touchableFiller = (
+    text: string,
+    selected: boolean,
+    onPress: Function
+  ) => (
+    <TouchableOpacity
+      key={text}
+      onPress={() => onPress()}
+      style={{
+        ...styles.pressable,
+        height: maxTouchableOpacityTextHeight,
+        backgroundColor: selected ? utils.color : 'transparent',
+        borderColor: selected ? 'transparent' : contrastTextColor
+      }}
+    >
+      <Text
+        numberOfLines={
+          text.split(' ').length > 1 ||
+          text.split('/').length > 1 ||
+          text.split('.').length > 1
+            ? 2
+            : 1
+        }
+        style={{
+          ...styles.pressableText,
+          paddingHorizontal: maxTouchableOpacityTextHeight / 4,
+          color: selected ? 'white' : contrastTextColor
+        }}
+      >
+        {text}
+      </Text>
+    </TouchableOpacity>
+  );
 
   const renderSkillLevel = () => {
     return (
@@ -85,24 +117,7 @@ export const Filters: React.FC<Props> = ({ options }) => {
             {utils.filterLabels().level[skillLevel]}
           </Text>
         )}
-        <TouchableOpacity
-          onPress={() => setSkillLevel(0)}
-          style={[
-            styles.allTOpacity,
-            skillLevel
-              ? { borderColor: contrastTextColor }
-              : { borderColor: 'transparent', backgroundColor: utils.color }
-          ]}
-        >
-          <Text
-            style={[
-              styles.allText,
-              skillLevel ? { color: contrastTextColor } : { color: 'white' }
-            ]}
-          >
-            ALL
-          </Text>
-        </TouchableOpacity>
+        {touchableFiller('ALL', !skillLevel, () => setSkillLevel(0))}
       </View>
     );
   };
@@ -119,42 +134,14 @@ export const Filters: React.FC<Props> = ({ options }) => {
             : 'WHAT STYLE DO YOU WANT TO PLAY?'}
         </Text>
         <View style={styles.listContainer}>
-          {options?.[filterKey]?.map((f, i) => {
+          {options?.[filterKey]?.map(f => {
             f = f.toLowerCase();
             const isSel = sel.includes(f) || (f === 'all' && !sel.length);
-            return (
-              <TouchableOpacity
-                key={`${f}${i}`}
-                onPress={() => {
-                  if (f === 'all') setSel([]);
-                  else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
-                  else setSel([...sel, f]);
-                }}
-                style={{
-                  ...styles.pressable,
-                  backgroundColor: isSel ? utils.color : 'transparent',
-                  borderColor: isSel ? 'transparent' : contrastTextColor,
-                  height: maxTouchableOpacityTextHeight
-                }}
-              >
-                <Text
-                  numberOfLines={
-                    f.split(' ').length > 1 ||
-                    f.split('/').length > 1 ||
-                    f.split('.').length > 1
-                      ? 2
-                      : 1
-                  }
-                  style={{
-                    ...styles.pressableText,
-                    paddingHorizontal: maxTouchableOpacityTextHeight / 4,
-                    color: isSel ? 'white' : contrastTextColor
-                  }}
-                >
-                  {f}
-                </Text>
-              </TouchableOpacity>
-            );
+            return touchableFiller(f, isSel, () => {
+              if (f === 'all') setSel([]);
+              else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
+              else setSel([...sel, f]);
+            });
           })}
         </View>
       </View>
@@ -236,43 +223,14 @@ export const Filters: React.FC<Props> = ({ options }) => {
                   );
                 }
               )
-            : ['all', 'in progress', 'completed'].map((f, i) => {
+            : ['all', 'in progress', 'completed'].map(f => {
                 f = f.toLowerCase();
                 const isSel = sel.includes(f) || (f === 'all' && !sel.length);
-                return (
-                  <TouchableOpacity
-                    key={`${f}${i}`}
-                    onPress={() => {
-                      if (f === 'all') setSel([]);
-                      else if (sel.includes(f))
-                        setSel(sel.filter(st => st !== f));
-                      else setSel([...sel, f]);
-                    }}
-                    style={{
-                      ...styles.pressable,
-                      backgroundColor: isSel ? utils.color : 'transparent',
-                      borderColor: isSel ? 'transparent' : contrastTextColor,
-                      height: maxTouchableOpacityTextHeight
-                    }}
-                  >
-                    <Text
-                      numberOfLines={
-                        f.split(' ').length > 1 ||
-                        f.split('/').length > 1 ||
-                        f.split('.').length > 1
-                          ? 2
-                          : 1
-                      }
-                      style={{
-                        ...styles.pressableText,
-                        paddingHorizontal: maxTouchableOpacityTextHeight / 4,
-                        color: isSel ? 'white' : contrastTextColor
-                      }}
-                    >
-                      {f}
-                    </Text>
-                  </TouchableOpacity>
-                );
+                return touchableFiller(f, isSel, () => {
+                  if (f === 'all') setSel([]);
+                  else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
+                  else setSel([...sel, f]);
+                });
               })}
         </View>
       </View>
@@ -344,7 +302,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans-Semibold'
     },
     pillContainer: {
-      marginTop: 10,
+      marginVertical: 20,
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center'
@@ -358,24 +316,9 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: utils.color,
       marginLeft: -10
     },
-    allTOpacity: {
-      padding: 10,
-      borderWidth: 1,
-      borderRadius: 50,
-      justifyContent: 'center',
-      alignSelf: 'center',
-      paddingHorizontal: 50,
-      marginVertical: 20
-    },
-    allText: {
-      fontSize: 10,
-      textAlign: 'center',
-      textTransform: 'uppercase',
-      fontFamily: 'OpenSans-Semibold'
-    },
     levelDescription: {
       color: current.textColor,
-      marginTop: 20,
+      marginBottom: 20,
       textAlign: 'center'
     },
     listContainer: {
@@ -386,6 +329,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignItems: 'center'
     },
     pressable: {
+      alignSelf: 'center',
       borderWidth: 1,
       borderRadius: 99,
       justifyContent: 'center',
