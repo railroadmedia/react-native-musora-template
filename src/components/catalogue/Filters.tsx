@@ -268,14 +268,25 @@ export const Filters: React.FC<Props> = ({ options }) => {
             style={{ padding: 15 }}
           />
         ) : (
-          <ScrollView style={styles.scrollview} scrollEnabled={scrollable}>
-            {renderSkillLevel()}
-            {renderUnexpandableList('topic')}
-            {renderUnexpandableList('style')}
-            {renderExpandableList('teacher')}
-            {renderExpandableList('progress')}
-            <SafeAreaView edges={['bottom']} />
-          </ScrollView>
+          <>
+            <ScrollView style={styles.scrollview} scrollEnabled={scrollable}>
+              {renderSkillLevel()}
+              {renderUnexpandableList('topic')}
+              {renderUnexpandableList('style')}
+              {renderExpandableList('teacher')}
+              {renderExpandableList('progress')}
+            </ScrollView>
+            <SafeAreaView edges={['bottom']} style={styles.footer}>
+              {['DONE & APPLY', 'RESET'].map(txt =>
+                touchableFiller(txt, txt !== 'RESET', () => {
+                  if (txt === 'RESET') {
+                  } else {
+                  }
+                  setIsVisible(false);
+                })
+              )}
+            </SafeAreaView>
+          </>
         )}
       </Modal>
     </>
@@ -342,5 +353,10 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans-Semibold',
       color: current.contrastTextColor
     },
-    instructorImg: { width: '50%', aspectRatio: 1, borderRadius: 99 }
+    instructorImg: { width: '50%', aspectRatio: 1, borderRadius: 99 },
+    footer: {
+      flexDirection: 'row',
+      padding: 15,
+      justifyContent: 'space-evenly'
+    }
   });
