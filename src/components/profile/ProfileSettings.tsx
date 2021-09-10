@@ -27,7 +27,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
-import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
+import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
 import type { UserAvatar } from '../../interfaces/user.interfaces';
 

@@ -15,9 +15,9 @@ import {
   StyleSheet,
   Animated
 } from 'react-native';
-import { ThemeContext } from '../state/theme/ThemeContext';
-import { utils } from '../utils';
-import { themeStyles } from '../themeStyles';
+import { ThemeContext } from '../../state/theme/ThemeContext';
+import { utils } from '../../utils';
+import { themeStyles } from '../../themeStyles';
 
 interface Props {
   onClose?: () => void;
@@ -70,14 +70,7 @@ export const AnimatedCustomAlert = forwardRef<RefObject<any>, Props>(
         supportedOrientations={['portrait', 'landscape']}
       >
         <TouchableOpacity style={styles.modalBackground} onPress={closeModal}>
-          <Animated.View
-            style={[
-              styles.animatedView,
-              {
-                opacity: opacity
-              }
-            ]}
-          >
+          <Animated.View style={[styles.animatedView, { opacity }]}>
             <Text style={styles.text}>{title}</Text>
             <Text style={styles.text}>{message}</Text>
             {children}

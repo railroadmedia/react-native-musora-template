@@ -24,7 +24,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { back } from '../../images/svgs';
-import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
+import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
 
@@ -54,9 +54,9 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   }, []);
 
   useEffect(() => {
-    Dimensions.addEventListener('change', dimChange);
+    const listener = Dimensions.addEventListener('change', dimChange);
     return () => {
-      Dimensions.removeEventListener('change', dimChange);
+      listener?.remove();
     };
   }, [dimChange]);
 

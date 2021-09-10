@@ -31,7 +31,7 @@ import {
   termsOfUse,
   turnOff
 } from '../../images/svgs';
-import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
+import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
 import { ProfileSettings } from './ProfileSettings';

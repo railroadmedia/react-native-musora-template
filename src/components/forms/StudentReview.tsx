@@ -27,7 +27,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ExpandableView } from '../../common_components/ExpandableView';
 import { Loading } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
-import { AnimatedCustomAlert } from '../../common_components/AnimatedCustomAlert';
+import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
 
 interface SectionType {
   q: string;
@@ -90,9 +90,9 @@ export const StudentReview: React.FC<Props> = () => {
   }, []);
 
   useEffect(() => {
-    Dimensions.addEventListener('change', dimChange);
+    const listener = Dimensions.addEventListener('change', dimChange);
     return () => {
-      Dimensions.removeEventListener('change', dimChange);
+      listener?.remove();
     };
   }, [dimChange]);
 

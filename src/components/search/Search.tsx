@@ -112,7 +112,7 @@ export const Search: React.FC<Props> = ({}) => {
             searchResult: searchRes?.data,
             refreshing: false
           });
-          setNrOfResults(searchRes.meta?.totalResults);
+          if (searchRes.meta) setNrOfResults(searchRes.meta.totalResults);
           let recentSearchesTemp = recentSearches;
           if (recentSearches.indexOf(searchedText) === -1) {
             recentSearchesTemp = [searchedText].concat(recentSearches);
