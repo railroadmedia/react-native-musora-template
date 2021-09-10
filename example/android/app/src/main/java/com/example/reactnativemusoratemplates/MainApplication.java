@@ -24,7 +24,7 @@ import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
-
+import com.rumax.reactnative.pdfviewer.PDFViewPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -52,6 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new ReanimatedPackage());
           packages.add(new RNScreensPackage());
           packages.add(new RNGestureHandlerPackage());
+          packages.add(new PDFViewPackage());
           
           return packages;
         }

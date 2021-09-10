@@ -33,7 +33,7 @@ export interface CatalogueSection {
   title?: string;
   message?: string;
   data?: Card[];
-  meta?: { filterOptions: Filters };
+  meta?: { filterOptions: Filters; totalResults: number };
 }
 
 export interface PacksSection {
@@ -127,6 +127,11 @@ export interface UserService {
       attributes: [];
     };
   }) => Promise<{}>;
+  updateUsersSoundsliceProgress: (
+    mediaId: number,
+    currentSecond: number,
+    mediaLengthSeconds: number
+  ) => Promise<{}>;
 }
 
 export interface MethodService {

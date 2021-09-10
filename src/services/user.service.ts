@@ -75,5 +75,15 @@ export const userService: UserService = {
       url: `/api/railcontent/content-like?content_id=${id}`,
       method: 'DELETE'
     });
+  },
+  updateUsersSoundsliceProgress: function (
+    mediaId,
+    currentSecond,
+    mediaLengthSeconds
+  ) {
+    return call({
+      url: `/musora-api/media?media_type=assignment&media-category=soundslice&media_id=${mediaId}&media_length_seconds=${mediaLengthSeconds}&current_second=${currentSecond}`,
+      method: 'PUT'
+    });
   }
 };
