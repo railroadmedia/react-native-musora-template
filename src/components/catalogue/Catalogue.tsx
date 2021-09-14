@@ -28,7 +28,8 @@ import {
   SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
   UPDATE_CATALOGUE_LOADERS,
-  SET_METHOD
+  SET_METHOD,
+  SET_ALL
 } from '../../state/catalogue/CatalogueReducer';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -258,7 +259,42 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       >
         <Text style={styles.sectionTitle}>All Lessons</Text>
         <Sort onPress={() => {}} />
-        <Filters options={filters.current} />
+        <Filters
+          options={filters.current}
+          onApply={filterQuery => {
+            page.current = 1;
+            abortC.current.abort();
+            abortC.current = new AbortController();
+            filters.current = undefined;
+            dispatch({
+              type: UPDATE_CATALOGUE_LOADERS,
+              scene,
+              loadingMore: false,
+              refreshing: true
+            });
+            console.log('fq', filterQuery);
+            provider[scene]
+              ?.getAll({
+                page: ++page.current,
+                signal: abortC.current.signal,
+                filters: filterQuery
+              })
+              .then(all => {
+                console.log('ff', all);
+                filters.current = all?.meta?.filterOptions;
+                if (isMounted.current) {
+                  addCards(all?.data);
+                  dispatch({
+                    type: SET_ALL,
+                    scene,
+                    method,
+                    all: all?.data,
+                    loadingMore: false
+                  });
+                }
+              });
+          }}
+        />
       </View>
     </>
   );

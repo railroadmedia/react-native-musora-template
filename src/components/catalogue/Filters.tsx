@@ -20,21 +20,32 @@ import { utils } from '../../utils';
 
 interface Props {
   options: I_Filters | undefined;
+  onApply: (filterQuery: string) => void;
 }
-export const Filters: React.FC<Props> = ({ options }) => {
+export const Filters: React.FC<Props> = ({ options, onApply }) => {
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
   const { contrastTextColor } = themeStyles[theme];
 
   const [isVisible, setIsVisible] = useState(false);
   const [scrollable, setScrollable] = useState(true);
-  const [skillLevel, setSkillLevel] = useState(0);
   const [maxTouchableOpacityTextHeight, setMaxTouchableOpacityTextHeight] =
     useState(0);
-  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [selectedStyles, setSelectedStyles] = useState<string[]>([]);
-  const [selectedInstructors, setSelectedInstructors] = useState<string[]>([]);
-  const [selectedProgress, setSelectedProgress] = useState<string[]>([]);
+
+  const [selected, setSelected] = useState<{
+    topics: string[];
+    styles: string[];
+    instructors: string[];
+    progress: string;
+    level: number;
+  }>({
+    level: 0,
+    topics: [],
+    styles: [],
+    instructors: [],
+    progress: ''
+  });
+
   const [isTeacherSectionOpened, setTeacherSectionOpened] = useState(false);
   const [isProgressSectionOpened, setProgressSectionOpened] = useState(false);
 
@@ -52,10 +63,38 @@ export const Filters: React.FC<Props> = ({ options }) => {
       onPanResponderMove: (_, { x0, dx }) => {
         const level =
           parseInt((((x0 + dx) / skillLevelWidth.current) * 10).toFixed(0)) - 1;
-        setSkillLevel(level < 0 ? 0 : level > 10 ? 10 : level);
+        setSelected(prevState => ({
+          ...prevState,
+          level: level < 0 ? 0 : level > 10 ? 10 : level
+        }));
       }
     })
   ).current;
+
+  const getQuery: ({}: typeof selected) => string = ({
+    level,
+    topics,
+    styles,
+    instructors,
+    progress
+  }) => {
+    let fq = '';
+    if (level) fq += `&required_fields[]=difficulty,${level}`;
+    if (topics?.length)
+      fq += `&included_fields[]=topic,${topics
+        .map(st => encodeURIComponent(st))
+        .join(',')}`;
+    if (styles?.length)
+      fq += `&included_fields[]=style,${styles
+        .map(ss => encodeURIComponent(ss))
+        .join(',')}`;
+    if (instructors?.length)
+      fq += `&included_fields[]=instructor,${instructors
+        .map(si => encodeURIComponent(si))
+        .join(',')}`;
+    if (progress) fq += `&required_user_states[]=${progress}`;
+    return fq;
+  };
 
   const touchableFiller = (
     text: string,
@@ -95,7 +134,7 @@ export const Filters: React.FC<Props> = ({ options }) => {
     return (
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>SET YOUR SKILL LEVEL</Text>
-        <Text style={styles.levelText}>LEVEL {skillLevel || 'ALL'}</Text>
+        <Text style={styles.levelText}>LEVEL {selected.level || 'ALL'}</Text>
         <View
           onLayout={({
             nativeEvent: {
@@ -109,27 +148,32 @@ export const Filters: React.FC<Props> = ({ options }) => {
           ))}
           <View
             {...panResponder.panHandlers}
-            style={[styles.levelPillCursor, { left: `${skillLevel * 10}%` }]}
+            style={[
+              styles.levelPillCursor,
+              { left: `${selected.level * 10}%` }
+            ]}
           />
         </View>
-        {!!skillLevel && (
+        {!!selected.level && (
           <Text style={styles.levelDescription}>
-            {utils.filterLabels().level[skillLevel]}
+            {utils.filterLabels().level[selected.level]}
           </Text>
         )}
-        {touchableFiller('ALL', !skillLevel, () => setSkillLevel(0))}
+        {touchableFiller('ALL', !selected.level, () =>
+          setSelected(prevState => ({ ...prevState, level: 0 }))
+        )}
       </View>
     );
   };
 
   const renderUnexpandableList = (filterKey: 'topic' | 'style') => {
-    const sel = filterKey === 'topic' ? selectedTopics : selectedStyles;
-    const setSel =
-      filterKey === 'topic' ? setSelectedTopics : setSelectedStyles;
+    let isTopic = filterKey === 'topic';
+    const selectedKey = isTopic ? 'topics' : 'styles';
+    const sel = selected[selectedKey];
     return (
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>
-          {filterKey === 'topic'
+          {isTopic
             ? 'WHAT DO YOU WANT TO WORK ON?'
             : 'WHAT STYLE DO YOU WANT TO PLAY?'}
         </Text>
@@ -138,9 +182,12 @@ export const Filters: React.FC<Props> = ({ options }) => {
             f = f.toLowerCase();
             const isSel = sel.includes(f) || (f === 'all' && !sel.length);
             return touchableFiller(f, isSel, () => {
-              if (f === 'all') setSel([]);
-              else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
-              else setSel([...sel, f]);
+              let newState = { ...selected, [selectedKey]: [...sel, f] };
+              if (f === 'all') newState[selectedKey] = [];
+              else if (sel.includes(f))
+                newState[selectedKey] = sel.filter(st => st !== f);
+              setSelected(newState);
+              onApply(getQuery(newState));
             });
           })}
         </View>
@@ -149,18 +196,13 @@ export const Filters: React.FC<Props> = ({ options }) => {
   };
 
   const renderExpandableList = (filterKey: 'teacher' | 'progress') => {
-    const isOpened =
-      filterKey === 'teacher'
-        ? isTeacherSectionOpened
-        : isProgressSectionOpened;
-    const setIsOpened =
-      filterKey === 'teacher'
-        ? setTeacherSectionOpened
-        : setProgressSectionOpened;
-    const sel =
-      filterKey === 'teacher' ? selectedInstructors : selectedProgress;
-    const setSel =
-      filterKey === 'teacher' ? setSelectedInstructors : setSelectedProgress;
+    const isTeacher = filterKey === 'teacher';
+    const isOpened = isTeacher
+      ? isTeacherSectionOpened
+      : isProgressSectionOpened;
+    const setIsOpened = isTeacher
+      ? setTeacherSectionOpened
+      : setProgressSectionOpened;
     return (
       <View style={styles.sectionContainer}>
         <TouchableOpacity
@@ -168,7 +210,7 @@ export const Filters: React.FC<Props> = ({ options }) => {
           style={{ flexDirection: 'row', alignItems: 'center' }}
         >
           <Text style={styles.sectionTitle}>
-            {filterKey === 'teacher'
+            {isTeacher
               ? utils.filterLabels().teacherSectionTitle
               : 'CHOOSE YOUR PROGRESS'}
           </Text>
@@ -183,12 +225,14 @@ export const Filters: React.FC<Props> = ({ options }) => {
         <View
           style={[styles.listContainer, { maxHeight: isOpened ? 10000 : 0 }]}
         >
-          {filterKey === 'teacher'
+          {isTeacher
             ? options?.instructor?.map(
                 ({ id, head_shot_picture_url, name }) => {
-                  const isSel = sel.includes(`${id}`);
+                  const { instructors } = selected;
+                  const isSel = instructors.includes(`${id}`);
                   return (
                     <TouchableOpacity
+                      key={id}
                       style={{
                         width: '24%',
                         alignItems: 'center',
@@ -196,9 +240,16 @@ export const Filters: React.FC<Props> = ({ options }) => {
                         backgroundColor: isSel ? utils.color : 'transparent'
                       }}
                       onPress={() => {
-                        if (sel.includes(`${id}`))
-                          setSel(sel.filter(st => st !== `${id}`));
-                        else setSel([...sel, `${id}`]);
+                        let newState = {
+                          ...selected,
+                          instructors: [...instructors, `${id}`]
+                        };
+                        if (instructors.includes(`${id}`))
+                          newState.instructors = newState.instructors.filter(
+                            st => st !== `${id}`
+                          );
+                        setSelected(newState);
+                        onApply(getQuery(newState));
                       }}
                     >
                       <Image
@@ -223,13 +274,16 @@ export const Filters: React.FC<Props> = ({ options }) => {
                   );
                 }
               )
-            : ['all', 'in progress', 'completed'].map(f => {
+            : ['all', 'started', 'completed'].map(f => {
                 f = f.toLowerCase();
-                const isSel = sel.includes(f) || (f === 'all' && !sel.length);
+                let { progress } = selected;
+                const isSel = progress === f || (f === 'all' && !progress);
                 return touchableFiller(f, isSel, () => {
-                  if (f === 'all') setSel([]);
-                  else if (sel.includes(f)) setSel(sel.filter(st => st !== f));
-                  else setSel([...sel, f]);
+                  let newState = { ...selected, progress: f };
+                  if (f === 'all') newState.progress = '';
+                  else if (progress === f) newState.progress = '';
+                  setSelected(newState);
+                  onApply(getQuery(newState));
                 });
               })}
         </View>
@@ -260,7 +314,8 @@ export const Filters: React.FC<Props> = ({ options }) => {
           </Text>
         )}
         <BackHeader title={'Filter'} onBack={() => setIsVisible(false)} />
-        {!Object.keys(options || {}).length ? (
+        {!Object.keys(options || {}).length ||
+        !maxTouchableOpacityTextHeight ? (
           <ActivityIndicator
             size='large'
             color={utils.color}
@@ -282,6 +337,7 @@ export const Filters: React.FC<Props> = ({ options }) => {
                   if (txt === 'RESET') {
                   } else {
                   }
+                  onApply(getQuery(selected));
                   setIsVisible(false);
                 })
               )}
