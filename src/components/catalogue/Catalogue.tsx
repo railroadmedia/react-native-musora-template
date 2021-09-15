@@ -109,8 +109,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
         filters.current = all?.meta?.filterOptions;
-        console.log(all);
-
         if (isMounted.current) {
           addCardsAndCache(
             all?.data
@@ -267,12 +265,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
             abortC.current = new AbortController();
             filters.current = undefined;
             dispatch({
-              type: UPDATE_CATALOGUE_LOADERS,
+              type: SET_ALL,
               scene,
+              all: [],
               loadingMore: false,
               refreshing: true
             });
-            console.log('fq', filterQuery);
             provider[scene]
               ?.getAll({
                 page: ++page.current,
@@ -280,7 +278,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
                 filters: filterQuery
               })
               .then(all => {
-                console.log('ff', all);
                 filters.current = all?.meta?.filterOptions;
                 if (isMounted.current) {
                   addCards(all?.data);
@@ -289,7 +286,8 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
                     scene,
                     method,
                     all: all?.data,
-                    loadingMore: false
+                    loadingMore: false,
+                    refreshing: false
                   });
                 }
               });
@@ -305,7 +303,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
 
   const renderFLEmpty = () =>
     refreshing ? (
-      <></>
+      <ActivityIndicator
+        size='small'
+        color={utils.color}
+        animating={true}
+        style={{ padding: 15 }}
+      />
     ) : (
       <Text style={styles.emptyListText}>There is no content.</Text>
     );

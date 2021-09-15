@@ -27,72 +27,43 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
   let styles = setStyles(theme);
   const { contrastTextColor } = themeStyles[theme];
 
-  const [isVisible, setIsVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [scrollable, setScrollable] = useState(true);
   const [maxTouchableOpacityTextHeight, setMaxTouchableOpacityTextHeight] =
     useState(0);
 
-  const [selected, setSelected] = useState<{
-    topics: string[];
-    styles: string[];
-    instructors: string[];
+  const [selectedFilters, setSelectedFilters] = useState<{
+    topic: string[];
+    style: string[];
+    instructor: string[];
     progress: string;
     level: number;
   }>({
     level: 0,
-    topics: [],
-    styles: [],
-    instructors: [],
+    topic: [],
+    style: [],
+    instructor: [],
     progress: ''
   });
 
   const [isTeacherSectionOpened, setTeacherSectionOpened] = useState(false);
   const [isProgressSectionOpened, setProgressSectionOpened] = useState(false);
 
-  const skillLevelWidth = useRef(0);
-  const panResponder = useRef(
-    PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponderCapture: () => true,
-      onShouldBlockNativeResponder: () => true,
-      onPanResponderGrant: () => setScrollable(false),
-      onPanResponderRelease: () => setScrollable(true),
-      onPanResponderTerminate: () => setScrollable(true),
-      onPanResponderMove: (_, { x0, dx }) => {
-        const level =
-          parseInt((((x0 + dx) / skillLevelWidth.current) * 10).toFixed(0)) - 1;
-        setSelected(prevState => ({
-          ...prevState,
-          level: level < 0 ? 0 : level > 10 ? 10 : level
-        }));
-      }
-    })
-  ).current;
-
-  const getQuery: ({}: typeof selected) => string = ({
-    level,
-    topics,
-    styles,
-    instructors,
-    progress
-  }) => {
+  const getQuery: ({}: typeof selectedFilters) => string = selected => {
     let fq = '';
-    if (level) fq += `&required_fields[]=difficulty,${level}`;
-    if (topics?.length)
-      fq += `&included_fields[]=topic,${topics
-        .map(st => encodeURIComponent(st))
-        .join(',')}`;
-    if (styles?.length)
-      fq += `&included_fields[]=style,${styles
-        .map(ss => encodeURIComponent(ss))
-        .join(',')}`;
-    if (instructors?.length)
-      fq += `&included_fields[]=instructor,${instructors
-        .map(si => encodeURIComponent(si))
-        .join(',')}`;
-    if (progress) fq += `&required_user_states[]=${progress}`;
+    if (selected.level) fq += `&required_fields[]=difficulty,${selected.level}`;
+    if (selected.progress) fq += `&required_user_states[]=${selected.progress}`;
+    let includedFieldsKeys: ('topic' | 'style' | 'instructor')[] = [
+      'topic',
+      'style',
+      'instructor'
+    ];
+    includedFieldsKeys.map(type => {
+      if (selected[type].length)
+        fq += `&included_fields[]=${type},${selected[type]
+          .map(st => encodeURIComponent(st))
+          .join(',')}`;
+    });
     return fq;
   };
 
@@ -113,11 +84,7 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     >
       <Text
         numberOfLines={
-          text.split(' ').length > 1 ||
-          text.split('/').length > 1 ||
-          text.split('.').length > 1
-            ? 2
-            : 1
+          [' ', '/', '.'].some(s => text.split(s).length > 1) ? 2 : 1
         }
         style={{
           ...styles.pressableText,
@@ -130,46 +97,9 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     </TouchableOpacity>
   );
 
-  const renderSkillLevel = () => {
-    return (
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>SET YOUR SKILL LEVEL</Text>
-        <Text style={styles.levelText}>LEVEL {selected.level || 'ALL'}</Text>
-        <View
-          onLayout={({
-            nativeEvent: {
-              layout: { width }
-            }
-          }) => (skillLevelWidth.current = width)}
-          style={styles.pillContainer}
-        >
-          {[...new Array(10)].map((_, i) => (
-            <View key={i} style={styles.levelPill} />
-          ))}
-          <View
-            {...panResponder.panHandlers}
-            style={[
-              styles.levelPillCursor,
-              { left: `${selected.level * 10}%` }
-            ]}
-          />
-        </View>
-        {!!selected.level && (
-          <Text style={styles.levelDescription}>
-            {utils.filterLabels().level[selected.level]}
-          </Text>
-        )}
-        {touchableFiller('ALL', !selected.level, () =>
-          setSelected(prevState => ({ ...prevState, level: 0 }))
-        )}
-      </View>
-    );
-  };
-
   const renderUnexpandableList = (filterKey: 'topic' | 'style') => {
     let isTopic = filterKey === 'topic';
-    const selectedKey = isTopic ? 'topics' : 'styles';
-    const sel = selected[selectedKey];
+    const sel = selectedFilters[filterKey];
     return (
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>
@@ -182,11 +112,11 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
             f = f.toLowerCase();
             const isSel = sel.includes(f) || (f === 'all' && !sel.length);
             return touchableFiller(f, isSel, () => {
-              let newState = { ...selected, [selectedKey]: [...sel, f] };
-              if (f === 'all') newState[selectedKey] = [];
+              let newState = { ...selectedFilters, [filterKey]: [...sel, f] };
+              if (f === 'all') newState[filterKey] = [];
               else if (sel.includes(f))
-                newState[selectedKey] = sel.filter(st => st !== f);
-              setSelected(newState);
+                newState[filterKey] = sel.filter(st => st !== f);
+              setSelectedFilters(newState);
               onApply(getQuery(newState));
             });
           })}
@@ -215,21 +145,17 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
               : 'CHOOSE YOUR PROGRESS'}
           </Text>
           {(isOpened ? arrowUp : arrowDown)({
-            icon: {
-              width: 20,
-              height: 20,
-              fill: themeStyles[theme].contrastTextColor
-            }
+            icon: { width: 20, height: 20, fill: contrastTextColor }
           })}
         </TouchableOpacity>
         <View
-          style={[styles.listContainer, { maxHeight: isOpened ? 10000 : 0 }]}
+          style={[styles.listContainer, { maxHeight: isOpened ? 'auto' : 0 }]}
         >
           {isTeacher
             ? options?.instructor?.map(
                 ({ id, head_shot_picture_url, name }) => {
-                  const { instructors } = selected;
-                  const isSel = instructors.includes(`${id}`);
+                  const { instructor } = selectedFilters;
+                  const isSel = instructor.includes(`${id}`);
                   return (
                     <TouchableOpacity
                       key={id}
@@ -241,32 +167,32 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
                       }}
                       onPress={() => {
                         let newState = {
-                          ...selected,
-                          instructors: [...instructors, `${id}`]
+                          ...selectedFilters,
+                          instructor: [...instructor, `${id}`]
                         };
-                        if (instructors.includes(`${id}`))
-                          newState.instructors = newState.instructors.filter(
+                        if (instructor.includes(`${id}`))
+                          newState.instructor = instructor.filter(
                             st => st !== `${id}`
                           );
-                        setSelected(newState);
+                        setSelectedFilters(newState);
                         onApply(getQuery(newState));
                       }}
                     >
                       <Image
                         style={styles.instructorImg}
                         source={{
-                          uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco,ar_1,c_fill,g_face/${head_shot_picture_url}`
+                          uri: head_shot_picture_url
+                            ? `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco,ar_1,c_fill,g_face/${head_shot_picture_url}`
+                            : utils.fallbackAvatar
                         }}
                       />
                       <Text
                         numberOfLines={2}
-                        style={[
-                          styles.pressableText,
-                          {
-                            height: maxTouchableOpacityTextHeight,
-                            color: isSel ? 'white' : contrastTextColor
-                          }
-                        ]}
+                        style={{
+                          ...styles.pressableText,
+                          height: maxTouchableOpacityTextHeight,
+                          color: isSel ? 'white' : contrastTextColor
+                        }}
                       >
                         {name}
                       </Text>
@@ -276,13 +202,12 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
               )
             : ['all', 'started', 'completed'].map(f => {
                 f = f.toLowerCase();
-                let { progress } = selected;
+                let { progress } = selectedFilters;
                 const isSel = progress === f || (f === 'all' && !progress);
                 return touchableFiller(f, isSel, () => {
-                  let newState = { ...selected, progress: f };
-                  if (f === 'all') newState.progress = '';
-                  else if (progress === f) newState.progress = '';
-                  setSelected(newState);
+                  let newState = { ...selectedFilters, progress: f };
+                  if (f === 'all' || progress === f) newState.progress = '';
+                  setSelectedFilters(newState);
                   onApply(getQuery(newState));
                 });
               })}
@@ -295,13 +220,13 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     <>
       {filters({
         icon: { width: 40, fill: utils.color },
-        onPress: () => setIsVisible(true)
+        onPress: () => setVisible(true)
       })}
       <Modal
         animationType={'fade'}
-        onRequestClose={() => setIsVisible(false)}
+        onRequestClose={() => setVisible(false)}
         supportedOrientations={['portrait', 'landscape']}
-        visible={isVisible}
+        visible={visible}
       >
         {!maxTouchableOpacityTextHeight && (
           <Text
@@ -313,9 +238,8 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
             {'\n'}
           </Text>
         )}
-        <BackHeader title={'Filter'} onBack={() => setIsVisible(false)} />
-        {!Object.keys(options || {}).length ||
-        !maxTouchableOpacityTextHeight ? (
+        <BackHeader title={'Filter'} onBack={() => setVisible(false)} />
+        {!maxTouchableOpacityTextHeight || !options ? (
           <ActivityIndicator
             size='large'
             color={utils.color}
@@ -325,7 +249,18 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
         ) : (
           <>
             <ScrollView style={styles.scrollview} scrollEnabled={scrollable}>
-              {renderSkillLevel()}
+              <SkillLevel
+                initialLevel={selectedFilters.level}
+                onChange={(scrollEnabled, level) => {
+                  setScrollable(scrollEnabled);
+                  if (level !== undefined && level !== selectedFilters.level) {
+                    let newState = { ...selectedFilters, level };
+                    setSelectedFilters(newState);
+                    onApply(getQuery(newState));
+                  }
+                }}
+                allHeight={maxTouchableOpacityTextHeight}
+              />
               {renderUnexpandableList('topic')}
               {renderUnexpandableList('style')}
               {renderExpandableList('teacher')}
@@ -335,10 +270,17 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
               {['DONE & APPLY', 'RESET'].map(txt =>
                 touchableFiller(txt, txt !== 'RESET', () => {
                   if (txt === 'RESET') {
-                  } else {
+                    const newState = {
+                      instructor: [],
+                      level: 0,
+                      progress: '',
+                      topic: [],
+                      style: []
+                    };
+                    setSelectedFilters(newState);
+                    onApply(getQuery(newState));
                   }
-                  onApply(getQuery(selected));
-                  setIsVisible(false);
+                  setVisible(false);
                 })
               )}
             </SafeAreaView>
@@ -348,6 +290,91 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     </>
   );
 };
+
+const SkillLevel: React.FC<{
+  initialLevel: number;
+  onChange: (scrollEnabled: boolean, level?: number) => void;
+  allHeight: number;
+}> = ({ onChange, allHeight, initialLevel }) => {
+  const { theme } = useContext(ThemeContext);
+  let styles = setStyles(theme);
+  const { contrastTextColor } = themeStyles[theme];
+
+  const [level, setLevel] = useState(initialLevel);
+  const skillLevelWidth = useRef(0);
+
+  let prevLevel = useRef(level);
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onShouldBlockNativeResponder: () => true,
+      onPanResponderGrant: () => onChange(false),
+      onPanResponderRelease: () => onChange(true, prevLevel.current),
+      onPanResponderTerminate: () => onChange(true, prevLevel.current),
+      onPanResponderMove: (_, { x0, dx }) => {
+        let lvl =
+          parseInt((((x0 + dx) / skillLevelWidth.current) * 10).toFixed(0)) - 1;
+        lvl = lvl < 0 ? 0 : lvl > 10 ? 10 : lvl;
+        if (prevLevel.current !== lvl) {
+          prevLevel.current = lvl;
+          setLevel(lvl);
+        }
+      }
+    })
+  ).current;
+
+  return (
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>SET YOUR SKILL LEVEL</Text>
+      <Text style={styles.levelText}>LEVEL {level || 'ALL'}</Text>
+      <View
+        onLayout={({ nativeEvent: { layout } }) =>
+          (skillLevelWidth.current = layout.width)
+        }
+        style={styles.pillContainer}
+      >
+        {[...new Array(10)].map((_, i) => (
+          <View key={i} style={styles.levelPill} />
+        ))}
+        <View
+          {...panResponder.panHandlers}
+          style={[styles.levelPillCursor, { left: `${level * 10}%` }]}
+        />
+      </View>
+      {!!level && (
+        <Text style={styles.levelDescription}>
+          {utils.filterLabels().level[level]}
+        </Text>
+      )}
+      <TouchableOpacity
+        onPress={() => {
+          setLevel(0);
+          onChange(true, 0);
+        }}
+        style={{
+          ...styles.pressable,
+          height: allHeight,
+          backgroundColor: !level ? utils.color : 'transparent',
+          borderColor: !level ? 'transparent' : contrastTextColor
+        }}
+      >
+        <Text
+          style={{
+            ...styles.pressableText,
+            paddingHorizontal: allHeight / 4,
+            color: !level ? 'white' : contrastTextColor
+          }}
+        >
+          ALL
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
+
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     scrollview: { backgroundColor: current.background, flex: 1 },
@@ -392,7 +419,6 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       overflow: 'hidden',
       flexDirection: 'row',
       flexWrap: 'wrap',
-      justifyContent: 'space-between',
       alignItems: 'center'
     },
     pressable: {
