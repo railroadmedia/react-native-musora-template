@@ -5,10 +5,10 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Image
+  Image,
+  FlatList
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BackHeader } from '../..';
@@ -248,24 +248,43 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
           />
         ) : (
           <>
-            <ScrollView style={styles.scrollview} scrollEnabled={scrollable}>
-              <SkillLevel
-                initialLevel={selectedFilters.level}
-                onChange={(scrollEnabled, level) => {
-                  setScrollable(scrollEnabled);
-                  if (level !== undefined && level !== selectedFilters.level) {
-                    let newState = { ...selectedFilters, level };
-                    setSelectedFilters(newState);
-                    onApply(getQuery(newState));
-                  }
-                }}
-                allHeight={maxTouchableOpacityTextHeight}
-              />
-              {renderUnexpandableList('topic')}
-              {renderUnexpandableList('style')}
-              {renderExpandableList('teacher')}
-              {renderExpandableList('progress')}
-            </ScrollView>
+            <FlatList
+              scrollEnabled={scrollable}
+              style={styles.scrollview}
+              initialNumToRender={0}
+              showsVerticalScrollIndicator={false}
+              data={['skill', 'topic', 'style', 'teacher', 'progress']}
+              keyExtractor={id => id}
+              renderItem={({ item }) =>
+                item === 'skill' ? (
+                  <SkillLevel
+                    initialLevel={selectedFilters.level}
+                    onChange={(scrollEnabled, level) => {
+                      setScrollable(scrollEnabled);
+                      if (
+                        level !== undefined &&
+                        level !== selectedFilters.level
+                      ) {
+                        let newState = { ...selectedFilters, level };
+                        setSelectedFilters(newState);
+                        onApply(getQuery(newState));
+                      }
+                    }}
+                    allHeight={maxTouchableOpacityTextHeight}
+                  />
+                ) : item === 'topic' ? (
+                  renderUnexpandableList('topic')
+                ) : item === 'style' ? (
+                  renderUnexpandableList('style')
+                ) : item === 'teacher' ? (
+                  renderExpandableList('teacher')
+                ) : item === 'progress' ? (
+                  renderExpandableList('progress')
+                ) : (
+                  <></>
+                )
+              }
+            />
             <SafeAreaView edges={['bottom']} style={styles.footer}>
               {['DONE & APPLY', 'RESET'].map(txt =>
                 touchableFiller(txt, txt !== 'RESET', () => {
