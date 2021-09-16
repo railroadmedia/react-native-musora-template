@@ -1,4 +1,5 @@
 import type { Card } from './card.interfaces';
+import type { Comment, Likes } from './lesson.interfaces';
 import type { Level, Method, MethodCourse } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
 import type {
@@ -40,6 +41,11 @@ export interface PacksSection {
   topHeaderPack: BannerPack;
   morePacks: Pack[];
   myPacks: Pack[];
+}
+
+export interface CommentSection {
+  data: Comment[];
+  meta: { totalCommentsAndReplies: number };
 }
 
 export interface Authenticate {
@@ -188,4 +194,21 @@ export interface StudentFocuService {
   submitStudentReview: (body: StudentReviewBody) => Promise<FormResp>;
   askQuestion: (body: AskQuestionBody) => Promise<FormResp>;
   submitCollabVideo: (body: SubmitCollabVideoBody) => Promise<FormResp>;
+}
+
+export interface CommentService {
+  getComments: (
+    id: number,
+    sortBy: string,
+    limit: number
+  ) => Promise<CommentSection>;
+  addComment: (commentText: string, contentId: number) => Promise<{}>;
+  likeComment: (id: number) => Promise<{}>;
+  dislikeComment: (id: number) => Promise<{}>;
+  getCommentLikes: (id: number) => Promise<{ data: Likes[] }>;
+  deleteComment: (id: number) => Promise<{}>;
+  addReplyToComment: (
+    replyText: string,
+    commentId: number
+  ) => Promise<{ data: any }>;
 }

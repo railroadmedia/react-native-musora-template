@@ -36,6 +36,9 @@ import { CourseOverview } from './components/course/CourseOverview';
 import { StudentReview } from './components/forms/StudentReview';
 import { AskQuestion } from './components/forms/AskQuestion';
 import { SubmitCollabVideo } from './components/forms/SubmitCollabVideo';
+import { LikeList } from './common_components/lesson/LikeList';
+import { Replies } from './common_components/lesson/Replies';
+import type { Comment } from './interfaces/lesson.interfaces';
 
 type Scenes =
   | 'home'
@@ -76,6 +79,15 @@ const Stack = createStackNavigator<{
   courseOverview: {
     mobile_app_url: string;
     isMethod: boolean;
+  };
+  likeList: {
+    commentId: number;
+  };
+  replies: {
+    parentComment: Comment;
+    onDeleteComment: () => void;
+    likeOrDislikeComment: () => void;
+    onAddOrRemoveReply: (num: number) => void;
   };
 }>();
 
@@ -227,6 +239,12 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                   options={{ title: 'SubmitCollabVideo' }}
                 >
                   {props => <SubmitCollabVideo {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name='likeList' options={{ title: 'Likes' }}>
+                  {props => <LikeList {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name='replies' options={{ title: 'Replies' }}>
+                  {props => <Replies {...props} />}
                 </Stack.Screen>
               </Stack.Navigator>
               <BottomNav visibleOn={bottomNavVisibleOn} />
