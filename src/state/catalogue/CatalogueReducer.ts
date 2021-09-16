@@ -5,6 +5,7 @@ import type {
 } from '../../interfaces/catalogue.interfaces';
 
 export const SET_CATALOGUE_FROM_CACHE = 'SET_CATALOGUE_FROM_CACHE';
+export const SET_ALL = 'SET_ALL';
 export const ADD_ALL = 'ADD_ALL';
 export const ADD_NEW = 'ADD_NEW';
 export const ADD_IN_PROGRESS = 'ADD_IN_PROGRESS';
@@ -39,6 +40,8 @@ export const catalogueReducer: CatalogueReducer = (
     loadingMore: loadingMore === undefined ? state.loadingMore : loadingMore
   };
   switch (type) {
+    case SET_ALL:
+      return { ...newState, all: add(undefined, all) };
     case ADD_ALL:
       return { ...newState, all: add(newState.all, all) };
     case ADD_NEW:

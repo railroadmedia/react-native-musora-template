@@ -28,7 +28,8 @@ import {
   SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
   UPDATE_CATALOGUE_LOADERS,
-  SET_METHOD
+  SET_METHOD,
+  SET_ALL
 } from '../../state/catalogue/CatalogueReducer';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -108,8 +109,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
         filters.current = all?.meta?.filterOptions;
-        console.log(all);
-
         if (isMounted.current) {
           addCardsAndCache(
             all?.data
@@ -258,7 +257,42 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
       >
         <Text style={styles.sectionTitle}>All Lessons</Text>
         <Sort onPress={() => {}} />
-        <Filters options={filters.current} />
+        <Filters
+          options={filters.current}
+          onApply={filterQuery => {
+            page.current = 1;
+            abortC.current.abort();
+            abortC.current = new AbortController();
+            filters.current = undefined;
+            dispatch({
+              type: SET_ALL,
+              scene,
+              all: [],
+              loadingMore: false,
+              refreshing: true
+            });
+            provider[scene]
+              ?.getAll({
+                page: ++page.current,
+                signal: abortC.current.signal,
+                filters: filterQuery
+              })
+              .then(all => {
+                filters.current = all?.meta?.filterOptions;
+                if (isMounted.current) {
+                  addCards(all?.data);
+                  dispatch({
+                    type: SET_ALL,
+                    scene,
+                    method,
+                    all: all?.data,
+                    loadingMore: false,
+                    refreshing: false
+                  });
+                }
+              });
+          }}
+        />
       </View>
     </>
   );
@@ -269,7 +303,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
 
   const renderFLEmpty = () =>
     refreshing ? (
-      <></>
+      <ActivityIndicator
+        size='small'
+        color={utils.color}
+        animating={true}
+        style={{ padding: 15 }}
+      />
     ) : (
       <Text style={styles.emptyListText}>There is no content.</Text>
     );
