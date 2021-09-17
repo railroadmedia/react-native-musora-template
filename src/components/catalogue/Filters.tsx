@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import {
   Modal,
   PanResponder,
@@ -23,8 +23,9 @@ interface Props {
   onApply: (filterQuery: string) => void;
 }
 export const Filters: React.FC<Props> = ({ options, onApply }) => {
+  console.log('rend filt');
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
   const { contrastTextColor } = themeStyles[theme];
 
   const [visible, setVisible] = useState(false);
@@ -316,7 +317,7 @@ const SkillLevel: React.FC<{
   allHeight: number;
 }> = ({ onChange, allHeight, initialLevel }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
   const { contrastTextColor } = themeStyles[theme];
 
   const [level, setLevel] = useState(initialLevel);

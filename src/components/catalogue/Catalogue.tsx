@@ -1,8 +1,8 @@
 import React, {
-  useCallback,
   useContext,
   useEffect,
   useReducer,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -49,6 +49,8 @@ interface Props {
 }
 
 export const Catalogue: React.FC<Props> = ({ scene }) => {
+  console.log('rend cat');
+
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string, props?: {}) => void;
@@ -61,8 +63,9 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
+  let styles = useMemo(() => setStyles(theme), [theme]);
+
   const [showResetModal, setShowResetModal] = useState(false);
-  let styles = setStyles(theme);
 
   const [
     {
@@ -85,10 +88,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
   const filters = useRef<{} | undefined>();
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -129,19 +128,17 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         }
       }));
 
-  const onBannerRightBtnPress = useCallback(() => {
-    navigate('method');
-  }, []);
+  const onBannerRightBtnPress = () => navigate('method');
 
-  const onBannerLefttBtnPress = useCallback(() => {
+  const onBannerLefttBtnPress = () => {
     if (method?.completed) {
       setShowResetModal(true);
     } else {
       // TODO: navigate to method.next_lesson
     }
-  }, [method?.completed]);
+  };
 
-  const resetMethodProgress = useCallback(() => {
+  const resetMethodProgress = () => {
     dispatch({
       type: UPDATE_CATALOGUE_LOADERS,
       scene,
@@ -163,7 +160,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         }
       });
     }
-  }, [method]);
+  };
 
   const renderFLMethodBanner = () => (
     <MethodBanner
@@ -206,7 +203,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     ) : null;
   };
 
-  const renderFLHeader = () => (
+  const flHeader = (
     <>
       {!!hasMethodBanner && renderFLMethodBanner()}
       {!!hasUserInfo ? (
@@ -301,17 +298,16 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     <RowCard id={item} route={scene} />
   );
 
-  const renderFLEmpty = () =>
-    refreshing ? (
-      <ActivityIndicator
-        size='small'
-        color={utils.color}
-        animating={true}
-        style={{ padding: 15 }}
-      />
-    ) : (
-      <Text style={styles.emptyListText}>There is no content.</Text>
-    );
+  const flEmpty = refreshing ? (
+    <ActivityIndicator
+      size='small'
+      color={utils.color}
+      animating={true}
+      style={{ padding: 15 }}
+    />
+  ) : (
+    <Text style={styles.emptyListText}>There is no content.</Text>
+  );
 
   const renderFLFooter = () => (
     <ActivityIndicator
@@ -322,12 +318,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     />
   );
 
-  const renderFLRefreshControl = () => (
+  const flRefreshControl = (
     <RefreshControl
       colors={['white']}
       tintColor={utils.color}
       progressBackgroundColor={utils.color}
-      onRefresh={refresh}
+      onRefresh={() => refresh()}
       refreshing={!!refreshing}
     />
   );
@@ -373,10 +369,10 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         data={all}
         renderItem={renderFLItem}
         keyExtractor={id => id.toString()}
-        ListHeaderComponent={renderFLHeader()}
-        ListEmptyComponent={renderFLEmpty()}
-        ListFooterComponent={renderFLFooter()}
-        refreshControl={renderFLRefreshControl()}
+        ListHeaderComponent={flHeader}
+        ListEmptyComponent={flEmpty}
+        ListFooterComponent={renderFLFooter}
+        refreshControl={flRefreshControl}
         onEndReached={loadMore}
       />
       {showResetModal && (
