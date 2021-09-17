@@ -50,6 +50,11 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
   const [isTeacherSectionOpened, setTeacherSectionOpened] = useState(false);
   const [isProgressSectionOpened, setProgressSectionOpened] = useState(false);
 
+  const prevFilters: typeof selectedFilters = useMemo(
+    () => (visible ? prevFilters || selectedFilters : selectedFilters),
+    [visible]
+  );
+
   const getQuery: ({}: typeof selectedFilters) => string = selected => {
     let fq = '';
     if (selected.level) fq += `&required_fields[]=difficulty,${selected.level}`;
@@ -239,7 +244,14 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
             {'\n'}
           </Text>
         )}
-        <BackHeader title={'Filter'} onBack={() => setVisible(false)} />
+        <BackHeader
+          title={'Filter'}
+          onBack={() => {
+            setSelectedFilters(prevFilters);
+            onApply(getQuery(prevFilters));
+            setVisible(false);
+          }}
+        />
         {!maxTouchableOpacityTextHeight || !options ? (
           <ActivityIndicator
             size='large'
@@ -299,8 +311,7 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
                     };
                     setSelectedFilters(newState);
                     onApply(getQuery(newState));
-                  }
-                  setVisible(false);
+                  } else setVisible(false);
                 })
               )}
             </SafeAreaView>
