@@ -25,7 +25,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { parseXpValue } from './helpers';
-import { commentService } from 'src/services/comment.service';
+import { commentService } from '../../services/comment.service';
 import { AnimatedCustomAlert } from '../modals/AnimatedCustomAlert';
 
 interface Props {
