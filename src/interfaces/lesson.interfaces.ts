@@ -70,6 +70,7 @@ export interface Comment {
   comment: string;
   created_on: string;
   id: number;
+  user_id: number;
   is_liked: boolean;
   like_count: number;
   replies: Comment[];
@@ -121,4 +122,11 @@ export interface MusicSheet {
   key: string;
   value: string;
   whRatio: number;
+}
+
+export interface Likes {
+  id: number;
+  avatar_url: string;
+  display_name: string;
+  xp: number;
 }
