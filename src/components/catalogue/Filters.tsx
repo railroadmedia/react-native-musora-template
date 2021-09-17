@@ -20,10 +20,9 @@ import { utils } from '../../utils';
 
 interface Props {
   options: I_Filters | undefined;
-  onApply: (filterQuery: string) => void;
+  onApply: ({}: { apiQuery: string; formattedQuery: string }) => void;
 }
 export const Filters: React.FC<Props> = ({ options, onApply }) => {
-  console.log('rend filt');
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyles(theme), [theme]);
   const { contrastTextColor } = themeStyles[theme];
@@ -55,22 +54,40 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     [visible]
   );
 
-  const getQuery: ({}: typeof selectedFilters) => string = selected => {
-    let fq = '';
-    if (selected.level) fq += `&required_fields[]=difficulty,${selected.level}`;
-    if (selected.progress) fq += `&required_user_states[]=${selected.progress}`;
+  const getQuery: ({}: typeof selectedFilters) => {
+    apiQuery: string;
+    formattedQuery: string;
+  } = selected => {
+    let aq = '',
+      fq = '';
+    if (selected.level) {
+      aq += `&required_fields[]=difficulty,${selected.level}`;
+      fq += ' / LEVEL ' + selected.level;
+    }
     let includedFieldsKeys: ('topic' | 'style' | 'instructor')[] = [
       'topic',
       'style',
       'instructor'
     ];
     includedFieldsKeys.map(type => {
-      if (selected[type].length)
-        fq += `&included_fields[]=${type},${selected[type]
+      if (selected[type].length) {
+        aq += `&included_fields[]=${type},${selected[type]
           .map(st => encodeURIComponent(st))
           .join(',')}`;
+        if (type === 'instructor')
+          fq += ` / ${type}: ${selected.instructor
+            .map(
+              si => options?.instructor?.find(i => i.id.toString() === si)?.name
+            )
+            .join(', ')}`;
+        else fq += ` / ${type}: ${selected[type].join(', ')}`;
+      }
     });
-    return fq;
+    if (selected.progress) {
+      aq += `&required_user_states[]=${selected.progress}`;
+      fq += ' / ' + selected.progress;
+    }
+    return { apiQuery: aq, formattedQuery: fq };
   };
 
   const touchableFiller = (
@@ -247,8 +264,10 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
         <BackHeader
           title={'Filter'}
           onBack={() => {
-            setSelectedFilters(prevFilters);
-            onApply(getQuery(prevFilters));
+            if (prevFilters !== selectedFilters) {
+              setSelectedFilters(prevFilters);
+              onApply(getQuery(prevFilters));
+            }
             setVisible(false);
           }}
         />

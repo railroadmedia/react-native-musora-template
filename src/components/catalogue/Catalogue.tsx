@@ -27,7 +27,6 @@ import {
   SET_CATALOGUE_FROM_CACHE,
   SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
-  UPDATE_CATALOGUE_LOADERS,
   SET_METHOD,
   SET_ALL
 } from '../../state/catalogue/CatalogueReducer';
@@ -49,8 +48,6 @@ interface Props {
 }
 
 export const Catalogue: React.FC<Props> = ({ scene }) => {
-  console.log('rend cat');
-
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string, props?: {}) => void;
@@ -88,13 +85,14 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
   const filters = useRef<{} | undefined>();
+  const selectedFilters = useRef('');
 
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
     provider[scene]?.getCache?.().then(cache => {
       if (isMounted.current)
-        dispatch({ type: SET_CATALOGUE_FROM_CACHE, scene, cache });
+        dispatch({ type: SET_CATALOGUE_FROM_CACHE, cache });
     });
     setCatalogue();
     return () => {
@@ -139,24 +137,14 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   };
 
   const resetMethodProgress = () => {
-    dispatch({
-      type: UPDATE_CATALOGUE_LOADERS,
-      scene,
-      loadingMore: false,
-      refreshing: true
-    });
+    dispatch({ loadingMore: false, refreshing: true });
     if (method) {
       userService.resetProgress(method.id);
       setShowResetModal(false);
       methodService.getMethod(abortC.current.signal).then(methodRes => {
         if (isMounted.current) {
           addCards([methodRes.next_lesson]);
-          dispatch({
-            type: SET_METHOD,
-            method: methodRes,
-            scene: 'home',
-            refreshing: false
-          });
+          dispatch({ type: SET_METHOD, method: methodRes, refreshing: false });
         }
       });
     }
@@ -256,23 +244,23 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         <Sort onPress={() => {}} />
         <Filters
           options={filters.current}
-          onApply={filterQuery => {
+          onApply={({ apiQuery, formattedQuery }) => {
             page.current = 1;
             abortC.current.abort();
             abortC.current = new AbortController();
             filters.current = undefined;
+            selectedFilters.current = formattedQuery;
             dispatch({
               type: SET_ALL,
-              scene,
               all: [],
               loadingMore: false,
               refreshing: true
             });
             provider[scene]
               ?.getAll({
-                page: ++page.current,
+                page: page.current,
                 signal: abortC.current.signal,
-                filters: filterQuery
+                filters: apiQuery
               })
               .then(all => {
                 filters.current = all?.meta?.filterOptions;
@@ -280,8 +268,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
                   addCards(all?.data);
                   dispatch({
                     type: SET_ALL,
-                    scene,
-                    method,
                     all: all?.data,
                     loadingMore: false,
                     refreshing: false
@@ -291,6 +277,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
           }}
         />
       </View>
+      {!!selectedFilters.current && (
+        <Text style={styles.appliedFilters}>
+          <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
+          {selectedFilters.current}
+        </Text>
+      )}
     </>
   );
 
@@ -332,17 +324,12 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     page.current = 1;
     abortC.current.abort();
     abortC.current = new AbortController();
-    dispatch({
-      type: UPDATE_CATALOGUE_LOADERS,
-      scene,
-      loadingMore: false,
-      refreshing: true
-    });
+    dispatch({ loadingMore: false, refreshing: true });
     setCatalogue();
   };
 
   const loadMore = () => {
-    dispatch({ type: UPDATE_CATALOGUE_LOADERS, scene, loadingMore: true });
+    dispatch({ loadingMore: true });
     refreshPromise.current?.then(() => {
       provider[scene]
         ?.getAll({
@@ -353,7 +340,6 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
           addCards(all?.data);
           dispatch({
             type: ADD_ALL,
-            scene,
             method,
             all: all?.data,
             loadingMore: false
@@ -440,5 +426,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       padding: 20,
       textAlign: 'center',
       color: current.textColor
+    },
+    appliedFilters: {
+      flex: 1,
+      padding: 15,
+      paddingVertical: 5,
+      textTransform: 'uppercase',
+      fontFamily: 'RobotoCondensed-Regular',
+      color: current.contrastTextColor
     }
   });

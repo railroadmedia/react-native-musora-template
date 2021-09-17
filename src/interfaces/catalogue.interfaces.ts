@@ -25,8 +25,8 @@ interface CatalogueCache {
 }
 
 interface CatalogueAction {
-  type: string;
-  scene: string;
+  type?: string;
+  scene?: string;
   cache?: CatalogueCache;
   all?: { id: number }[];
   newContent?: { id: number }[];

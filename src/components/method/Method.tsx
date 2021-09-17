@@ -27,8 +27,7 @@ import { NextLesson } from '../../common_components/NextLesson';
 import { CardsContext } from '../../state/cards/CardsContext';
 import {
   catalogueReducer,
-  SET_METHOD,
-  UPDATE_CATALOGUE_LOADERS
+  SET_METHOD
 } from '../../state/catalogue/CatalogueReducer';
 
 const window = Dimensions.get('window');
@@ -84,12 +83,7 @@ export const Method: React.FC = () => {
   const refresh = (): void => {
     abortC.current.abort();
     abortC.current = new AbortController();
-    dispatch({
-      type: UPDATE_CATALOGUE_LOADERS,
-      refreshing: true,
-      loadingMore: false,
-      scene: 'home'
-    });
+    dispatch({ refreshing: true, loadingMore: false });
     setMethod();
   };
 
