@@ -14,7 +14,8 @@ import { provider } from '../../services/catalogueSceneProvider.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import {
   ADD_CONTENT,
-  seeAllReducer
+  seeAllReducer,
+  SET_CONTENT
 } from '../../state/catalogue/SeeAllReducer';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -48,6 +49,8 @@ export const SeeAll: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
+  const filters = useRef<{} | undefined>({ refreshing: true });
+  const selectedFilters = useRef('');
 
   const [{ content, refreshing, loadingMore }, dispatch] = useReducer(
     seeAllReducer,
@@ -72,33 +75,79 @@ export const SeeAll: React.FC<Props> = ({
     refreshPromise.current = provider[scene][fetcherName]?.({
       page: page.current,
       signal: abortC.current.signal
-    }).then(({ data }) => {
+    }).then(({ data, meta }) => {
       if (isMounted.current) {
+        filters.current = meta?.filterOptions;
         addCards(data);
         dispatch({ type: ADD_CONTENT, content: data || [], refreshing: false });
       }
     });
   };
 
-  const renderFLHeader = () => (
-    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-      <Text style={styles.subtitle}>{scene}</Text>
-      <Filters onPress={() => {}} />
-    </View>
+  const flHeader = (
+    <>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.subtitle}>{scene}</Text>
+        <Filters
+          options={filters.current}
+          onApply={({ apiQuery, formattedQuery }) => {
+            if (isMounted.current) {
+              page.current = 1;
+              abortC.current.abort();
+              abortC.current = new AbortController();
+              filters.current = { refreshing: true };
+              selectedFilters.current = formattedQuery;
+              dispatch({
+                type: SET_CONTENT,
+                content: [],
+                loadingMore: false,
+                refreshing: true
+              });
+              provider[scene][fetcherName]?.({
+                page: page.current,
+                signal: abortC.current.signal,
+                filters: apiQuery
+              }).then(({ data, meta }) => {
+                filters.current = meta?.filterOptions;
+                if (isMounted.current) {
+                  addCards(data);
+                  dispatch({
+                    type: SET_CONTENT,
+                    content: data,
+                    loadingMore: false,
+                    refreshing: false
+                  });
+                }
+              });
+            }
+          }}
+        />
+      </View>
+      {!!selectedFilters.current && (
+        <Text style={styles.appliedFilters}>
+          <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
+          {selectedFilters.current}
+        </Text>
+      )}
+    </>
   );
 
   const renderFLItem = ({ item }: { item: number }) => (
     <RowCard id={item} route={scene} />
   );
 
-  const renderFLEmpty = () =>
-    refreshing ? (
-      <></>
-    ) : (
-      <Text style={styles.emptyListText}>There is no content.</Text>
-    );
+  const flEmpty = refreshing ? (
+    <ActivityIndicator
+      size='small'
+      color={utils.color}
+      animating={true}
+      style={{ padding: 15 }}
+    />
+  ) : (
+    <Text style={styles.emptyListText}>There is no content.</Text>
+  );
 
-  const renderFLFooter = () => (
+  const flFooter = (
     <ActivityIndicator
       size='small'
       color={utils.color}
@@ -107,12 +156,12 @@ export const SeeAll: React.FC<Props> = ({
     />
   );
 
-  const renderFLRefreshControl = () => (
+  const flRefreshControl = (
     <RefreshControl
       colors={['white']}
       tintColor={utils.color}
       progressBackgroundColor={utils.color}
-      onRefresh={refresh}
+      onRefresh={() => refresh()}
       refreshing={refreshing}
     />
   );
@@ -121,6 +170,8 @@ export const SeeAll: React.FC<Props> = ({
     page.current = 1;
     abortC.current.abort();
     abortC.current = new AbortController();
+    filters.current = { refreshing: true, reset: true };
+    selectedFilters.current = '';
     dispatch({ type: ADD_CONTENT, loadingMore: false, refreshing: true });
     setContent();
   };
@@ -143,25 +194,24 @@ export const SeeAll: React.FC<Props> = ({
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        data={content}
-        renderItem={renderFLItem}
-        keyExtractor={id => id.toString()}
-        ListHeaderComponent={renderFLHeader()}
-        ListEmptyComponent={renderFLEmpty()}
-        ListFooterComponent={renderFLFooter()}
-        refreshControl={renderFLRefreshControl()}
-        onEndReached={loadMore}
-      />
-    </View>
+    <FlatList
+      style={styles.flatList}
+      showsVerticalScrollIndicator={false}
+      data={content}
+      renderItem={renderFLItem}
+      keyExtractor={id => id.toString()}
+      ListHeaderComponent={flHeader}
+      ListEmptyComponent={flEmpty}
+      ListFooterComponent={flFooter}
+      refreshControl={flRefreshControl}
+      onEndReached={loadMore}
+    />
   );
 };
 
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
-    container: {
+    flatList: {
       backgroundColor: current.background,
       flex: 1
     },
@@ -178,5 +228,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginVertical: 20,
       flex: 1,
       textTransform: 'capitalize'
+    },
+    appliedFilters: {
+      flex: 1,
+      padding: 15,
+      paddingVertical: 5,
+      textTransform: 'uppercase',
+      fontFamily: 'RobotoCondensed-Regular',
+      color: current.contrastTextColor
     }
   });

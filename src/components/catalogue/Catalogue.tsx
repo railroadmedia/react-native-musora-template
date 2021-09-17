@@ -84,7 +84,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const abortC = useRef(new AbortController());
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
-  const filters = useRef<{} | undefined>();
+  const filters = useRef<{} | undefined>({ refreshing: true });
   const selectedFilters = useRef('');
 
   useEffect(() => {
@@ -105,8 +105,8 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     (refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([all, newContent, inProgress, recentlyViewed, method]) => {
-        filters.current = all?.meta?.filterOptions;
         if (isMounted.current) {
+          filters.current = all?.meta?.filterOptions;
           addCardsAndCache(
             all?.data
               ?.concat(newContent?.data || [])
@@ -245,35 +245,37 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         <Filters
           options={filters.current}
           onApply={({ apiQuery, formattedQuery }) => {
-            page.current = 1;
-            abortC.current.abort();
-            abortC.current = new AbortController();
-            filters.current = undefined;
-            selectedFilters.current = formattedQuery;
-            dispatch({
-              type: SET_ALL,
-              all: [],
-              loadingMore: false,
-              refreshing: true
-            });
-            provider[scene]
-              ?.getAll({
-                page: page.current,
-                signal: abortC.current.signal,
-                filters: apiQuery
-              })
-              .then(all => {
-                filters.current = all?.meta?.filterOptions;
-                if (isMounted.current) {
-                  addCards(all?.data);
-                  dispatch({
-                    type: SET_ALL,
-                    all: all?.data,
-                    loadingMore: false,
-                    refreshing: false
-                  });
-                }
+            if (isMounted.current) {
+              page.current = 1;
+              abortC.current.abort();
+              abortC.current = new AbortController();
+              filters.current = { refreshing: true };
+              selectedFilters.current = formattedQuery;
+              dispatch({
+                type: SET_ALL,
+                all: [],
+                loadingMore: false,
+                refreshing: true
               });
+              provider[scene]
+                ?.getAll({
+                  page: page.current,
+                  signal: abortC.current.signal,
+                  filters: apiQuery
+                })
+                .then(all => {
+                  filters.current = all?.meta?.filterOptions;
+                  if (isMounted.current) {
+                    addCards(all?.data);
+                    dispatch({
+                      type: SET_ALL,
+                      all: all?.data,
+                      loadingMore: false,
+                      refreshing: false
+                    });
+                  }
+                });
+            }
           }}
         />
       </View>
@@ -301,7 +303,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     <Text style={styles.emptyListText}>There is no content.</Text>
   );
 
-  const renderFLFooter = () => (
+  const flFooter = (
     <ActivityIndicator
       size='small'
       color={utils.color}
@@ -324,6 +326,8 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     page.current = 1;
     abortC.current.abort();
     abortC.current = new AbortController();
+    filters.current = { refreshing: true, reset: true };
+    selectedFilters.current = '';
     dispatch({ loadingMore: false, refreshing: true });
     setCatalogue();
   };
@@ -357,7 +361,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         keyExtractor={id => id.toString()}
         ListHeaderComponent={flHeader}
         ListEmptyComponent={flEmpty}
-        ListFooterComponent={renderFLFooter}
+        ListFooterComponent={flFooter}
         refreshControl={flRefreshControl}
         onEndReached={loadMore}
       />

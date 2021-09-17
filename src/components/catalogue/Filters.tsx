@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Modal,
   PanResponder,
@@ -53,6 +53,17 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     () => (visible ? prevFilters || selectedFilters : selectedFilters),
     [visible]
   );
+
+  useEffect(() => {
+    if (options?.reset)
+      setSelectedFilters({
+        instructor: [],
+        level: 0,
+        progress: '',
+        topic: [],
+        style: []
+      });
+  }, [options?.reset]);
 
   const getQuery: ({}: typeof selectedFilters) => {
     apiQuery: string;
@@ -271,7 +282,7 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
             setVisible(false);
           }}
         />
-        {!maxTouchableOpacityTextHeight || !options ? (
+        {!maxTouchableOpacityTextHeight || options?.refreshing ? (
           <ActivityIndicator
             size='large'
             color={utils.color}

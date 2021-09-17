@@ -18,6 +18,8 @@ import type {
 import type { User, UserAvatar } from './user.interfaces';
 
 export interface Filters {
+  refreshing?: boolean;
+  reset?: boolean;
   content_type?: string[];
   difficulty?: string[];
   instructor?: {
