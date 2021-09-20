@@ -28,7 +28,7 @@ export interface Lesson {
   progress_percent: number;
   resources: Resource[];
   thumbnail_url: string;
-  instructor: Instructor;
+  instructor: Instructor[];
   difficulty: number;
   published_on: string;
   length_in_seconds: number;
@@ -53,12 +53,13 @@ export interface Lesson {
   parent: Parent;
   video_playback_endpoints: Video[];
   last_watch_position_in_seconds: number;
+  apiKey?: string;
 }
 
 export interface Assignment {
   id: number;
   xp: number;
-  progress_percent: number;
+  user_progress: [{ progress_percent: number }];
   title: string;
   description: string;
   soundslice_slug: string;

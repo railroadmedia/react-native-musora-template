@@ -1,5 +1,5 @@
 import type { Card } from './card.interfaces';
-import type { Comment, Likes } from './lesson.interfaces';
+import type { Comment, Lesson, Likes } from './lesson.interfaces';
 import type { Level, Method, MethodCourse } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
 import type {
@@ -114,6 +114,19 @@ export interface ServiceProvider {
   home: SceneService;
   courses: SceneService;
   [scene: string]: SceneService;
+}
+
+export interface ContentService {
+  getContentById: (
+    id: number,
+    forDownload: boolean,
+    signal: AbortSignal
+  ) => Promise<Lesson>;
+  getContentByUrl: (
+    mobile_app_url: string,
+    forDownload: boolean,
+    signal: AbortSignal
+  ) => Promise<Lesson>;
 }
 
 export interface UserService {

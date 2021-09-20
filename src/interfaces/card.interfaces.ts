@@ -4,6 +4,7 @@ export interface Card {
   completed?: boolean;
   head_shot_picture_url?: string;
   id: number;
+  mobile_app_url: string;
   instructors?: { name: string }[];
   is_added_to_primary_playlist?: boolean;
   length_in_seconds?: number;
@@ -19,8 +20,11 @@ export interface Card {
   type: string;
   live_event_start_time?: string;
   live_event_end_time?: string;
+  bundle_count?: number;
   level_number?: number;
   sizeInBytes?: number;
+  lessons?: Card[];
+  parentId?: number;
 }
 
 export interface CardsReducer {
