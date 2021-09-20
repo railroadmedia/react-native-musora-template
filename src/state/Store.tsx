@@ -15,7 +15,6 @@ import {
 } from './user/UserReducer';
 
 import { LIGHT, DARK, themeStyles } from '../themeStyles';
-import { HeaderContext } from './header/HeaderContext';
 import { OrientationContext } from './orientation/OrientationContext';
 import {
   ADD_CARDS,
@@ -29,7 +28,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
-  const [headerNavHeight, setHeaderNavHeight] = useState(0);
   const [orientation, setOrientation] = useState(
     Orientation.getInitialOrientation()
   );
@@ -75,8 +73,6 @@ export const Store: React.FC = props => {
     setTheme(newTheme);
   };
 
-  const updateHeaderNavHeight = (height: number) => setHeaderNavHeight(height);
-
   const updateOrientation = (o: OrientationType) => setOrientation(o);
 
   return (
@@ -89,19 +85,15 @@ export const Store: React.FC = props => {
       >
         <UserContext.Provider value={{ user, updateUser, updateUserAndCache }}>
           <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            <HeaderContext.Provider
-              value={{ headerNavHeight, updateHeaderNavHeight }}
+            <OrientationContext.Provider
+              value={{
+                isLandscape: orientation.toLowerCase().includes('land'),
+                orientation,
+                updateOrientation
+              }}
             >
-              <OrientationContext.Provider
-                value={{
-                  isLandscape: orientation.toLowerCase().includes('land'),
-                  orientation,
-                  updateOrientation
-                }}
-              >
-                {!!theme && props.children}
-              </OrientationContext.Provider>
-            </HeaderContext.Provider>
+              {!!theme && props.children}
+            </OrientationContext.Provider>
           </ThemeContext.Provider>
         </UserContext.Provider>
       </CardsContext.Provider>

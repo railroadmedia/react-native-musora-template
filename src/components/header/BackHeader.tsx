@@ -7,7 +7,6 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 
 import { back, settings } from '../../images/svgs';
 import { utils } from '../../utils';
-import { HeaderContext } from '../../state/header/HeaderContext';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 interface Props {
@@ -28,7 +27,6 @@ export const BackHeader: React.FC<Props> = ({
     }
   >();
   let { top, left, right } = useSafeAreaInsets();
-  const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
   let styles = setStyles(theme);
 
@@ -50,9 +48,6 @@ export const BackHeader: React.FC<Props> = ({
         { paddingTop: top, paddingLeft: left, paddingRight: right },
         transparent ? { backgroundColor: 'transparent' } : {}
       ]}
-      onLayout={({ nativeEvent }) =>
-        updateHeaderNavHeight(nativeEvent.layout.height)
-      }
     >
       <StatusBar
         backgroundColor={themeStyles[theme].background}

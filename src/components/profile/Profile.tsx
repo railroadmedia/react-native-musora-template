@@ -23,7 +23,6 @@ import { userService } from '../../services/user.service';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { UserContext } from '../../state/user/UserContext';
-import { HeaderContext } from '../../state/header/HeaderContext';
 
 import { themeStyles } from '../../themeStyles';
 
@@ -45,8 +44,8 @@ export const Profile: React.FC = () => {
   const scrollY = useRef(new Animated.Value(0));
 
   const [flHeaderHeight, setFLHeaderHeight] = useState(0);
+  const [headerNavHeight, setHeaderNavHeight] = useState(0);
 
-  const { headerNavHeight } = useContext(HeaderContext);
   const { user, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
 
@@ -108,13 +107,20 @@ export const Profile: React.FC = () => {
       });
 
   const renderStickyHeader = () => (
-    <View style={styles.stickyHeaderContainer}>
+    <View
+      style={styles.stickyHeaderContainer}
+      ref={r => {
+        r?.measure((_, __, ___, ____, _____, pageY) =>
+          setHeaderNavHeight(pageY)
+        );
+      }}
+    >
       <Animated.Image
         blurRadius={10}
         source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
         resizeMode={'cover'}
         style={{
-          height: flHeaderHeight + 2 * headerNavHeight,
+          height: flHeaderHeight + headerNavHeight,
           width: '100%',
           position: 'absolute',
           marginTop: -headerNavHeight,
@@ -132,7 +138,7 @@ export const Profile: React.FC = () => {
       <Animated.View
         style={{
           position: 'absolute',
-          height: flHeaderHeight + 2 * headerNavHeight,
+          height: flHeaderHeight + headerNavHeight,
           width: '100%',
           backgroundColor: themeStyles[theme].background,
           marginTop: -headerNavHeight,

@@ -15,7 +15,6 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 
 import { downloads, myList } from '../../images/svgs';
 import { UserContext } from '../../state/user/UserContext';
-import { HeaderContext } from '../../state/header/HeaderContext';
 import { userService } from '../../services/user.service';
 import { useNavigation } from '@react-navigation/native';
 
@@ -23,7 +22,6 @@ export const MainHeader: React.FC = () => {
   const { navigate } = useNavigation<{ navigate: (scene: string) => void }>();
 
   const { top, left, right } = useSafeAreaInsets();
-  const { updateHeaderNavHeight } = useContext(HeaderContext);
   const { theme } = useContext(ThemeContext);
   const { user, updateUserAndCache } = useContext(UserContext);
   let styles = setStyles(theme);
@@ -53,9 +51,6 @@ export const MainHeader: React.FC = () => {
         styles.safeAreaContainer,
         { paddingTop: top, paddingRight: right, paddingLeft: left }
       ]}
-      onLayout={({ nativeEvent }) =>
-        updateHeaderNavHeight(nativeEvent.layout.height)
-      }
     >
       <StatusBar
         backgroundColor={themeStyles[theme].background}
