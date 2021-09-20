@@ -38,22 +38,21 @@ import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
 import RowCard from '../../common_components/cards/RowCard';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
 import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import { methodService } from '../../services/method.service';
 
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
 interface Props {
-  scene: string;
+  route: RouteProp<ParamListBase>;
+  navigation: StackNavigationProp<ParamListBase>;
 }
 
-export const Catalogue: React.FC<Props> = ({ scene }) => {
-  const { navigate } = useNavigation<
-    NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props?: {}) => void;
-    }
-  >();
-
+export const Catalogue: React.FC<Props> = ({
+  route: { name: scene },
+  navigation: { navigate }
+}) => {
   const hasMethodBanner = scene.match(/^(home)$/),
     hasUserInfo = scene.match(/^(home)$/);
 
