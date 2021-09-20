@@ -1,4 +1,5 @@
 import React, {
+  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -61,7 +62,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
-  const [showResetModal, setShowResetModal] = useState(false);
+  const resetModalRef = createRef<any>();
   let styles = setStyles(theme);
 
   const [
@@ -135,7 +136,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
 
   const onBannerLefttBtnPress = useCallback(() => {
     if (method?.completed) {
-      setShowResetModal(true);
+      resetModalRef.current.toggle();
     } else {
       // TODO: navigate to method.next_lesson
     }
@@ -150,7 +151,7 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
     });
     if (method) {
       userService.resetProgress(method.id);
-      setShowResetModal(false);
+      resetModalRef.current.toggle();
       methodService.getMethod(abortC.current.signal).then(methodRes => {
         if (isMounted.current) {
           addCards([methodRes.next_lesson]);
@@ -379,15 +380,15 @@ export const Catalogue: React.FC<Props> = ({ scene }) => {
         refreshControl={renderFLRefreshControl()}
         onEndReached={loadMore}
       />
-      {showResetModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-          btnText='RESET'
-          onAction={resetMethodProgress}
-          onCancel={() => setShowResetModal(false)}
-        />
-      )}
+
+      <ActionModal
+        ref={resetModalRef}
+        title='Hold your horses...'
+        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+        btnText='RESET'
+        onAction={resetMethodProgress}
+        onCancel={() => resetModalRef.current.toggle()}
+      />
     </View>
   );
 };

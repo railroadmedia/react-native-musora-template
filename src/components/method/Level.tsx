@@ -1,4 +1,5 @@
 import React, {
+  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -53,11 +54,11 @@ export const Level: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [level, setLevel] = useState<I_Level>();
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const removeModalRef = createRef<any>();
 
   let styles = setStyles(theme);
   useEffect(() => {
@@ -96,18 +97,19 @@ export const Level: React.FC<Props> = ({
   const toggleMyList = useCallback(() => {
     if (!level) return;
     if (level.is_added_to_primary_playlist) {
-      if (showRemoveModal) {
-        userService.removeFromMyList(level.id);
-        setShowRemoveModal(false);
-        setLevel({ ...level, is_added_to_primary_playlist: false });
-      } else {
-        setShowRemoveModal(true);
-      }
+      removeModalRef.current.toggle();
     } else {
       userService.addToMyList(level.id);
       setLevel({ ...level, is_added_to_primary_playlist: true });
     }
-  }, [level?.is_added_to_primary_playlist, showRemoveModal]);
+  }, [level?.is_added_to_primary_playlist]);
+
+  const addToMyList = useCallback(() => {
+    if (!level) return;
+    userService.removeFromMyList(level.id);
+    removeModalRef.current.toggle();
+    setLevel({ ...level, is_added_to_primary_playlist: false });
+  }, [level?.id, removeModalRef]);
 
   const onMainBtnPress = useCallback(() => {
     // TODO navigate to next lesson
@@ -183,15 +185,15 @@ export const Level: React.FC<Props> = ({
           color={utils.color}
         />
       )}
-      {showRemoveModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
-          btnText='REMOVE'
-          onAction={toggleMyList}
-          onCancel={() => setShowRemoveModal(false)}
-        />
-      )}
+
+      <ActionModal
+        ref={removeModalRef}
+        title='Hold your horses...'
+        message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
+        btnText='REMOVE'
+        onAction={addToMyList}
+        onCancel={() => removeModalRef.current.toggle()}
+      />
     </View>
   );
 };

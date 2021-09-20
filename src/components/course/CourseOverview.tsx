@@ -1,4 +1,5 @@
 import React, {
+  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -65,14 +66,14 @@ export const CourseOverview: React.FC<Props> = ({
   const [course, setCourse] = useState<MethodCourse>();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
 
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const removeModalRef = createRef<any>();
+  const resetModalRef = createRef<any>();
 
   let styles = setStyles(theme);
   useEffect(() => {
@@ -149,18 +150,20 @@ export const CourseOverview: React.FC<Props> = ({
   const toggleMyList = useCallback(() => {
     if (!course) return;
     if (course.is_added_to_primary_playlist) {
-      if (showRemoveModal) {
-        userService.removeFromMyList(course.id);
-        setShowRemoveModal(false);
-        setCourse({ ...course, is_added_to_primary_playlist: false });
-      } else {
-        setShowRemoveModal(true);
-      }
+      removeModalRef.current.toggle();
     } else {
       userService.addToMyList(course.id);
       setCourse({ ...course, is_added_to_primary_playlist: true });
     }
-  }, [course, showRemoveModal]);
+  }, [course, removeModalRef]);
+
+  const addToMyList = useCallback(() => {
+    if (!course) return;
+
+    userService.removeFromMyList(course.id);
+    setCourse({ ...course, is_added_to_primary_playlist: false });
+    removeModalRef.current.toggle();
+  }, [course, removeModalRef]);
 
   const refresh = (): void => {
     abortC.current.abort();
@@ -178,8 +181,8 @@ export const CourseOverview: React.FC<Props> = ({
       completed: false,
       progress_percent: 0
     });
-    setShowResetModal(false);
-  }, [course]);
+    resetModalRef.current.toggle();
+  }, [course, resetModalRef]);
 
   const onMainBtnPress = (): void => {};
 
@@ -356,7 +359,7 @@ export const CourseOverview: React.FC<Props> = ({
                     /> */}
                     <TouchableOpacity
                       style={styles.underCompleteTOpacities}
-                      onPress={() => setShowResetModal(true)}
+                      onPress={() => resetModalRef.current.toggle()}
                     >
                       {reset({
                         icon: { fill: utils.color, height: 25, width: 25 }
@@ -405,24 +408,24 @@ export const CourseOverview: React.FC<Props> = ({
             text={`COURSE - ${course.progress_percent}% COMPLETE`}
           />
         )}
-        {showRemoveModal && (
-          <ActionModal
-            title='Hold your horses...'
-            message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
-            btnText='REMOVE'
-            onAction={toggleMyList}
-            onCancel={() => setShowRemoveModal(false)}
-          />
-        )}
-        {showResetModal && (
-          <ActionModal
-            title='Hold your horses...'
-            message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-            btnText='RESET'
-            onAction={resetProgress}
-            onCancel={() => setShowResetModal(false)}
-          />
-        )}
+
+        <ActionModal
+          ref={removeModalRef}
+          title='Hold your horses...'
+          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
+          btnText='REMOVE'
+          onAction={addToMyList}
+          onCancel={() => removeModalRef.current.toggle()}
+        />
+
+        <ActionModal
+          ref={resetModalRef}
+          title='Hold your horses...'
+          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+          btnText='RESET'
+          onAction={resetProgress}
+          onCancel={() => resetModalRef.current.toggle()}
+        />
       </View>
     </SafeAreaView>
   );

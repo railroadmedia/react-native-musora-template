@@ -1,4 +1,5 @@
 import React, {
+  createRef,
   ReactElement,
   useCallback,
   useContext,
@@ -50,10 +51,10 @@ export const Packs: React.FC<Props> = () => {
   const [topHeaderPack, setTopHeaderPack] = useState<BannerPack>();
   const [allPacks, setAllPacks] = useState<any>();
   const [myPacks, setMyPacks] = useState<I_Pack[]>();
-  const [showResetModal, setShowResetModal] = useState(false);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const resetModalRef = createRef<any>();
 
   const multiplier = useMemo(() => {
     if (utils.isTablet) return 6;
@@ -248,14 +249,15 @@ export const Packs: React.FC<Props> = () => {
 
   const onMainBtnClick = useCallback(() => {
     if (topHeaderPack?.completed) {
-      setShowResetModal(true);
+      resetModalRef.current.toggle();
     } else {
       // TODO: add navigation to topHeaderPack?.next_lesson_url
     }
-  }, [topHeaderPack]);
+  }, [topHeaderPack, resetModalRef]);
 
   const resetProgress = useCallback(() => {
     if (topHeaderPack) {
+      resetModalRef.current.toggle();
       userService.resetProgress(topHeaderPack.id);
       refresh();
     }
@@ -294,18 +296,15 @@ export const Packs: React.FC<Props> = () => {
           style={{ flex: 1 }}
         />
       )}
-      {showResetModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-          btnText='RESET'
-          onAction={() => {
-            setShowResetModal(false);
-            resetProgress();
-          }}
-          onCancel={() => setShowResetModal(false)}
-        />
-      )}
+
+      <ActionModal
+        ref={resetModalRef}
+        title='Hold your horses...'
+        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+        btnText='RESET'
+        onAction={resetProgress}
+        onCancel={() => resetModalRef.current.toggle()}
+      />
     </>
   );
 };
