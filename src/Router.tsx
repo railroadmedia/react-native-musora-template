@@ -151,7 +151,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               >
                 {catalogues.map(c => (
                   <Stack.Screen name={c} key={c}>
-                    {props => <Catalogue {...props} scene={c} />}
+                    {props => <Catalogue {...props} />}
                   </Stack.Screen>
                 ))}
 
