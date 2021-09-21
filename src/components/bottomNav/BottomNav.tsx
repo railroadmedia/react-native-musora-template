@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NavigationProp } from '@react-navigation/native';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import { useEffect } from 'react';
 import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,7 +36,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const [position, setPosition] = useState<'absolute' | 'relative'>('absolute');
 
   const { theme } = useContext(ThemeContext);
-  let styles = setStyle(theme);
+  let styles = useMemo(() => setStyle(theme), [theme]);
 
   const homeIndexCorespondent: { [key: string]: number } = {
     home: 0,

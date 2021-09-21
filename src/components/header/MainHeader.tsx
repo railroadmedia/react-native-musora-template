@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import {
   StyleSheet,
   View,
@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { utils } from '../../utils';
 
@@ -17,40 +16,31 @@ import { downloads, myList } from '../../images/svgs';
 import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
 import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const MainHeader: React.FC = () => {
   const { navigate } = useNavigation<{ navigate: (scene: string) => void }>();
 
-  const { top, left, right } = useSafeAreaInsets();
   const { theme } = useContext(ThemeContext);
   const { user, updateUserAndCache } = useContext(UserContext);
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
-  const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
 
   useEffect(() => {
-    isMounted.current = true;
     abortC.current = new AbortController();
     userService.getUserDetails({ signal: abortC.current.signal }).then(ud => {
       updateUserAndCache(ud);
     });
-    () => {
-      isMounted.current = false;
+    return () => {
       abortC.current.abort();
     };
   }, []);
 
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
-
   return (
-    <View
-      style={[
-        styles.safeAreaContainer,
-        { paddingTop: top, paddingRight: right, paddingLeft: left }
-      ]}
+    <SafeAreaView
+      edges={['top', 'left', 'right']}
+      style={styles.safeAreaContainer}
     >
       <StatusBar
         backgroundColor={themeStyles[theme].background}
@@ -82,7 +72,7 @@ export const MainHeader: React.FC = () => {
           style={{ height: 35, aspectRatio: 1, borderRadius: 20 }}
         />
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

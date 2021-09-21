@@ -1,13 +1,16 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { StyleSheet, Text, StatusBar, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { themeStyles, DARK } from '../../themeStyles';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 
 import { back, settings } from '../../images/svgs';
 import { utils } from '../../utils';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase } from '@react-navigation/native';
 
 interface Props {
   title: string;
@@ -21,31 +24,17 @@ export const BackHeader: React.FC<Props> = ({
   settingsVisible,
   onBack
 }) => {
-  const { navigate, goBack } = useNavigation<
-    NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string) => void;
-    }
-  >();
-  let { top, left, right } = useSafeAreaInsets();
+  const { navigate, goBack } =
+    useNavigation<StackNavigationProp<ParamListBase>>();
+
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-
-  const isMounted = useRef(true);
-
-  useEffect(() => {
-    isMounted.current = true;
-    () => (isMounted.current = false);
-  }, []);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right', 'top']}
       style={[
         styles.safeAreaContainer,
-        { paddingTop: top, paddingLeft: left, paddingRight: right },
         transparent ? { backgroundColor: 'transparent' } : {}
       ]}
     >
@@ -70,7 +59,7 @@ export const BackHeader: React.FC<Props> = ({
             onPress: () => navigate('settings')
           })}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

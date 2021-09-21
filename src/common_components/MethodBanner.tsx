@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -6,43 +6,60 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { arrowRight, info, infoFilled, method, play } from '../images/svgs';
+import { useNavigation } from '@react-navigation/core';
+
 import { ThemeContext } from '../state/theme/ThemeContext';
-import { themeStyles } from '../themeStyles';
-import { utils } from '../utils';
+
 import { Gradient } from './Gradient';
 
-interface Props {
-  isBig: boolean;
-  thumbnail_url?: string;
-  onLeftBtnPress: Function;
-  onRightBtnPress: Function;
-  started?: boolean;
-  completed?: boolean;
-  description?: string;
+import { utils } from '../utils';
+import { themeStyles } from '../themeStyles';
+
+import {
+  arrowRight,
+  info,
+  infoFilled,
+  method,
+  play,
+  reset
+} from '../images/svgs';
+
+import type { ParamListBase } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { Method } from '../interfaces/method.interfaces';
+
+interface Props extends Method {
+  expandableInfo?: boolean;
 }
+
+const svgStyle = {
+  icon: { height: 10, fill: 'white' },
+  container: { paddingRight: 5 }
+};
+const infoSvgStyle = { icon: { height: 25, width: 25, fill: 'white' } };
 
 export const MethodBanner: React.FC<Props> = ({
   thumbnail_url,
-  onLeftBtnPress,
-  onRightBtnPress,
   started,
   completed,
   description,
-  isBig
+  expandableInfo,
+  next_lesson: { id }
 }) => {
+  const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
+
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
 
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <>
       <ImageBackground
-        style={[styles.imageBackground, !isBig ? { aspectRatio: 16 / 9 } : {}]}
+        style={[
+          styles.imageBackground,
+          expandableInfo ? { aspectRatio: 16 / 9 } : {}
+        ]}
         source={{
           uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco/${thumbnail_url}`
         }}
@@ -64,28 +81,22 @@ export const MethodBanner: React.FC<Props> = ({
           container: { paddingTop: 15 }
         })}
         <View style={styles.btnsContainer}>
-          {!isBig && <View style={styles.placeHolder} />}
+          {expandableInfo && <View style={styles.placeHolder} />}
           <TouchableOpacity
-            onPress={() => onLeftBtnPress()}
+            onPress={() => navigate('lessonPart', { id })}
             style={styles.btnTOpacity}
           >
-            {play({
-              icon: { height: 10, fill: 'white' },
-              container: { paddingRight: 5 }
-            })}
+            {(completed ? reset : play)(svgStyle)}
             <Text style={styles.btnText}>
               {completed ? 'RESET' : started ? 'CONTINUE' : 'START'}
             </Text>
           </TouchableOpacity>
-          {isBig ? (
+          {!expandableInfo ? (
             <TouchableOpacity
-              onPress={() => onRightBtnPress()}
+              onPress={() => navigate('method')}
               style={[styles.btnTOpacity, styles.btnTOpacityMoreInfo]}
             >
-              {arrowRight({
-                icon: { height: 10, fill: 'white' },
-                container: { paddingRight: 5 }
-              })}
+              {arrowRight(svgStyle)}
               <Text style={styles.btnText}>MORE INFO</Text>
             </TouchableOpacity>
           ) : (
@@ -93,13 +104,7 @@ export const MethodBanner: React.FC<Props> = ({
               style={styles.placeHolder}
               onPress={() => setShowInfo(!showInfo)}
             >
-              {showInfo
-                ? infoFilled({
-                    icon: { height: 25, width: 25, fill: 'white' }
-                  })
-                : info({
-                    icon: { height: 25, width: 25, fill: 'white' }
-                  })}
+              {showInfo ? infoFilled(infoSvgStyle) : info(infoSvgStyle)}
               <Text style={styles.infoText}>Info</Text>
             </TouchableOpacity>
           )}

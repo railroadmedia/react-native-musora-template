@@ -27,7 +27,6 @@ import {
   SET_CATALOGUE_FROM_CACHE,
   SET_CATALOGUE_THEN_CACHE,
   catalogueReducer,
-  SET_METHOD,
   SET_ALL
 } from '../../state/catalogue/CatalogueReducer';
 import { ThemeContext } from '../../state/theme/ThemeContext';
@@ -38,9 +37,6 @@ import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
 import RowCard from '../../common_components/cards/RowCard';
-import ActionModal from '../../common_components/modals/ActionModal';
-import { userService } from '../../services/user.service';
-import { methodService } from '../../services/method.service';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
@@ -60,8 +56,6 @@ export const Catalogue: React.FC<Props> = ({
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyles(theme), [theme]);
-
-  const [showResetModal, setShowResetModal] = useState(false);
 
   const [
     {
@@ -103,60 +97,27 @@ export const Catalogue: React.FC<Props> = ({
   const setCatalogue = () =>
     (refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
-      .then(([all, newContent, inProgress, recentlyViewed, method]) => {
+      .then(([aRes, ncRes, ipRes, rvRes, mRes]) => {
         if (isMounted.current) {
-          filters.current = all?.meta?.filterOptions;
+          filters.current = aRes?.meta?.filterOptions;
           addCardsAndCache(
-            all?.data
-              ?.concat(newContent?.data || [])
-              .concat(inProgress?.data || [])
-              .concat(recentlyViewed?.data || [])
+            aRes?.data
+              ?.concat(ncRes?.data || [])
+              .concat(ipRes?.data || [])
+              .concat(rvRes?.data || [])
           );
           dispatch({
             type: SET_CATALOGUE_THEN_CACHE,
             scene,
-            method,
-            all: all?.data,
-            inProgress: inProgress?.data,
-            recentlyViewed: recentlyViewed?.data,
-            newContent: newContent?.data,
+            method: mRes,
+            all: aRes?.data,
+            inProgress: ipRes?.data,
+            recentlyViewed: rvRes?.data,
+            newContent: ncRes?.data,
             refreshing: false
           });
         }
       }));
-
-  const onBannerRightBtnPress = () => navigate('method');
-
-  const onBannerLefttBtnPress = () => {
-    if (method?.completed) {
-      setShowResetModal(true);
-    } else {
-      // TODO: navigate to method.next_lesson
-    }
-  };
-
-  const resetMethodProgress = () => {
-    dispatch({ loadingMore: false, refreshing: true });
-    if (method) {
-      userService.resetProgress(method.id);
-      setShowResetModal(false);
-      methodService.getMethod(abortC.current.signal).then(methodRes => {
-        if (isMounted.current) {
-          addCards([methodRes.next_lesson]);
-          dispatch({ type: SET_METHOD, method: methodRes, refreshing: false });
-        }
-      });
-    }
-  };
-
-  const renderFLMethodBanner = () => (
-    <MethodBanner
-      {...method}
-      isBig={true}
-      onRightBtnPress={onBannerRightBtnPress}
-      onLeftBtnPress={onBannerLefttBtnPress}
-    />
-  );
 
   const renderCarousel = (items: number[] | undefined, title: string) => {
     let seeAllFetcher = 'getInProgress';
@@ -192,7 +153,9 @@ export const Catalogue: React.FC<Props> = ({
 
   const flHeader = (
     <>
-      {!!hasMethodBanner && renderFLMethodBanner()}
+      {!!hasMethodBanner && method && !method.completed && (
+        <MethodBanner {...method} />
+      )}
       {!!hasUserInfo ? (
         <View style={styles.userInfoContainer}>
           <Image source={{ uri: user.avatarUrl }} style={styles.avatarImg} />
@@ -262,13 +225,13 @@ export const Catalogue: React.FC<Props> = ({
                   signal: abortC.current.signal,
                   filters: apiQuery
                 })
-                .then(all => {
-                  filters.current = all?.meta?.filterOptions;
+                .then(aRes => {
+                  filters.current = aRes?.meta?.filterOptions;
                   if (isMounted.current) {
-                    addCards(all?.data);
+                    addCards(aRes?.data);
                     dispatch({
                       type: SET_ALL,
-                      all: all?.data,
+                      all: aRes?.data,
                       loadingMore: false,
                       refreshing: false
                     });
@@ -339,12 +302,11 @@ export const Catalogue: React.FC<Props> = ({
           page: ++page.current,
           signal: abortC.current.signal
         })
-        .then(all => {
-          addCards(all?.data);
+        .then(aRes => {
+          addCards(aRes?.data);
           dispatch({
             type: ADD_ALL,
-            method,
-            all: all?.data,
+            all: aRes?.data,
             loadingMore: false
           });
         });
@@ -364,15 +326,6 @@ export const Catalogue: React.FC<Props> = ({
         refreshControl={flRefreshControl}
         onEndReached={loadMore}
       />
-      {showResetModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-          btnText='RESET'
-          onAction={resetMethodProgress}
-          onCancel={() => setShowResetModal(false)}
-        />
-      )}
     </View>
   );
 };

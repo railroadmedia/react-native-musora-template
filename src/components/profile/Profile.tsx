@@ -1,6 +1,7 @@
 import React, {
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState
@@ -56,7 +57,7 @@ export const Profile: React.FC = () => {
       refreshing: true
     });
 
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -68,10 +69,6 @@ export const Profile: React.FC = () => {
       abortC.current.abort();
     };
   }, []);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
 
   const getProfile = () => {
     Promise.all([

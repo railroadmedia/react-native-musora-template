@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useReducer, useRef } from 'react';
+import React, {
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef
+} from 'react';
 import {
   View,
   Text,
@@ -12,7 +18,7 @@ import {
   ActivityIndicator,
   Image
 } from 'react-native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
@@ -29,16 +35,14 @@ import {
   catalogueReducer,
   SET_METHOD
 } from '../../state/catalogue/CatalogueReducer';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase } from '@react-navigation/native';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
 
 export const Method: React.FC = () => {
-  const { navigate } = useNavigation<
-    NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props: {}) => void;
-    }
-  >();
+  const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
@@ -53,10 +57,7 @@ export const Method: React.FC = () => {
     loadingMore: false
   });
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -113,13 +114,7 @@ export const Method: React.FC = () => {
               />
             }
           >
-            <MethodBanner
-              {...method}
-              isBig={false}
-              onRightBtnPress={() => {}}
-              onLeftBtnPress={() => {}}
-            />
-
+            <MethodBanner {...method} expandableInfo={true} />
             <View style={styles.container}>
               <View style={styles.profileContainer}>
                 <Image

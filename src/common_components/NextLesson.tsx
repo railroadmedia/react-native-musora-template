@@ -1,5 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { utils } from '../utils';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
@@ -13,14 +16,10 @@ interface Props {
 
 export const NextLesson: React.FC<Props> = ({ progress, text, item }) => {
   const { theme } = useContext(ThemeContext);
-
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
-    <View>
+    <SafeAreaView edges={['left', 'right', 'bottom']}>
       <View style={styles.progressBar}>
         <View
           style={[styles.progressBarCompleted, { width: progress + '%' }]}
@@ -31,7 +30,7 @@ export const NextLesson: React.FC<Props> = ({ progress, text, item }) => {
         <Text style={styles.subtitle}>{text}</Text>
       </View>
       <RowCard id={item} iconType='next-lesson' route={''} />
-    </View>
+    </SafeAreaView>
   );
 };
 

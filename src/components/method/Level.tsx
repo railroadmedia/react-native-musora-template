@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState
@@ -16,7 +17,7 @@ import {
   StyleSheet
 } from 'react-native';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -30,6 +31,7 @@ import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
 import { method } from '../../images/svgs';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 interface Props {
   route: RouteProp<ParamListBase, 'level'> & {
@@ -44,11 +46,7 @@ export const Level: React.FC<Props> = ({
     params: { mobile_app_url }
   }
 }) => {
-  const { navigate } = useNavigation<
-    NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props: {}) => void;
-    }
-  >();
+  const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
@@ -59,10 +57,7 @@ export const Level: React.FC<Props> = ({
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;

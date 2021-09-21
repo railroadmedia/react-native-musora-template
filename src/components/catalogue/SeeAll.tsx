@@ -1,5 +1,5 @@
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import { useReducer } from 'react';
 import {
   ActivityIndicator,
@@ -59,7 +59,7 @@ export const SeeAll: React.FC<Props> = ({
 
   const { addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
