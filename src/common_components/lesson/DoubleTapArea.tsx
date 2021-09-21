@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { TouchableOpacity, ViewStyle } from 'react-native';
 
 interface Props {
-  children: any;
+  children: React.ReactNode;
   onDoubleTap: () => void;
   styles: ViewStyle[];
 }

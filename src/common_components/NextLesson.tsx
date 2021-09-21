@@ -11,7 +11,7 @@ import RowCard from './cards/RowCard';
 interface Props {
   progress: number;
   text: string;
-  item: any;
+  item: number;
 }
 
 export const NextLesson: React.FC<Props> = ({ progress, text, item }) => {

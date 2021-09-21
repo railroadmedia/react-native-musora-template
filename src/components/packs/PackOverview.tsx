@@ -1,4 +1,5 @@
 import React, {
+  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -56,10 +57,10 @@ export const PackOverview: React.FC<Props> = ({
   const { addCards } = useContext(CardsContext);
 
   const [refreshing, setRefreshing] = useState(false);
-  const [showResetModal, setShowResetModal] = useState(false);
   const [pack, setPack] = useState<I_PackBundle | I_PackLessonBundle>();
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const resetModalRef = createRef<any>();
 
   let styles = setStyles(theme);
   useEffect(() => {
@@ -97,14 +98,15 @@ export const PackOverview: React.FC<Props> = ({
 
   const onMainBtnClick = useCallback(() => {
     if (pack?.completed) {
-      setShowResetModal(true);
+      resetModalRef.current.toggle();
     } else {
       // TODO: add navigation to pack?.next_lesson
     }
-  }, [pack]);
+  }, [pack, resetModalRef]);
 
   const resetProgress = useCallback(() => {
     if (pack) {
+      resetModalRef.current.toggle();
       userService.resetProgress(pack.id);
       refresh();
     }
@@ -173,18 +175,15 @@ export const PackOverview: React.FC<Props> = ({
           progress={pack.progress_percent}
         />
       )}
-      {showResetModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-          btnText='RESET'
-          onAction={() => {
-            setShowResetModal(false);
-            resetProgress();
-          }}
-          onCancel={() => setShowResetModal(false)}
-        />
-      )}
+
+      <ActionModal
+        ref={resetModalRef}
+        title='Hold your horses...'
+        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
+        btnText='RESET'
+        onAction={resetProgress}
+        onCancel={() => resetModalRef.current.toggle()}
+      />
     </SafeAreaView>
   );
 };

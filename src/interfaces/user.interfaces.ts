@@ -23,6 +23,12 @@ export interface UserAvatar {
   uri: string;
 }
 
+export interface UpdateAvatarResponse {
+  success: boolean;
+  errors: [{ detail: string }];
+  data: [{ url: string }];
+}
+
 export interface UserContext {
   user: User;
   updateUser: (user: User) => void;

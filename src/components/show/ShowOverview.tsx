@@ -194,9 +194,11 @@ export const ShowOverview: React.FC<Props> = ({
     />
   );
 
-  const renderFListItem = ({ item }: any): ReactElement => (
-    <RowCard id={item.id} route='showOverview' />
-  );
+  const renderFListItem = ({
+    item
+  }: {
+    item: { id: number };
+  }): ReactElement => <RowCard id={item.id} route='showOverview' />;
 
   return (
     <SafeAreaView edges={['top']} style={styles.container}>

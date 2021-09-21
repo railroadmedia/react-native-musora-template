@@ -21,9 +21,9 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 
 interface Props {
-  svg: Svg;
+  svg: Element;
   type: string;
-  xp: string;
+  xp: number;
   buttonText: string;
   onGoToNextBtn: () => void;
 }

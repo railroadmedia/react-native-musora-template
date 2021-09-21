@@ -7,3 +7,7 @@ export const parseXpValue = function (xp: number): string {
 
   return xp.toString();
 };
+
+export const capitalizeFirstLetter = (text: string) => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};

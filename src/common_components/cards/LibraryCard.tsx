@@ -95,7 +95,14 @@ export const LibraryCard: React.FC<Props> = ({
         </View>
       </TouchableOpacity>
       <CardIcon
-        item={{ id, published_on, is_added_to_primary_playlist, type, title }}
+        item={{
+          id,
+          published_on,
+          is_added_to_primary_playlist,
+          type,
+          title,
+          mobile_app_url
+        }}
       />
     </View>
   );

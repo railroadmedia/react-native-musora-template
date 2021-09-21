@@ -1,4 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import React, {
+  forwardRef,
+  RefObject,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useState
+} from 'react';
 import {
   View,
   Text,
@@ -20,42 +27,44 @@ interface Props {
   onCancel: () => void;
 }
 
-const ActionModal: React.FC<Props> = ({
-  title,
-  message,
-  btnText,
-  icon,
-  onAction,
-  onCancel
-}) => {
-  const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
+const ActionModal = forwardRef<RefObject<any>, Props>(
+  (
+    { title, message, btnText, icon, onAction, onCancel },
+    ref: React.Ref<any>
+  ) => {
+    const [visible, setVisible] = useState(false);
+    const { theme } = useContext(ThemeContext);
+    let styles = setStyles(theme);
 
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+    useEffect(() => {
+      styles = setStyles(theme);
+    }, [theme]);
 
-  return (
-    <Modal transparent={true} visible={true} onRequestClose={() => onCancel()}>
-      <TouchableOpacity
-        style={styles.modalBackground}
-        onPress={() => onCancel()}
-      >
-        <View style={styles.animatedView}>
-          <View style={styles.icon}>{icon}</View>
-          {title && <Text style={styles.title}>{title}</Text>}
-          <Text style={styles.message}>{message}</Text>
-          <TouchableOpacity onPress={() => onAction()} style={styles.actionBtn}>
-            <Text style={styles.actionBtnText}>{btnText}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onCancel()}>
-            <Text style={styles.cancelBtnText}>CANCEL</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-    </Modal>
-  );
-};
+    useImperativeHandle(ref, () => ({
+      toggle() {
+        setVisible(!visible);
+      }
+    }));
+
+    return (
+      <Modal transparent={true} visible={visible} onRequestClose={onCancel}>
+        <TouchableOpacity style={styles.modalBackground} onPress={onCancel}>
+          <View style={styles.animatedView}>
+            <View style={styles.icon}>{icon}</View>
+            <Text style={styles.title}>{title}</Text>
+            <Text style={styles.message}>{message}</Text>
+            <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
+              <Text style={styles.actionBtnText}>{btnText}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onCancel}>
+              <Text style={styles.cancelBtnText}>CANCEL</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  }
+);
 
 export default ActionModal;
 
