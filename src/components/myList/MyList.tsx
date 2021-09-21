@@ -94,7 +94,7 @@ export const MyList: React.FC<Props> = ({}) => {
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
-    myListService.getCache?.().then((cache: any) => {
+    myListService.getCache?.().then(cache => {
       if (isMounted.current) {
         dispatch({ type: SET_MY_LIST_FROM_CACHE, cache });
       }
@@ -291,7 +291,7 @@ export const MyList: React.FC<Props> = ({}) => {
     return <Text style={styles.title}>{pageTitle}</Text>;
   };
 
-  const renderFLItem = ({ item }: any): ReactElement => (
+  const renderFLItem = ({ item }: { item: number }): ReactElement => (
     <RowCard
       id={item}
       route='myList'

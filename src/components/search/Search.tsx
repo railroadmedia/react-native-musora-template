@@ -149,7 +149,7 @@ export const Search: React.FC<Props> = ({}) => {
     [setSearchedText, setShowSearchResults, onSearch]
   );
 
-  const renderFLItem = ({ item }: any): ReactElement => (
+  const renderFLItem = ({ item }: { item: number }): ReactElement => (
     <RowCard id={item} route='search' />
   );
 

@@ -29,7 +29,10 @@ import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
 import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
 import { Loading } from '../../common_components/Loading';
-import type { UserAvatar } from '../../interfaces/user.interfaces';
+import type {
+  UpdateAvatarResponse,
+  UserAvatar
+} from '../../interfaces/user.interfaces';
 
 interface Props {
   closeModal: () => void;
@@ -53,7 +56,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   const onSave = useCallback(async () => {
     textInput.current?.blur();
     if (name && name !== user.display_name) {
-      let response: any = await userService.isNameUnique(name);
+      let response: { unique: boolean } = await userService.isNameUnique(name);
 
       if (response.unique) {
         userService.updateUserDetails(null, name);
@@ -67,7 +70,9 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       }
     }
     if (croppedImage?.uri) {
-      let res: any = await userService.updateAvatar(croppedImage);
+      let res: UpdateAvatarResponse = await userService.updateAvatar(
+        croppedImage
+      );
 
       if (res.success) {
         let r = await userService.updateUserDetails(res.data?.[0]?.url);

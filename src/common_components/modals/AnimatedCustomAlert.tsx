@@ -21,7 +21,7 @@ import { themeStyles } from '../../themeStyles';
 
 interface Props {
   onClose?: () => void;
-  children?: any;
+  children?: React.ReactNode;
 }
 
 export const AnimatedCustomAlert = forwardRef<RefObject<any>, Props>(

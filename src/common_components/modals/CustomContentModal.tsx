@@ -19,7 +19,7 @@ import { utils } from 'react-native-musora-templates';
 interface Props {
   modalStyle: ViewStyle;
   translucentStyle: ViewStyle;
-  children: any;
+  children: React.ReactNode;
 }
 
 export const CustomContentModal = forwardRef<RefObject<any>, Props>(

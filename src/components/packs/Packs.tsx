@@ -18,7 +18,8 @@ import {
   Dimensions,
   ImageBackground,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  ViewStyle
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
@@ -174,10 +175,13 @@ export const Packs: React.FC<Props> = () => {
         ? 0
         : (((allPacks.length / multiplier) >> 0) + 1) * multiplier -
           allPacks.length;
-      let myTitle: { id: string; title: string | null; styles?: any }[] = [
-        { id: '0myP', title: 'Packs', styles: styles.title }
-      ];
-      let moreTitle: { id: string; title: string | null; styles?: any }[] = [
+      let myTitle: { id: string; title: string | null; styles?: ViewStyle }[] =
+        [{ id: '0myP', title: 'Packs', styles: styles.title }];
+      let moreTitle: {
+        id: string;
+        title: string | null;
+        styles?: ViewStyle;
+      }[] = [
         {
           id: '0moreP',
           title: 'MORE PACKS',

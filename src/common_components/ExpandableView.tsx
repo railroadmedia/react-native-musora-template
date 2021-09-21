@@ -23,7 +23,7 @@ interface Props {
   title: string;
   iconColor: string;
   processType?: string;
-  children: any;
+  children: React.ReactNode;
 }
 
 export const ExpandableView = forwardRef<RefObject<any>, Props>(

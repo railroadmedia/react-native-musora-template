@@ -15,7 +15,7 @@ import type {
   StudentReviewBody,
   SubmitCollabVideoBody
 } from './studentFocus.interfaces';
-import type { User, UserAvatar } from './user.interfaces';
+import type { UpdateAvatarResponse, User, UserAvatar } from './user.interfaces';
 
 export interface Filters {
   content_type?: string[];
@@ -131,15 +131,15 @@ export interface ContentService {
 
 export interface UserService {
   getUserDetails: ServiceFunction<User>;
-  getNotifications: ServiceFunction<{ data: Notification[]; meta: any }>;
+  getNotifications: ServiceFunction<{ data: Notification[] }>;
   updateUserDetails: (picture?: any, name?: string) => Promise<{}>;
-  isNameUnique: (name: string) => Promise<{}>;
+  isNameUnique: (name: string) => Promise<{ unique: boolean }>;
   addToMyList: (id: number) => Promise<{}>;
   removeFromMyList: (id: number) => Promise<{}>;
   resetProgress: (id: number) => Promise<{}>;
   likeContent: (id: number) => Promise<{}>;
   dislikeContent: (id: number) => Promise<{}>;
-  updateAvatar: (file: UserAvatar) => Promise<{}>;
+  updateAvatar: (file: UserAvatar) => Promise<UpdateAvatarResponse>;
   changeNotificationSettings: (body: {
     data: {
       type: string;
@@ -223,5 +223,5 @@ export interface CommentService {
   addReplyToComment: (
     replyText: string,
     commentId: number
-  ) => Promise<{ data: any }>;
+  ) => Promise<{ data: Comment[] }>;
 }
