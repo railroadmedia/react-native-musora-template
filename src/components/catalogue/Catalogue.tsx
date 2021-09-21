@@ -61,7 +61,6 @@ export const Catalogue: React.FC<Props> = ({
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
-  const resetModalRef = createRef<any>();
   let styles = setStyles(theme);
 
   const [
@@ -134,36 +133,8 @@ export const Catalogue: React.FC<Props> = ({
   }, []);
 
   const onBannerLefttBtnPress = useCallback(() => {
-    if (method?.completed) {
-      resetModalRef.current.toggle();
-    } else {
-      // TODO: navigate to method.next_lesson
-    }
-  }, [method?.completed]);
-
-  const resetMethodProgress = useCallback(() => {
-    dispatch({
-      type: UPDATE_CATALOGUE_LOADERS,
-      scene,
-      loadingMore: false,
-      refreshing: true
-    });
-    if (method) {
-      userService.resetProgress(method.id);
-      resetModalRef.current.toggle();
-      methodService.getMethod(abortC.current.signal).then(methodRes => {
-        if (isMounted.current) {
-          addCards([methodRes.next_lesson]);
-          dispatch({
-            type: SET_METHOD,
-            method: methodRes,
-            scene: 'home',
-            refreshing: false
-          });
-        }
-      });
-    }
-  }, [method]);
+    // TODO: navigate to method.next_lesson
+  }, []);
 
   const renderFLMethodBanner = () => (
     <MethodBanner
@@ -378,15 +349,6 @@ export const Catalogue: React.FC<Props> = ({
         ListFooterComponent={renderFLFooter()}
         refreshControl={renderFLRefreshControl()}
         onEndReached={loadMore}
-      />
-
-      <ActionModal
-        ref={resetModalRef}
-        title='Hold your horses...'
-        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
-        btnText='RESET'
-        onAction={resetMethodProgress}
-        onCancel={() => resetModalRef.current.toggle()}
       />
     </View>
   );
