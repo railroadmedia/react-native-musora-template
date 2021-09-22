@@ -43,7 +43,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   const { theme } = useContext(ThemeContext);
   const loadingRef = useRef<LoadingRefObject>(null);
   const alert = useRef<CustomRefObject>(null);
-  const scrollView = useRef<any>();
+  const scrollView = useRef<ScrollView>(null);
   const videoUrl = useRef<string>('');
 
   let styles = useMemo(() => setStyles(theme), [theme]);
@@ -125,7 +125,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
       });
       loadingRef.current?.toggleLoading(false);
       if (ssrResp.success) {
-        scrollView.current.scrollToEnd();
+        scrollView.current?.scrollToEnd();
         setActiveIndex(1);
         return;
       } else {
@@ -140,7 +140,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   const onScrollViewLayout = useCallback(
     nativeEvent => {
       let scrollW = nativeEvent.layout.width;
-      scrollView.current.scrollTo({
+      scrollView.current?.scrollTo({
         x: activeIndex * scrollW,
         y: 0,
         animated: false

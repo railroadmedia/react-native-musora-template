@@ -22,16 +22,21 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { x } from '../../images/svgs';
 import { userService } from '../../services/user.service';
+import { utils } from 'react-native-musora-templates';
 
 interface Props {
   slug: string;
   assignmentId: number;
 }
 
-export const Soundslice = forwardRef<RefObject<any>, Props>(
-  ({ slug, assignmentId }, ref: React.Ref<any>) => {
+export interface SoundsliceRefObj {
+  toggleSoundslice: () => void;
+}
+
+export const Soundslice = forwardRef(
+  ({ slug, assignmentId }: Props, ref: React.Ref<SoundsliceRefObj>) => {
     const [showModal, setShowModal] = useState(false);
-    const webViewRef = useRef<any>();
+    const webViewRef = useRef<WebView>(null);
 
     const { theme } = useContext(ThemeContext);
     let styles = useMemo(() => setStyles(theme), [theme]);
@@ -44,8 +49,8 @@ export const Soundslice = forwardRef<RefObject<any>, Props>(
 
     const toggle = useCallback(() => {
       setShowModal(!showModal);
-      webViewRef?.current.disableIdleTimer?.();
-      webViewRef?.current.injectJavaScript(`
+      webViewRef?.current?.disableIdleTimer?.();
+      webViewRef?.current?.injectJavaScript(`
         window.removeEventListener('message', window.currentTimeCallbackListener);
   
         var ss = {};
@@ -92,7 +97,7 @@ export const Soundslice = forwardRef<RefObject<any>, Props>(
                   dataParsed.duration
                 );
                 if (dataParsed.close) {
-                  webViewRef.current.enableIdleTimer?.();
+                  webViewRef.current?.enableIdleTimer?.();
                   setShowModal(false);
                 }
               }}

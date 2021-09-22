@@ -37,13 +37,21 @@ interface Props {
   onLikeOrDislike?: (id: number) => void;
 }
 
+export interface CommentCardRefObj {}
+
 let windowWidth = Dimensions.get('window').width;
 const DEFAULT_PROFILE_IMAGE =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2000px-No_image_available.svg.png';
-export const CommentCard = forwardRef<RefObject<any>, Props>(
+export const CommentCard = forwardRef(
   (
-    { comment, lessonId, onDeleteComment, onAddOrRemoveReply, onLikeOrDislike },
-    ref: React.Ref<any>
+    {
+      comment,
+      lessonId,
+      onDeleteComment,
+      onAddOrRemoveReply,
+      onLikeOrDislike
+    }: Props,
+    ref: React.Ref<CommentCardRefObj>
   ) => {
     const { navigate } = useNavigation<
       NavigationProp<ReactNavigation.RootParamList> & {

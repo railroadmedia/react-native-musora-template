@@ -17,12 +17,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../state/user/UserContext';
 import { filters, x, check, send } from '../../images/svgs';
-import { CustomContentModal } from '../modals/CustomContentModal';
+import {
+  CustomContentModal,
+  CustomContentRefObj
+} from '../modals/CustomContentModal';
 import type { Comment } from '../../interfaces/lesson.interfaces';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
-import { CommentCard } from './CommentCard';
+import { CommentCard, CommentCardRefObj } from './CommentCard';
 import { commentService } from '../../services/comment.service';
 
 const filterOptions = [
@@ -50,17 +53,17 @@ export const CommentSection: React.FC<Props> = ({
   const [selectedFilterIndex, setSelectedFilterIndex] = useState(1);
   const allCommentsNum = useRef<number>(nrOfComments);
   const limit = useRef<number>(10);
-  const input = useRef<any>();
-  const commentCardRef = useRef<any>();
-  const actionModalFilters = useRef<any>();
-  const actionModalCommentInput = useRef<any>();
+  const input = useRef<TextInput>(null);
+  const commentCardRef = useRef<CommentCardRefObj>(null);
+  const actionModalFilters = useRef<CustomContentRefObj>(null);
+  const actionModalCommentInput = useRef<CustomContentRefObj>(null);
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 
   const addComment = useCallback(async () => {
-    actionModalCommentInput.current.toggleModal();
+    actionModalCommentInput.current?.toggle();
     if (commentText.length > 0) {
       const encodedCommentText = encodeURIComponent(commentText);
       await commentService.addComment(encodedCommentText, lessonId);
@@ -78,16 +81,16 @@ export const CommentSection: React.FC<Props> = ({
   }, [commentText, lessonId, sortByComments]);
 
   const showAddComment = useCallback(() => {
-    actionModalCommentInput.current.toggleModal();
+    actionModalCommentInput.current?.toggle();
   }, [actionModalCommentInput]);
 
   const toggleFilterModal = useCallback(() => {
-    actionModalFilters.current.toggle();
+    actionModalFilters.current?.toggle();
   }, [actionModalFilters]);
 
   const selectFilter = useCallback(
     async (index: number, sort: string) => {
-      actionModalFilters.current.toggleModal();
+      actionModalFilters.current?.toggle();
       const c = await commentService.getComments(
         lessonId,
         sortByComments,
@@ -258,7 +261,7 @@ export const CommentSection: React.FC<Props> = ({
             placeholder='Add a comment...'
             placeholderTextColor={themeStyles[theme].textColor}
             value={commentText}
-            onLayout={e => input.current.focus()}
+            onLayout={e => input.current?.focus()}
             onChangeText={text => setCommentText(text)}
           />
           <TouchableOpacity style={styles.sendIcon} onPress={addComment}>

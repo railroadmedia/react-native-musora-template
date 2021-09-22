@@ -42,7 +42,7 @@ export const AskQuestion: React.FC<Props> = () => {
   const { theme } = useContext(ThemeContext);
   const loadingRef = useRef<LoadingRefObject>(null);
   const alert = useRef<CustomRefObject>(null);
-  const scrollView = useRef<any>();
+  const scrollView = useRef<ScrollView>(null);
   const question = useRef<string>('');
 
   let styles = useMemo(() => setStyles(theme), [theme]);
@@ -69,7 +69,7 @@ export const AskQuestion: React.FC<Props> = () => {
       });
       loadingRef.current?.toggleLoading(false);
       if (ssrResp.success) {
-        scrollView.current.scrollToEnd();
+        scrollView.current?.scrollToEnd();
         setActiveIndex(1);
         return;
       } else {
@@ -138,7 +138,7 @@ export const AskQuestion: React.FC<Props> = () => {
   const onScrollViewLayout = useCallback(
     nativeEvent => {
       let scrollW = nativeEvent.layout.width;
-      scrollView.current.scrollTo({
+      scrollView.current?.scrollTo({
         x: activeIndex * scrollW,
         y: 0,
         animated: false

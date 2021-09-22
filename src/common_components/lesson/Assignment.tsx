@@ -45,7 +45,7 @@ export const Assignment: React.FC<Props> = ({
 }) => {
   const [hideTitles, setHideTitles] = useState(false);
   const [width, setWidth] = useState(Dimensions.get('screen').width);
-  const scrollViewRef = useRef<any>();
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyles(theme), [theme]);

@@ -22,8 +22,15 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const CustomContentModal = forwardRef<RefObject<any>, Props>(
-  ({ modalStyle, translucentStyle, children }, ref: React.Ref<any>) => {
+export interface CustomContentRefObj {
+  toggle: () => void;
+}
+
+export const CustomContentModal = forwardRef(
+  (
+    { modalStyle, translucentStyle, children }: Props,
+    ref: React.Ref<CustomContentRefObj>
+  ) => {
     const [modalVisible, setModalVisible] = useState(false);
 
     useImperativeHandle(ref, () => ({

@@ -25,7 +25,10 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { back } from '../../images/svgs';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ExpandableView } from '../../common_components/ExpandableView';
+import {
+  ExpandableView,
+  ExpandableViewRefObject
+} from '../../common_components/ExpandableView';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
 import ActionModal, {
@@ -65,8 +68,8 @@ export const StudentReview: React.FC<Props> = () => {
   >();
 
   const { theme } = useContext(ThemeContext);
-  const scrollView = useRef<any>();
-  const expSkill = createRef<any>();
+  const scrollView = useRef<ScrollView>(null);
+  const expSkill = useRef<ExpandableViewRefObject>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
   const alert = useRef<CustomRefObject>(null);
   const nextScrollTo = useRef(0);
@@ -201,7 +204,7 @@ export const StudentReview: React.FC<Props> = () => {
 
   const setExperience = useCallback(
     (experienceType: string) => {
-      expSkill.current.toggleView();
+      expSkill.current?.toggleView();
       experience.current = experienceType;
       setExperienceTitle(experienceType);
     },
