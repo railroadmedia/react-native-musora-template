@@ -70,6 +70,7 @@ export const Method: React.FC = () => {
   }, []);
   const setMethod = () =>
     methodService.getMethod(abortC.current.signal).then(methodRes => {
+      methodRes.completed = true;
       if (isMounted.current) {
         addCards([methodRes.next_lesson]);
         dispatch({

@@ -27,6 +27,7 @@ import {
 import type { ParamListBase } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Method } from '../interfaces/method.interfaces';
+import { ResetModal } from './modals/ResetModal';
 
 interface Props extends Method {
   expandableInfo?: boolean;
@@ -48,9 +49,10 @@ export const MethodBanner: React.FC<Props> = ({
 }) => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
-  const [showInfo, setShowInfo] = useState(false);
-  const { theme } = useContext(ThemeContext);
+  const [infoVisible, setInfoVisivle] = useState(false);
+  const [resetVisible, setResetVisible] = useState(false);
 
+  const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
@@ -83,7 +85,10 @@ export const MethodBanner: React.FC<Props> = ({
         <View style={styles.btnsContainer}>
           {expandableInfo && <View style={styles.placeHolder} />}
           <TouchableOpacity
-            onPress={() => navigate('lessonPart', { id })}
+            onPress={() => {
+              if (!completed) navigate('lessonPart', { id });
+              else setResetVisible(true);
+            }}
             style={styles.btnTOpacity}
           >
             {(completed ? reset : play)(svgStyle)}
@@ -102,15 +107,19 @@ export const MethodBanner: React.FC<Props> = ({
           ) : (
             <TouchableOpacity
               style={styles.placeHolder}
-              onPress={() => setShowInfo(!showInfo)}
+              onPress={() => setInfoVisivle(!infoVisible)}
             >
-              {showInfo ? infoFilled(infoSvgStyle) : info(infoSvgStyle)}
+              {infoVisible ? infoFilled(infoSvgStyle) : info(infoSvgStyle)}
               <Text style={styles.infoText}>Info</Text>
             </TouchableOpacity>
           )}
         </View>
       </ImageBackground>
-      {showInfo && <Text style={styles.description}>{description}</Text>}
+      {infoVisible && <Text style={styles.description}>{description}</Text>}
+      <ResetModal
+        visible={resetVisible}
+        onDismiss={() => setResetVisible(false)}
+      />
     </>
   );
 };
