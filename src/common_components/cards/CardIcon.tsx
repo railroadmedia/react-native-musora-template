@@ -1,10 +1,10 @@
-import React, { createRef, useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
 import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
-import ActionModal from '../modals/ActionModal';
+import ActionModal, { CustomRefObject } from '../modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Card } from '../../interfaces/card.interfaces';
 
@@ -37,9 +37,9 @@ export const CardIcon: React.FC<Props> = ({
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
     is_added_to_primary_playlist
   );
-  const removeModalRef = createRef<any>();
-  const resetModalRef = createRef<any>();
-  const calendarModalRef = createRef<any>();
+  const removeModalRef = useRef<CustomRefObject>(null);
+  const resetModalRef = useRef<CustomRefObject>(null);
+  const calendarModalRef = useRef<CustomRefObject>(null);
 
   const addLessonToCalendar = useCallback(() => {
     const startDate = new Date(
@@ -53,8 +53,8 @@ export const CardIcon: React.FC<Props> = ({
       endDate
     };
     AddCalendarEvent.presentEventCreatingDialog(eventConfig)
-      .then(() => calendarModalRef.current.toggle())
-      .catch(() => calendarModalRef.current.toggle());
+      .then(() => calendarModalRef.current?.toggle('', ''))
+      .catch(() => calendarModalRef.current?.toggle('', ''));
   }, [
     live_event_start_time,
     live_event_end_time,
@@ -69,14 +69,14 @@ export const CardIcon: React.FC<Props> = ({
   }, [setIsAddedToPrimaryList, id]);
 
   const removeFromMyList = useCallback(() => {
-    removeModalRef.current.toggle();
+    removeModalRef.current?.toggle('', '');
     setIsAddedToPrimaryList(false);
     userService.removeFromMyList(id);
     onRemoveFromMyList?.(id);
   }, [setIsAddedToPrimaryList, id, removeModalRef]);
 
   const resetProgress = useCallback(() => {
-    resetModalRef.current.toggle();
+    resetModalRef.current?.toggle('', '');
     userService.resetProgress(id);
     onResetProgress?.(id);
   }, [id, resetModalRef]);
@@ -87,7 +87,11 @@ export const CardIcon: React.FC<Props> = ({
         ? addToCalendar({
             icon: iconStyle,
             container: styles.icon,
-            onPress: () => calendarModalRef.current.toggle()
+            onPress: () =>
+              calendarModalRef.current?.toggle(
+                '',
+                `Add this lesson to your calendar so you're notified when it's available`
+              )
           })
         : iconType === 'next-lesson'
         ? play({
@@ -98,13 +102,21 @@ export const CardIcon: React.FC<Props> = ({
         ? reset({
             icon: iconStyle,
             container: styles.icon,
-            onPress: () => resetModalRef.current.toggle()
+            onPress: () =>
+              resetModalRef.current?.toggle(
+                'Hold your horses...',
+                `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+              )
           })
         : isAddedToPrimaryList
         ? x({
             icon: iconStyle,
             container: styles.icon,
-            onPress: () => removeModalRef.current.toggle()
+            onPress: () =>
+              removeModalRef.current?.toggle(
+                'Hold your horses...',
+                `This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`
+              )
           })
         : plus({
             icon: iconStyle,
@@ -113,29 +125,24 @@ export const CardIcon: React.FC<Props> = ({
           })}
       <ActionModal
         ref={removeModalRef}
-        title='Hold your horses...'
-        message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
         btnText='REMOVE'
         onAction={removeFromMyList}
-        onCancel={() => removeModalRef.current.toggle()}
+        onCancel={() => removeModalRef.current?.toggle('', '')}
       />
       <ActionModal
         ref={resetModalRef}
-        title='Hold your horses...'
-        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
         btnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current.toggle()}
+        onCancel={() => resetModalRef.current?.toggle('', '')}
       />
 
       <ActionModal
         icon={addToCalendar({
           icon: { height: 128, width: 300, fill: utils.color }
         })}
-        message={`Add this lesson to your calendar so you're notified when it's available`}
         btnText='ADD TO CALENDAR'
         onAction={addLessonToCalendar}
-        onCancel={() => calendarModalRef.current.toggle()}
+        onCancel={() => calendarModalRef.current?.toggle('', '')}
       />
     </View>
   );

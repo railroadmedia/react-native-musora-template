@@ -1,8 +1,8 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -29,7 +29,9 @@ import type {
 import { PacksBanner } from './PacksBanner';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { CardsContext } from '../../state/cards/CardsContext';
-import ActionModal from '../../common_components/modals/ActionModal';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import RowCard from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
@@ -60,12 +62,9 @@ export const PackOverview: React.FC<Props> = ({
   const [pack, setPack] = useState<I_PackBundle | I_PackLessonBundle>();
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const resetModalRef = createRef<any>();
+  const resetModalRef = useRef<CustomRefObject>(null);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -98,7 +97,10 @@ export const PackOverview: React.FC<Props> = ({
 
   const onMainBtnClick = useCallback(() => {
     if (pack?.completed) {
-      resetModalRef.current.toggle();
+      resetModalRef.current?.toggle(
+        'Hold your horses...',
+        `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+      );
     } else {
       // TODO: add navigation to pack?.next_lesson
     }
@@ -106,7 +108,7 @@ export const PackOverview: React.FC<Props> = ({
 
   const resetProgress = useCallback(() => {
     if (pack) {
-      resetModalRef.current.toggle();
+      resetModalRef.current?.toggle('', '');
       userService.resetProgress(pack.id);
       refresh();
     }
@@ -178,11 +180,9 @@ export const PackOverview: React.FC<Props> = ({
 
       <ActionModal
         ref={resetModalRef}
-        title='Hold your horses...'
-        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
         btnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current.toggle()}
+        onCancel={() => resetModalRef.current?.toggle('', '')}
       />
     </SafeAreaView>
   );

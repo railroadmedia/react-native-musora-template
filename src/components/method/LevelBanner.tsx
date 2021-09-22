@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -47,11 +47,7 @@ export const LevelBanner: React.FC<Props> = ({
 
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <>

@@ -3,7 +3,6 @@ import React, {
   RefObject,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   useState
@@ -26,7 +25,9 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { parseXpValue } from './helpers';
 import { commentService } from '../../services/comment.service';
-import { AnimatedCustomAlert } from '../modals/AnimatedCustomAlert';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 
 interface Props {
   comment: Comment;
@@ -76,12 +77,9 @@ export const CommentCard = forwardRef<RefObject<any>, Props>(
 
     const { theme } = useContext(ThemeContext);
     const { user } = useContext(UserContext);
-    const animatedAlert = useRef<any>();
+    const alert = useRef<CustomRefObject>(null);
 
-    let styles = setStyles(theme);
-    useEffect(() => {
-      styles = setStyles(theme);
-    }, [theme]);
+    let styles = useMemo(() => setStyles(theme), [theme]);
 
     const goToReplies = useCallback(() => {
       if (lessonId) {
@@ -94,18 +92,18 @@ export const CommentCard = forwardRef<RefObject<any>, Props>(
     }, []);
 
     const showDeleteAlert = useCallback(() => {
-      animatedAlert.current.toggle(
+      alert.current?.toggle(
         'Hold your horses...',
         'This will delete this comment and cannot be undone. Are you sure about this?'
       );
-    }, [animatedAlert]);
+    }, [alert]);
 
     const closeDeleteModal = useCallback(() => {
-      animatedAlert.current.toggle();
-    }, [animatedAlert]);
+      alert.current?.toggle('', '');
+    }, [alert]);
 
     const deleteComment = useCallback(() => {
-      animatedAlert.current.toggle();
+      alert.current?.toggle('', '');
       if (onDeleteComment) onDeleteComment(comment.id);
     }, [onDeleteComment, comment.id]);
 
@@ -281,14 +279,14 @@ export const CommentCard = forwardRef<RefObject<any>, Props>(
           </View>
         </View>
 
-        <AnimatedCustomAlert ref={animatedAlert}>
+        <ActionModal ref={alert} onCancel={() => alert.current?.toggle('', '')}>
           <TouchableOpacity onPress={deleteComment} style={styles.btn}>
             <Text style={styles.deleteBtnText}>DELETE</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={closeDeleteModal}>
             <Text style={styles.cancelBtnText}>CANCEL</Text>
           </TouchableOpacity>
-        </AnimatedCustomAlert>
+        </ActionModal>
       </View>
     );
   }

@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -67,10 +68,7 @@ export const ShowOverview: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const page = useRef(1);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import {
   Text,
   Modal,
@@ -47,10 +47,7 @@ export const NavigationMenu: React.FC<Props> = ({
   >();
   const { theme } = useContext(ThemeContext);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onNavigate = useCallback((route: string) => {
     goBack();

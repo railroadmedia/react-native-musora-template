@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -68,10 +62,7 @@ export const PacksBanner: React.FC<Props> = ({
 
   const [showInfo, setShowInfo] = useState(false);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const getAspectRatio = useMemo(() => {
     if (utils.isTablet) {

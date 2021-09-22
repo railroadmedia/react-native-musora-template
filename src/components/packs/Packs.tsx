@@ -1,5 +1,4 @@
 import React, {
-  createRef,
   ReactElement,
   useCallback,
   useContext,
@@ -34,7 +33,9 @@ import type {
 } from '../../interfaces/packs.interfaces';
 import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
-import ActionModal from '../../common_components/modals/ActionModal';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 
 interface Props {}
@@ -55,17 +56,14 @@ export const Packs: React.FC<Props> = () => {
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const resetModalRef = createRef<any>();
+  const resetModalRef = useRef<CustomRefObject>(null);
 
   const multiplier = useMemo(() => {
     if (utils.isTablet) return 6;
     return 3;
   }, []);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -253,7 +251,10 @@ export const Packs: React.FC<Props> = () => {
 
   const onMainBtnClick = useCallback(() => {
     if (topHeaderPack?.completed) {
-      resetModalRef.current.toggle();
+      resetModalRef.current?.toggle(
+        'Hold your horses...',
+        `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+      );
     } else {
       // TODO: add navigation to topHeaderPack?.next_lesson_url
     }
@@ -261,7 +262,7 @@ export const Packs: React.FC<Props> = () => {
 
   const resetProgress = useCallback(() => {
     if (topHeaderPack) {
-      resetModalRef.current.toggle();
+      resetModalRef.current?.toggle('', '');
       userService.resetProgress(topHeaderPack.id);
       refresh();
     }
@@ -303,11 +304,9 @@ export const Packs: React.FC<Props> = () => {
 
       <ActionModal
         ref={resetModalRef}
-        title='Hold your horses...'
-        message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
         btnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current.toggle()}
+        onCancel={() => resetModalRef.current?.toggle('', '')}
       />
     </>
   );

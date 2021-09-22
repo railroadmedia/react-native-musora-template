@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
 import { messageBubble, threeDotsMenu } from '../../images/svgs';
 import type { Notification as Props } from '../../interfaces/notification.interfaces';
@@ -14,7 +14,8 @@ export const Notification: React.FC<Props> = ({
   onNotificationThreeDotsMenu
 }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity

@@ -1,7 +1,7 @@
 import React, {
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -57,10 +57,7 @@ export const CommentSection: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const addComment = useCallback(async () => {
     actionModalCommentInput.current.toggleModal();

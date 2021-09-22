@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useReducer } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { View, Text, ScrollView, StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemeContext } from '../../state/theme/ThemeContext';
@@ -22,10 +22,7 @@ export const NotificationSettings: React.FC<Props> = () => {
     notifications_summary_frequency_minutes
   } = user || {};
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const changeNotificationStatus = useCallback(data => {
     // if (!this.context.isConnected) return this.context.showNoConnectionAlert();

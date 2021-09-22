@@ -107,9 +107,10 @@ export const Profile: React.FC = () => {
     <View
       style={styles.stickyHeaderContainer}
       ref={r => {
-        r?.measure((_, __, ___, ____, _____, pageY) =>
-          setHeaderNavHeight(pageY)
-        );
+        r?.measure((_, __, ___, ____, _____, pageY) => {
+          console.log(pageY);
+          setHeaderNavHeight(pageY || 0);
+        });
       }}
     >
       <Animated.Image

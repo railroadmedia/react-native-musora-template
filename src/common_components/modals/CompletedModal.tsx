@@ -3,8 +3,8 @@ import React, {
   RefObject,
   useCallback,
   useContext,
-  useEffect,
   useImperativeHandle,
+  useMemo,
   useState
 } from 'react';
 import {
@@ -33,10 +33,7 @@ export const CompletedModal = forwardRef<RefObject<any>, Props>(
     const [visible, setVisible] = useState(false);
 
     const { theme } = useContext(ThemeContext);
-    let styles = setStyles(theme);
-    useEffect(() => {
-      styles = setStyles(theme);
-    }, [theme]);
+    let styles = useMemo(() => setStyles(theme), [theme]);
 
     useImperativeHandle(ref, () => ({
       toggleView() {

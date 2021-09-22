@@ -3,8 +3,8 @@ import React, {
   RefObject,
   useCallback,
   useContext,
-  useEffect,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -34,10 +34,7 @@ export const Soundslice = forwardRef<RefObject<any>, Props>(
     const webViewRef = useRef<any>();
 
     const { theme } = useContext(ThemeContext);
-    let styles = setStyles(theme);
-    useEffect(() => {
-      styles = setStyles(theme);
-    }, [theme]);
+    let styles = useMemo(() => setStyles(theme), [theme]);
 
     useImperativeHandle(ref, () => ({
       toggleSoundslice() {

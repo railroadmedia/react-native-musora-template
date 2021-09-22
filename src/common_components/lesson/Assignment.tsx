@@ -2,6 +2,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -47,10 +48,7 @@ export const Assignment: React.FC<Props> = ({
   const scrollViewRef = useRef<any>();
 
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);

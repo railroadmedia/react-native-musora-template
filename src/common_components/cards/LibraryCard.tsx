@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import {
-  ImageBackground,
   View,
   Text,
   TouchableOpacity,
@@ -45,10 +44,7 @@ export const LibraryCard: React.FC<Props> = ({
   } = item;
   const { theme } = useContext(ThemeContext);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>
