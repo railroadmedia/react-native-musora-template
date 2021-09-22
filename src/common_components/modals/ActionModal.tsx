@@ -22,7 +22,7 @@ interface Props {
   title?: string;
   message: string;
   btnText: string;
-  icon?: any;
+  icon?: Element;
   onAction: () => void;
   onCancel: () => void;
 }
