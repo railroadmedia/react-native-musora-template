@@ -115,7 +115,11 @@ export const Method: React.FC = () => {
               />
             }
           >
-            <MethodBanner {...method} expandableInfo={true} />
+            <MethodBanner
+              {...method}
+              expandableInfo={true}
+              onResetProgress={refresh}
+            />
             <View style={styles.container}>
               <View style={styles.profileContainer}>
                 <Image

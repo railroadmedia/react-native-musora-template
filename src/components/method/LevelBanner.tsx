@@ -29,7 +29,7 @@ interface Props {
   description?: string;
   is_added_to_primary_playlist?: boolean;
   customTitle: string;
-  renderCustomLogo: () => any;
+  renderCustomLogo: () => Element;
 }
 
 export const LevelBanner: React.FC<Props> = ({
