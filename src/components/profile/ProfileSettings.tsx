@@ -1,8 +1,8 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
+  useRef,
   useState
 } from 'react';
 import {
@@ -27,31 +27,30 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
-import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
-import { Loading } from '../../common_components/Loading';
+import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import type {
   UpdateAvatarResponse,
   UserAvatar
 } from '../../interfaces/user.interfaces';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 
 interface Props {
   closeModal: () => void;
 }
 
 export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
-  const customAlert = createRef<any>();
-  const textInput = createRef<TextInput>();
-  const loadingRef = createRef<any>();
+  const customAlert = useRef<CustomRefObject>(null);
+  const textInput = useRef<TextInput>(null);
+  const loadingRef = useRef<LoadingRefObject>(null);
   const { theme } = useContext(ThemeContext);
   const { user, updateUser } = useContext(UserContext);
   const [name, setName] = useState(user.display_name);
   const [image, setImage] = useState(user.avatarUrl);
   const [croppedImage, setCroppedImage] = useState<UserAvatar>();
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onSave = useCallback(async () => {
     textInput.current?.blur();
@@ -78,7 +77,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         let r = await userService.updateUserDetails(res.data?.[0]?.url);
         updateUser({ ...user, avatarUrl: res.data?.[0]?.url });
       } else {
-        customAlert.current.toggle(
+        customAlert.current?.toggle(
           'Something went wrong.',
           res.errors?.[0]?.detail
         );
@@ -95,7 +94,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       maxHeight: 300,
       maxWidth: 300
     };
-    loadingRef.current?.toggleLoading();
+    loadingRef.current?.toggleLoading(true);
     launchImageLibrary(options, (response: ImagePickerResponse) => {
       if (response?.assets?.[0]?.uri) {
         ImagePicker.openCropper({
@@ -105,7 +104,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
           mediaType: 'photo'
         })
           .then(async image => {
-            loadingRef.current?.toggleLoading();
+            loadingRef.current?.toggleLoading(false);
             if (image) {
               setImage(image.path);
               const croppedImg = {
@@ -117,14 +116,14 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
             }
           })
           .catch(error => {
-            loadingRef.current?.toggleLoading();
+            loadingRef.current?.toggleLoading(false);
           });
       } else {
-        customAlert.current.toggle(
+        customAlert.current?.toggle(
           'Something went wrong',
-          response.errorMessage
+          response.errorMessage || ''
         );
-        loadingRef.current?.toggleLoading();
+        loadingRef.current?.toggleLoading(false);
       }
     });
   }, [image, loadingRef.current, customAlert.current]);
@@ -175,7 +174,10 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
           }`}</Text>
         </KeyboardAvoidingView>
       </TouchableOpacity>
-      <AnimatedCustomAlert ref={customAlert} />
+      <ActionModal
+        ref={customAlert}
+        onCancel={() => customAlert.current?.toggle('', '')}
+      />
       <Loading ref={loadingRef} />
     </Modal>
   );

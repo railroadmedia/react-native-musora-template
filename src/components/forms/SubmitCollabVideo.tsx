@@ -1,8 +1,8 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -24,9 +24,11 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { back } from '../../images/svgs';
-import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
-import { Loading } from '../../common_components/Loading';
+import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -39,15 +41,12 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const { theme } = useContext(ThemeContext);
-  const loadingRef = createRef<any>();
-  const alert = createRef<any>();
-  const scrollView = useRef<any>();
+  const loadingRef = useRef<LoadingRefObject>(null);
+  const alert = useRef<CustomRefObject>(null);
+  const scrollView = useRef<ScrollView>(null);
   const videoUrl = useRef<string>('');
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);
@@ -120,17 +119,17 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
     if (activeIndex) {
       goBack();
     } else {
-      loadingRef.current.toggleLoading();
+      loadingRef.current?.toggleLoading(true);
       let ssrResp = await studentFocuService.submitCollabVideo({
         video: videoUrl.current
       });
-      loadingRef.current.toggleLoading();
+      loadingRef.current?.toggleLoading(false);
       if (ssrResp.success) {
-        scrollView.current.scrollToEnd();
+        scrollView.current?.scrollToEnd();
         setActiveIndex(1);
         return;
       } else {
-        return alert.current.toggle(
+        return alert.current?.toggle(
           ssrResp.title || 'Something went wrong',
           ssrResp.message || 'Please try again later!'
         );
@@ -141,7 +140,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   const onScrollViewLayout = useCallback(
     nativeEvent => {
       let scrollW = nativeEvent.layout.width;
-      scrollView.current.scrollTo({
+      scrollView.current?.scrollTo({
         x: activeIndex * scrollW,
         y: 0,
         animated: false
@@ -200,7 +199,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
           </SafeAreaView>
         </View>
       </KeyboardAvoidingView>
-      <AnimatedCustomAlert ref={alert} />
+      <ActionModal ref={alert} onCancel={() => alert.current?.toggle('', '')} />
       <Loading ref={loadingRef} />
     </SafeAreaView>
   );

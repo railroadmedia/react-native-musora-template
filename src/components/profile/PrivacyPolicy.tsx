@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { ScrollView, Text, StyleSheet, View, Linking } from 'react-native';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -43,10 +43,7 @@ interface Props {
 export const PrivacyPolicy: React.FC<Props> = ({ from }) => {
   const { theme } = useContext(ThemeContext);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>

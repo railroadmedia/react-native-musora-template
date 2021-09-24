@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -24,10 +25,15 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { back } from '../../images/svgs';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { ExpandableView } from '../../common_components/ExpandableView';
-import { Loading } from '../../common_components/Loading';
+import {
+  ExpandableView,
+  ExpandableViewRefObject
+} from '../../common_components/ExpandableView';
+import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
-import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 
 interface SectionType {
   q: string;
@@ -62,10 +68,10 @@ export const StudentReview: React.FC<Props> = () => {
   >();
 
   const { theme } = useContext(ThemeContext);
-  const scrollView = useRef<any>();
-  const expSkill = createRef<any>();
-  const loadingRef = createRef<any>();
-  const alert = createRef<any>();
+  const scrollView = useRef<ScrollView>(null);
+  const expSkill = useRef<ExpandableViewRefObject>(null);
+  const loadingRef = useRef<LoadingRefObject>(null);
+  const alert = useRef<CustomRefObject>(null);
   const nextScrollTo = useRef(0);
   const prevScrollTo = useRef(0);
   const goal = useRef('');
@@ -80,10 +86,7 @@ export const StudentReview: React.FC<Props> = () => {
   const [nextDisabled, setNextDisabled] = useState(false);
   const [experienceTitle, setExperienceTitle] = useState('Beginner');
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);
@@ -100,7 +103,7 @@ export const StudentReview: React.FC<Props> = () => {
     Keyboard.dismiss();
     let disabled = false;
     if (activeCarouselIndicator === 5) {
-      loadingRef.current.toggleLoading();
+      loadingRef.current?.toggleLoading(true);
       const ssrResp = await studentFocuService.submitStudentReview({
         goal: goal.current,
         weakness: weakness.current,
@@ -109,7 +112,7 @@ export const StudentReview: React.FC<Props> = () => {
         improvement: improvement.current,
         instructor_focus: instructor_focus.current
       });
-      loadingRef.current.toggleLoading();
+      loadingRef.current?.toggleLoading(false);
       if (ssrResp.success) {
         if (nextScrollTo.current === 0) nextScrollTo.current = width;
         scrollView.current?.scrollTo({
@@ -121,7 +124,7 @@ export const StudentReview: React.FC<Props> = () => {
         setNextDisabled(disabled);
         return;
       } else {
-        return alert.current.toggle(
+        return alert.current?.toggle(
           ssrResp.title || 'Something went wrong',
           ssrResp.message || 'Please try again later!'
         );
@@ -201,7 +204,7 @@ export const StudentReview: React.FC<Props> = () => {
 
   const setExperience = useCallback(
     (experienceType: string) => {
-      expSkill.current.toggleView();
+      expSkill.current?.toggleView();
       experience.current = experienceType;
       setExperienceTitle(experienceType);
     },
@@ -411,7 +414,10 @@ export const StudentReview: React.FC<Props> = () => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
-        <AnimatedCustomAlert ref={alert} />
+        <ActionModal
+          ref={alert}
+          onCancel={() => alert.current?.toggle('', '')}
+        />
       </SafeAreaView>
       <Loading ref={loadingRef} />
     </>

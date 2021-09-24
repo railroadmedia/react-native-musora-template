@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { left, right } from '../../images/svgs';
@@ -25,10 +25,7 @@ export const LessonProgress: React.FC<Props> = ({
 }) => {
   const { theme } = useContext(ThemeContext);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <SafeAreaView style={styles.safearea} edges={['bottom']}>

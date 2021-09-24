@@ -1,9 +1,8 @@
 import React, {
   forwardRef,
-  RefObject,
   useContext,
-  useEffect,
   useImperativeHandle,
+  useMemo,
   useState
 } from 'react';
 import {
@@ -19,30 +18,31 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 
 interface Props {
-  title?: string;
-  message: string;
-  btnText: string;
+  btnText?: string;
   icon?: Element;
-  onAction: () => void;
+  onAction?: () => void;
   onCancel: () => void;
+  children?: React.ReactNode;
 }
 
-const ActionModal = forwardRef<RefObject<any>, Props>(
-  (
-    { title, message, btnText, icon, onAction, onCancel },
-    ref: React.Ref<any>
-  ) => {
-    const [visible, setVisible] = useState(false);
-    const { theme } = useContext(ThemeContext);
-    let styles = setStyles(theme);
+export interface CustomRefObject {
+  toggle: (title: string, message: string) => void;
+}
 
-    useEffect(() => {
-      styles = setStyles(theme);
-    }, [theme]);
+const ActionModal = forwardRef(
+  (props: Props, ref: React.Ref<CustomRefObject>) => {
+    const { btnText, icon, onAction, onCancel, children } = props;
+    const [visible, setVisible] = useState(false);
+    const [title, setTitle] = useState('');
+    const [message, setMessage] = useState('');
+    const { theme } = useContext(ThemeContext);
+    let styles = useMemo(() => setStyles(theme), [theme]);
 
     useImperativeHandle(ref, () => ({
-      toggle() {
+      toggle(title, message) {
         setVisible(!visible);
+        setTitle(title || 'Unknown');
+        setMessage(message || 'Unknown error');
       }
     }));
 
@@ -50,15 +50,20 @@ const ActionModal = forwardRef<RefObject<any>, Props>(
       <Modal transparent={true} visible={visible} onRequestClose={onCancel}>
         <TouchableOpacity style={styles.modalBackground} onPress={onCancel}>
           <View style={styles.animatedView}>
-            <View style={styles.icon}>{icon}</View>
-            <Text style={styles.title}>{title}</Text>
+            {!!icon && <View style={styles.icon}>{icon}</View>}
+            {!!title && <Text style={styles.title}>{title}</Text>}
             <Text style={styles.message}>{message}</Text>
-            <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
-              <Text style={styles.actionBtnText}>{btnText}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={onCancel}>
-              <Text style={styles.cancelBtnText}>CANCEL</Text>
-            </TouchableOpacity>
+            {!!onAction && (
+              <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
+                <Text style={styles.actionBtnText}>{btnText}</Text>
+              </TouchableOpacity>
+            )}
+            {!!onCancel && (
+              <TouchableOpacity onPress={onCancel}>
+                <Text style={styles.cancelBtnText}>CANCEL</Text>
+              </TouchableOpacity>
+            )}
+            {children}
           </View>
         </TouchableOpacity>
       </Modal>

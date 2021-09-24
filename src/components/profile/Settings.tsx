@@ -1,5 +1,4 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
   useEffect,
@@ -31,11 +30,13 @@ import {
   termsOfUse,
   turnOff
 } from '../../images/svgs';
-import { AnimatedCustomAlert } from '../../common_components/modals/AnimatedCustomAlert';
-import { Loading } from '../../common_components/Loading';
+import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
 import { ProfileSettings } from './ProfileSettings';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 
 interface Props {}
 
@@ -51,12 +52,12 @@ export const Settings: React.FC<Props> = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const { user: cachedUser } = useContext(UserContext);
 
-  const loadingRef = createRef<any>();
-  const animatedAlert = createRef<any>();
-  const restoreAlert = createRef<any>();
-  const restoreSuccessfull = createRef<any>();
+  const loadingRef = useRef<LoadingRefObject>(null);
+  const animatedAlert = useRef<CustomRefObject>(null);
+  const restoreAlert = useRef<CustomRefObject>(null);
+  const restoreSuccessfull = useRef<CustomRefObject>(null);
   let alertBtn = useRef<string>();
-  let styles = setStyles(theme);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const iconStyle = useMemo(() => {
     return { height: 20, width: 20, fill: utils.color };
@@ -143,7 +144,7 @@ export const Settings: React.FC<Props> = () => {
 
   const onContactSupport = useCallback(() => {
     alertBtn.current = '';
-    animatedAlert.current?.toggle();
+    animatedAlert.current?.toggle('', '');
     Linking.openURL(`mailto:support@${utils.brand}.com`);
   }, []);
 
@@ -152,7 +153,7 @@ export const Settings: React.FC<Props> = () => {
       Linking.openURL('itms-apps://apps.apple.com/account/subscriptions');
     else if (alertBtn.current === 'viewAndroid')
       Linking.openURL('https://play.google.com/store/account/subscriptions');
-    animatedAlert.current?.toggle();
+    animatedAlert.current?.toggle('', '');
     alertBtn.current = '';
   }, []);
 
@@ -204,7 +205,10 @@ export const Settings: React.FC<Props> = () => {
           </Text>
         )}
       </ScrollView>
-      <AnimatedCustomAlert ref={animatedAlert}>
+      <ActionModal
+        ref={animatedAlert}
+        onCancel={() => animatedAlert.current?.toggle('', '')}
+      >
         <TouchableOpacity
           style={styles.additionalBtn}
           onPress={onViewSubscription}
@@ -214,27 +218,29 @@ export const Settings: React.FC<Props> = () => {
         <TouchableOpacity onPress={onContactSupport}>
           <Text style={styles.additionalTextBtn}>Contact Support</Text>
         </TouchableOpacity>
-      </AnimatedCustomAlert>
-      <AnimatedCustomAlert
+      </ActionModal>
+      <ActionModal
         ref={restoreAlert}
-        onClose={() => {
+        onCancel={() => {
           if (loadingRef) loadingRef.current?.toggleLoading(false);
+          restoreAlert.current?.toggle('', '');
         }}
       />
       <Loading ref={loadingRef} />
-      <AnimatedCustomAlert
+      <ActionModal
         ref={restoreSuccessfull}
-        onClose={() => {
+        onCancel={() => {
           if (loadingRef) loadingRef.current?.toggleLoading(false);
+          restoreSuccessfull.current?.toggle('', '');
         }}
       >
         <TouchableOpacity
-          onPress={() => restoreSuccessfull.current?.toggle()}
+          onPress={() => restoreSuccessfull.current?.toggle('', '')}
           style={styles.additionalBtn}
         >
           <Text style={styles.additionalBtnText}>OK</Text>
         </TouchableOpacity>
-      </AnimatedCustomAlert>
+      </ActionModal>
       {showProfileSettings && (
         <ProfileSettings closeModal={() => setShowProfileSettings(false)} />
       )}

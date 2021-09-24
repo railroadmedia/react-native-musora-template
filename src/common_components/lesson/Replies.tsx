@@ -1,7 +1,7 @@
 import React, {
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useRef,
   useState
 } from 'react';
@@ -24,7 +24,10 @@ import { UserContext } from '../../state/user/UserContext';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
-import { CustomContentModal } from '../modals/CustomContentModal';
+import {
+  CustomContentModal,
+  CustomContentRefObj
+} from '../modals/CustomContentModal';
 import { CommentCard } from './CommentCard';
 import { commentService } from '../../services/comment.service';
 
@@ -54,15 +57,12 @@ export const Replies: React.FC<Props> = ({
 
   const [replyText, setReplyText] = useState('');
   const [comment, setComment] = useState<Comment>(parentComment);
-  const actionModalCommentInput = useRef<any>();
+  const actionModalCommentInput = useRef<CustomContentRefObj>(null);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const addReply = useCallback(async () => {
-    actionModalCommentInput.current.toggleModal();
+    actionModalCommentInput.current?.toggle();
     if (replyText && replyText.length > 0) {
       const encodedReply = encodeURIComponent(replyText);
       const res = await commentService.addReplyToComment(
@@ -122,7 +122,7 @@ export const Replies: React.FC<Props> = ({
                 />
                 <TouchableOpacity
                   style={styles.placeholderBtn}
-                  onPress={() => actionModalCommentInput.current.toggleModal()}
+                  onPress={() => actionModalCommentInput.current?.toggle()}
                 >
                   <Text style={styles.placeholder}>Add a reply...</Text>
                 </TouchableOpacity>

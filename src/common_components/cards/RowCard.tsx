@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { Card } from '../../interfaces/card.interfaces';
 import { CardsContext } from '../../state/cards/CardsContext';
@@ -24,11 +24,7 @@ const RowCard: React.FC<Props> = props => {
   const item: Card = cards[id];
 
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {}, []);
 

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo } from 'react';
 import {
   ScrollView,
   Text,
@@ -14,11 +14,7 @@ import { themeStyles } from '../../themeStyles';
 
 export const Support: React.FC = () => {
   const { theme } = useContext(ThemeContext);
-
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onChatSupport = useCallback(() => {}, []);
 

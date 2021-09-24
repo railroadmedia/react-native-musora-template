@@ -108,7 +108,7 @@ export const Profile: React.FC = () => {
       style={styles.stickyHeaderContainer}
       ref={r => {
         r?.measure((_, __, ___, ____, _____, pageY) =>
-          setHeaderNavHeight(pageY)
+          setHeaderNavHeight(pageY || 0)
         );
       }}
     >

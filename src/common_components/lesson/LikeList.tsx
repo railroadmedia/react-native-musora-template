@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import {
   View,
   Text,
@@ -34,10 +40,7 @@ export const LikeList: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const [likes, setLikes] = useState<Likes[]>([]);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const getLikeList = useCallback(async () => {
     const likeList: { data: Likes[] } = await commentService.getCommentLikes(

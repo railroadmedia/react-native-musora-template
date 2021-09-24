@@ -1,10 +1,8 @@
 import React, {
-  createRef,
   useCallback,
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState
 } from 'react';
@@ -43,7 +41,9 @@ import RowCard from '../../common_components/cards/RowCard';
 import { NextLesson } from '../../common_components/NextLesson';
 import { methodService } from '../../services/method.service';
 import { userService } from '../../services/user.service';
-import ActionModal from '../../common_components/modals/ActionModal';
+import ActionModal, {
+  CustomRefObject
+} from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';
 import type { MethodCourse } from '../../interfaces/method.interfaces';
 
@@ -72,13 +72,10 @@ export const CourseOverview: React.FC<Props> = ({
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const removeModalRef = createRef<any>();
-  const resetModalRef = createRef<any>();
+  const removeModalRef = useRef<CustomRefObject>(null);
+  const resetModalRef = useRef<CustomRefObject>(null);
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -150,7 +147,10 @@ export const CourseOverview: React.FC<Props> = ({
   const toggleMyList = useCallback(() => {
     if (!course) return;
     if (course.is_added_to_primary_playlist) {
-      removeModalRef.current.toggle();
+      removeModalRef.current?.toggle(
+        'Hold your horses...',
+        `This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`
+      );
     } else {
       userService.addToMyList(course.id);
       setCourse({ ...course, is_added_to_primary_playlist: true });
@@ -162,7 +162,7 @@ export const CourseOverview: React.FC<Props> = ({
 
     userService.removeFromMyList(course.id);
     setCourse({ ...course, is_added_to_primary_playlist: false });
-    removeModalRef.current.toggle();
+    removeModalRef.current?.toggle('', '');
   }, [course, removeModalRef]);
 
   const refresh = (): void => {
@@ -181,7 +181,7 @@ export const CourseOverview: React.FC<Props> = ({
       completed: false,
       progress_percent: 0
     });
-    resetModalRef.current.toggle();
+    resetModalRef.current?.toggle('', '');
   }, [course, resetModalRef]);
 
   const onMainBtnPress = (): void => {};
@@ -359,7 +359,12 @@ export const CourseOverview: React.FC<Props> = ({
                     /> */}
                     <TouchableOpacity
                       style={styles.underCompleteTOpacities}
-                      onPress={() => resetModalRef.current.toggle()}
+                      onPress={() =>
+                        resetModalRef.current?.toggle(
+                          'Hold your horses...',
+                          `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+                        )
+                      }
                     >
                       {reset({
                         icon: { fill: utils.color, height: 25, width: 25 }
@@ -411,20 +416,16 @@ export const CourseOverview: React.FC<Props> = ({
 
         <ActionModal
           ref={removeModalRef}
-          title='Hold your horses...'
-          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
           btnText='REMOVE'
           onAction={addToMyList}
-          onCancel={() => removeModalRef.current.toggle()}
+          onCancel={() => removeModalRef.current?.toggle('', '')}
         />
 
         <ActionModal
           ref={resetModalRef}
-          title='Hold your horses...'
-          message={`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}
           btnText='RESET'
           onAction={resetProgress}
-          onCancel={() => resetModalRef.current.toggle()}
+          onCancel={() => resetModalRef.current?.toggle('', '')}
         />
       </View>
     </SafeAreaView>

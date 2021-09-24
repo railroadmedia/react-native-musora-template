@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useMemo } from 'react';
 import {
   View,
   Text,
@@ -28,11 +28,7 @@ const SliderCard: React.FC<Props> = props => {
   const item: Card = cards[id];
 
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {}, []);
 

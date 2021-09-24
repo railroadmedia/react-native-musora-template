@@ -11,8 +11,13 @@ interface Props {
   activityColor?: string;
 }
 
-export const Loading = forwardRef<RefObject<any>, Props>(
-  ({ backgroundColor, activityColor }, ref: React.Ref<any>) => {
+export interface LoadingRefObject {
+  toggleLoading: (isLoading: boolean) => void;
+}
+
+export const Loading = forwardRef(
+  (props: Props, ref: React.Ref<LoadingRefObject>) => {
+    const { backgroundColor, activityColor } = props;
     const [loading, setLoading] = useState(false);
 
     useImperativeHandle(ref, () => ({

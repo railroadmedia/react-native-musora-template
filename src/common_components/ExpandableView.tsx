@@ -26,7 +26,11 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const ExpandableView = forwardRef<RefObject<any>, Props>(
+export interface ExpandableViewRefObject {
+  toggleView: () => void;
+}
+
+export const ExpandableView = forwardRef(
   (
     {
       expandableContStyle,
@@ -36,8 +40,8 @@ export const ExpandableView = forwardRef<RefObject<any>, Props>(
       iconColor,
       processType,
       children
-    },
-    ref: React.Ref<any>
+    }: Props,
+    ref: React.Ref<ExpandableViewRefObject>
   ) => {
     const [maxHeight, setMaxHeight] = useState(-1);
     const [contentVisible, setContentVisible] = useState(false);

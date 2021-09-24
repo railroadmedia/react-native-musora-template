@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -29,7 +29,7 @@ interface Props {
   description?: string;
   is_added_to_primary_playlist?: boolean;
   customTitle: string;
-  renderCustomLogo: () => any;
+  renderCustomLogo: () => Element;
 }
 
 export const LevelBanner: React.FC<Props> = ({
@@ -47,11 +47,7 @@ export const LevelBanner: React.FC<Props> = ({
 
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useContext(ThemeContext);
-  let styles = setStyles(theme);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <>

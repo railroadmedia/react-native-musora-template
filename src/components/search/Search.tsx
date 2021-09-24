@@ -5,7 +5,8 @@ import React, {
   useCallback,
   useRef,
   useReducer,
-  ReactElement
+  ReactElement,
+  useMemo
 } from 'react';
 import {
   ActivityIndicator,
@@ -58,11 +59,7 @@ export const Search: React.FC<Props> = ({}) => {
   );
   const abortC = useRef(new AbortController());
   const page = useRef(1);
-
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const backButtonHandler = useCallback(() => {
     if (showSearchResults) {

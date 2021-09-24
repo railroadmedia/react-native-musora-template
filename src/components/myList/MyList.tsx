@@ -3,6 +3,7 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useReducer,
   useRef,
   useState
@@ -59,10 +60,7 @@ export const MyList: React.FC<Props> = ({}) => {
       refreshing: true
     });
 
-  let styles = setStyles(theme);
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const backButtonHandler = useCallback(() => {
     setPageTitle('My List');
