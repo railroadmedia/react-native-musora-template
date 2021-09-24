@@ -25,9 +25,9 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import {
-  CustomContentModal,
-  CustomContentRefObj
-} from '../modals/CustomContentModal';
+  CommentInputModal,
+  CommentInputModalRefObj
+} from '../modals/CommentInputModal';
 import { CommentCard } from './CommentCard';
 import { commentService } from '../../services/comment.service';
 
@@ -57,7 +57,7 @@ export const Replies: React.FC<Props> = ({
 
   const [replyText, setReplyText] = useState('');
   const [comment, setComment] = useState<Comment>(parentComment);
-  const actionModalCommentInput = useRef<CustomContentRefObj>(null);
+  const actionModalCommentInput = useRef<CommentInputModalRefObj>(null);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -149,7 +149,7 @@ export const Replies: React.FC<Props> = ({
           </View>
         )}
       </View>
-      <CustomContentModal
+      <CommentInputModal
         modalStyle={styles.customModalStyle}
         ref={actionModalCommentInput}
         translucentStyle={styles.translucentStyle}
@@ -179,7 +179,7 @@ export const Replies: React.FC<Props> = ({
             {send({ icon: { height: 30, width: 30, fill: utils.color } })}
           </TouchableOpacity>
         </SafeAreaView>
-      </CustomContentModal>
+      </CommentInputModal>
     </SafeAreaView>
   );
 };

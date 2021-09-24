@@ -15,7 +15,13 @@ import type {
   StudentReviewBody,
   SubmitCollabVideoBody
 } from './studentFocus.interfaces';
-import type { UpdateAvatarResponse, User, UserAvatar } from './user.interfaces';
+import type {
+  CompletedResponse,
+  ResetProgressResponse,
+  UpdateAvatarResponse,
+  User,
+  UserAvatar
+} from './user.interfaces';
 
 export interface Filters {
   refreshing?: boolean;
@@ -138,7 +144,8 @@ export interface UserService {
   isNameUnique: (name: string) => Promise<{ unique: boolean }>;
   addToMyList: (id: number) => Promise<{}>;
   removeFromMyList: (id: number) => Promise<{}>;
-  resetProgress: (id: number) => Promise<{}>;
+  resetProgress: (id: number) => Promise<ResetProgressResponse>;
+  markAsComplete: (id: number) => Promise<CompletedResponse>;
   likeContent: (id: number) => Promise<{}>;
   dislikeContent: (id: number) => Promise<{}>;
   updateAvatar: (file: UserAvatar) => Promise<UpdateAvatarResponse>;

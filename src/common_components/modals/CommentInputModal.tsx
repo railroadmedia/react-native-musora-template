@@ -22,14 +22,14 @@ interface Props {
   children: React.ReactNode;
 }
 
-export interface CustomContentRefObj {
+export interface CommentInputModalRefObj {
   toggle: () => void;
 }
 
-export const CustomContentModal = forwardRef(
+export const CommentInputModal = forwardRef(
   (
     { modalStyle, translucentStyle, children }: Props,
-    ref: React.Ref<CustomContentRefObj>
+    ref: React.Ref<CommentInputModalRefObj>
   ) => {
     const [modalVisible, setModalVisible] = useState(false);
 

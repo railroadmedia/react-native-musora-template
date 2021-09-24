@@ -29,6 +29,19 @@ export interface UpdateAvatarResponse {
   data: [{ url: string }];
 }
 
+export interface CompletedResponse {
+  displayIosReviewModal?: boolean;
+  displayGoogleReviewModal?: boolean;
+  parent?: {
+    user_progress: [{ progress_percent: number }];
+  };
+}
+
+export interface ResetProgressResponse {
+  type?: string;
+  progress_percent?: number;
+}
+
 export interface UserContext {
   user: User;
   updateUser: (user: User) => void;

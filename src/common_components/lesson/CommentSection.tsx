@@ -12,15 +12,16 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  Modal
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { UserContext } from '../../state/user/UserContext';
 import { filters, x, check, send } from '../../images/svgs';
 import {
-  CustomContentModal,
-  CustomContentRefObj
-} from '../modals/CustomContentModal';
+  CommentInputModal,
+  CommentInputModalRefObj
+} from '../modals/CommentInputModal';
 import type { Comment } from '../../interfaces/lesson.interfaces';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -50,13 +51,13 @@ export const CommentSection: React.FC<Props> = ({
   const [commentText, setCommentText] = useState('');
   const [sortByComments, setSortByComments] = useState('');
   const [animate, setAnimate] = useState(false);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedFilterIndex, setSelectedFilterIndex] = useState(1);
   const allCommentsNum = useRef<number>(nrOfComments);
   const limit = useRef<number>(10);
   const input = useRef<TextInput>(null);
   const commentCardRef = useRef<CommentCardRefObj>(null);
-  const actionModalFilters = useRef<CustomContentRefObj>(null);
-  const actionModalCommentInput = useRef<CustomContentRefObj>(null);
+  const actionModalCommentInput = useRef<CommentInputModalRefObj>(null);
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
 
@@ -85,12 +86,12 @@ export const CommentSection: React.FC<Props> = ({
   }, [actionModalCommentInput]);
 
   const toggleFilterModal = useCallback(() => {
-    actionModalFilters.current?.toggle();
-  }, [actionModalFilters]);
+    setFilterModalVisible(!filterModalVisible);
+  }, [filterModalVisible]);
 
   const selectFilter = useCallback(
     async (index: number, sort: string) => {
-      actionModalFilters.current?.toggle();
+      toggleFilterModal();
       const c = await commentService.getComments(
         lessonId,
         sortByComments,
@@ -154,53 +155,61 @@ export const CommentSection: React.FC<Props> = ({
           {filters({ icon: { height: 23, width: 23, fill: utils.color } })}
         </TouchableOpacity>
 
-        <CustomContentModal
-          translucentStyle={styles.translucentStyle}
-          modalStyle={styles.customModalStyle}
-          ref={actionModalFilters}
+        <Modal
+          transparent={true}
+          visible={filterModalVisible}
+          onRequestClose={toggleFilterModal}
+          supportedOrientations={['portrait', 'landscape']}
+          animationType='slide'
         >
-          <View style={styles.background}>
-            {filterOptions.map((option, index) => (
-              <TouchableOpacity
-                style={styles.filterContainer}
-                key={index}
-                onPress={() => selectFilter(index, option.value)}
-              >
-                {selectedFilterIndex === index &&
-                  check({
-                    icon: {
-                      width: 18,
-                      height: 18,
-                      fill: themeStyles[theme].textColor
-                    }
-                  })}
-                <Text
-                  style={[
-                    styles.filterText,
-                    selectedFilterIndex === index
-                      ? styles.selectedFilter
-                      : styles.unselectedFilter
-                  ]}
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={toggleFilterModal}
+            style={styles.modalContainer}
+          >
+            <View style={styles.background}>
+              {filterOptions.map((option, index) => (
+                <TouchableOpacity
+                  style={styles.filterContainer}
+                  key={index}
+                  onPress={() => selectFilter(index, option.value)}
                 >
-                  {option.label}
-                </Text>
+                  {selectedFilterIndex === index &&
+                    check({
+                      icon: {
+                        width: 18,
+                        height: 18,
+                        fill: themeStyles[theme].textColor
+                      }
+                    })}
+                  <Text
+                    style={[
+                      styles.filterText,
+                      selectedFilterIndex === index
+                        ? styles.selectedFilter
+                        : styles.unselectedFilter
+                    ]}
+                  >
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+              <TouchableOpacity
+                style={styles.filterBox}
+                onPress={toggleFilterModal}
+              >
+                {x({
+                  icon: {
+                    width: 18,
+                    height: 18,
+                    fill: themeStyles[theme].textColor
+                  }
+                })}
+                <Text style={styles.cancelText}>Cancel</Text>
               </TouchableOpacity>
-            ))}
-            <TouchableOpacity
-              style={styles.filterBox}
-              onPress={toggleFilterModal}
-            >
-              {x({
-                icon: {
-                  width: 18,
-                  height: 18,
-                  fill: themeStyles[theme].textColor
-                }
-              })}
-              <Text style={styles.cancelText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </CustomContentModal>
+            </View>
+          </TouchableOpacity>
+        </Modal>
       </View>
 
       <View style={styles.inputContainer}>
@@ -236,7 +245,7 @@ export const CommentSection: React.FC<Props> = ({
           animating={animate}
         />
       )}
-      <CustomContentModal
+      <CommentInputModal
         modalStyle={styles.customModalStyle}
         ref={actionModalCommentInput}
         translucentStyle={styles.translucentStyle}
@@ -268,7 +277,7 @@ export const CommentSection: React.FC<Props> = ({
             {send({ icon: { height: 30, width: 30, fill: utils.color } })}
           </TouchableOpacity>
         </SafeAreaView>
-      </CustomContentModal>
+      </CommentInputModal>
     </View>
   );
 };
@@ -377,5 +386,11 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     filterIcon: {
       position: 'absolute',
       right: 15
+    },
+    modalContainer: {
+      backgroundColor: 'rgba(0, 0, 0, .8)',
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center'
     }
   });

@@ -118,6 +118,16 @@ export const PackOverview: React.FC<Props> = ({
     push('packOverview', { mobile_app_url });
   }, []);
 
+  const flRefreshControl = (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={refreshing}
+    />
+  );
+
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
       <StatusBar
@@ -125,17 +135,7 @@ export const PackOverview: React.FC<Props> = ({
         barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
       />
       {pack?.id ? (
-        <ScrollView
-          style={styles.container}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refresh}
-              colors={[utils.color]}
-              tintColor={utils.color}
-            />
-          }
-        >
+        <ScrollView style={styles.container} refreshControl={flRefreshControl}>
           <PacksBanner
             {...pack}
             isMainPacksPage={false}
