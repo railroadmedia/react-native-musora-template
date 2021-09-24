@@ -254,7 +254,10 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
     <>
       {filters({
         icon: { width: 40, fill: utils.color },
-        onPress: () => setVisible(true)
+        onPress: () => {
+          setVisible(true);
+          setMaxTouchableOpacityTextHeight(0);
+        }
       })}
       <Modal
         animationType={'fade'}
@@ -294,7 +297,6 @@ export const Filters: React.FC<Props> = ({ options, onApply }) => {
             <FlatList
               scrollEnabled={scrollable}
               style={styles.scrollview}
-              initialNumToRender={0}
               showsVerticalScrollIndicator={false}
               data={['skill', 'topic', 'style', 'teacher', 'progress']}
               keyExtractor={id => id}

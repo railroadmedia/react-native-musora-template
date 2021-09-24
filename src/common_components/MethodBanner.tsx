@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -33,14 +27,10 @@ import {
 import type { ParamListBase } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Method } from '../interfaces/method.interfaces';
-import ActionModal, {
-  CustomRefObject
-} from '../common_components/modals/ActionModal';
-import { userService } from '../services/user.service';
+import { ResetModal } from './modals/ResetModal';
 
 interface Props extends Method {
   expandableInfo?: boolean;
-  onResetProgress?: () => void;
 }
 
 const svgStyle = {
@@ -50,28 +40,20 @@ const svgStyle = {
 const infoSvgStyle = { icon: { height: 25, width: 25, fill: 'white' } };
 
 export const MethodBanner: React.FC<Props> = ({
-  id,
   thumbnail_url,
   started,
   completed,
   description,
   expandableInfo,
-  next_lesson,
-  onResetProgress
+  next_lesson: { id }
 }) => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [infoVisible, setInfoVisivle] = useState(false);
-  const resetModalRef = useRef<CustomRefObject>(null);
+  const [resetVisible, setResetVisible] = useState(false);
 
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
-
-  const resetProgress = useCallback(async () => {
-    resetModalRef.current?.toggle('', '');
-    await userService.resetProgress(id);
-    onResetProgress?.();
-  }, [id, resetModalRef]);
 
   return (
     <>
@@ -104,12 +86,8 @@ export const MethodBanner: React.FC<Props> = ({
           {expandableInfo && <View style={styles.placeHolder} />}
           <TouchableOpacity
             onPress={() => {
-              if (!completed) navigate('lessonPart', { id: next_lesson.id });
-              else
-                resetModalRef.current?.toggle(
-                  'Hold your horses...',
-                  `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
-                );
+              if (!completed) navigate('lessonPart', { id });
+              else setResetVisible(true);
             }}
             style={styles.btnTOpacity}
           >
@@ -138,11 +116,13 @@ export const MethodBanner: React.FC<Props> = ({
         </View>
       </ImageBackground>
       {infoVisible && <Text style={styles.description}>{description}</Text>}
-      <ActionModal
-        ref={resetModalRef}
-        btnText='RESET'
-        onAction={resetProgress}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+      <ResetModal
+        visible={resetVisible}
+        onDismiss={reset => {
+          setResetVisible(false);
+          if (reset) {
+          }
+        }}
       />
     </>
   );

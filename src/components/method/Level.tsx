@@ -3,6 +3,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useReducer,
   useRef,
   useState
 } from 'react';
@@ -26,9 +27,7 @@ import { methodService } from '../../services/method.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { LevelBanner } from './LevelBanner';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import ActionModal from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
 import { method } from '../../images/svgs';
@@ -52,11 +51,11 @@ export const Level: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
+  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [level, setLevel] = useState<I_Level>();
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const removeModalRef = useRef<CustomRefObject>(null);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -92,22 +91,18 @@ export const Level: React.FC<Props> = ({
   const toggleMyList = useCallback(() => {
     if (!level) return;
     if (level.is_added_to_primary_playlist) {
-      removeModalRef.current?.toggle(
-        'Hold your horses...',
-        `This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`
-      );
+      if (showRemoveModal) {
+        userService.removeFromMyList(level.id);
+        setShowRemoveModal(false);
+        setLevel({ ...level, is_added_to_primary_playlist: false });
+      } else {
+        setShowRemoveModal(true);
+      }
     } else {
       userService.addToMyList(level.id);
       setLevel({ ...level, is_added_to_primary_playlist: true });
     }
-  }, [level?.is_added_to_primary_playlist, removeModalRef]);
-
-  const addToMyList = useCallback(() => {
-    if (!level) return;
-    userService.removeFromMyList(level.id);
-    removeModalRef.current?.toggle('', '');
-    setLevel({ ...level, is_added_to_primary_playlist: false });
-  }, [level?.id, removeModalRef]);
+  }, [level?.is_added_to_primary_playlist, showRemoveModal]);
 
   const onMainBtnPress = useCallback(() => {
     // TODO navigate to next lesson
@@ -183,13 +178,15 @@ export const Level: React.FC<Props> = ({
           color={utils.color}
         />
       )}
-
-      <ActionModal
-        ref={removeModalRef}
-        btnText='REMOVE'
-        onAction={addToMyList}
-        onCancel={() => removeModalRef.current?.toggle('', '')}
-      />
+      {showRemoveModal && (
+        <ActionModal
+          title='Hold your horses...'
+          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
+          btnText='REMOVE'
+          onAction={toggleMyList}
+          onCancel={() => setShowRemoveModal(false)}
+        />
+      )}
     </View>
   );
 };
