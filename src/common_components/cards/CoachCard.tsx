@@ -19,7 +19,8 @@ interface Props {
   };
   index: number;
 }
-const CoachCard: React.FC<Props> = ({ coach, index }) => {
+
+export const CoachCard: React.FC<Props> = ({ coach, index }) => {
   const cols = useMemo(() => {
     return isTablet() ? 3 : 2;
   }, []);
@@ -108,5 +109,3 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.4)'
   }
 });
-
-export default CoachCard;

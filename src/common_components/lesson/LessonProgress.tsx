@@ -40,7 +40,11 @@ export const LessonProgress: React.FC<Props> = ({
         <TouchableOpacity
           style={[
             styles.arrowContainer,
-            { borderColor: previousLessonId ? utils.color : undefined }
+            {
+              borderColor: previousLessonId
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+            }
           ]}
           disabled={!previousLessonId}
           onPress={onGoToPreviousLesson}
@@ -49,7 +53,7 @@ export const LessonProgress: React.FC<Props> = ({
             icon: {
               height: 25,
               width: 25,
-              fill: nextLessonId
+              fill: previousLessonId
                 ? utils.color
                 : themeStyles[theme].contrastTextColor
             },
@@ -65,7 +69,11 @@ export const LessonProgress: React.FC<Props> = ({
           onPress={onGoToNextLesson}
           style={[
             styles.arrowContainer,
-            { borderColor: nextLessonId ? utils.color : undefined }
+            {
+              borderColor: nextLessonId
+                ? utils.color
+                : themeStyles[theme].contrastTextColor
+            }
           ]}
           disabled={!nextLessonId}
         >
@@ -115,7 +123,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       width: 40,
       borderRadius: 20,
       borderWidth: 2,
-      borderColor: utils.color,
+      borderColor: current.contrastTextColor,
       justifyContent: 'center',
       alignItems: 'center',
       marginHorizontal: 10,

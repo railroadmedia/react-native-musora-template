@@ -31,7 +31,7 @@ import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
 
 interface Props {
@@ -116,6 +116,16 @@ export const PackOverview: React.FC<Props> = ({
     push('packOverview', { mobile_app_url });
   }, []);
 
+  const flRefreshControl = (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={refreshing}
+    />
+  );
+
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
       <StatusBar
@@ -123,17 +133,7 @@ export const PackOverview: React.FC<Props> = ({
         barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
       />
       {pack?.id ? (
-        <ScrollView
-          style={styles.container}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refresh}
-              colors={[utils.color]}
-              tintColor={utils.color}
-            />
-          }
-        >
+        <ScrollView style={styles.container} refreshControl={flRefreshControl}>
           <PacksBanner
             {...pack}
             isMainPacksPage={false}

@@ -37,7 +37,7 @@ import {
 } from '../../images/svgs';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
 
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import { NextLesson } from '../../common_components/NextLesson';
 import { methodService } from '../../services/method.service';
 import { userService } from '../../services/user.service';
@@ -184,6 +184,16 @@ export const CourseOverview: React.FC<Props> = ({
 
   const onMainBtnPress = (): void => {};
 
+  const flRefreshControl = (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={refreshing}
+    />
+  );
+
   return (
     <SafeAreaView edges={['top']} style={styles.safearea}>
       <StatusBar
@@ -192,17 +202,7 @@ export const CourseOverview: React.FC<Props> = ({
       />
       <View style={styles.container}>
         {course?.id ? (
-          <ScrollView
-            style={{ flex: 1 }}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={refresh}
-                colors={[utils.color]}
-                tintColor={utils.color}
-              />
-            }
-          >
+          <ScrollView style={{ flex: 1 }} refreshControl={flRefreshControl}>
             <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
               {back({
                 icon: {

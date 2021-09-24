@@ -1,12 +1,14 @@
 import React, { useCallback, useContext, useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+
 import type { Card } from '../../interfaces/card.interfaces';
 import { CardsContext } from '../../state/cards/CardsContext';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
-import { decideSubtitle } from './cardhelpers';
+import { decideSubtitle, getContentType } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
 
@@ -18,7 +20,13 @@ interface Props {
   onRemoveFromMyList?: (id: number) => void;
 }
 
-const RowCard: React.FC<Props> = props => {
+export const RowCard: React.FC<Props> = props => {
+  const { navigate } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props: {}) => void;
+    }
+  >();
+
   const { id, route, onResetProgress, onRemoveFromMyList, iconType } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
@@ -26,7 +34,20 @@ const RowCard: React.FC<Props> = props => {
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyles(theme), [theme]);
 
-  const onCardPress = useCallback(() => {}, []);
+  const onCardPress = useCallback(() => {
+    let { route, contentType } = getContentType(
+      item.type,
+      item.bundle_count,
+      item.lessons
+    );
+
+    navigate(route, {
+      id,
+      parentId: item.parentId,
+      contentType,
+      url: item.mobile_app_url
+    });
+  }, []);
 
   const renderImage = () => {
     if (route?.match(/^(live|schedule)$/)) {
@@ -127,5 +148,3 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans'
     }
   });
-
-export default RowCard;

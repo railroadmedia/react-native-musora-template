@@ -85,5 +85,13 @@ export const userService: UserService = {
       url: `/musora-api/media?media_type=assignment&media-category=soundslice&media_id=${mediaId}&media_length_seconds=${mediaLengthSeconds}&current_second=${currentSecond}`,
       method: 'PUT'
     });
+  },
+  markAsComplete: function (id: number) {
+    return call({
+      url: `/musora-api/complete?content_id=${id}&device_type=${
+        utils.isiOS ? 'ios' : 'android'
+      }`,
+      method: 'PUT'
+    });
   }
 };

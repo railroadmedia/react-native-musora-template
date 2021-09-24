@@ -34,7 +34,7 @@ import type {
   Show as I_Show,
   ShowLessons
 } from '../../interfaces/show.interfaces';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import { showService } from '../../services/show.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import type { Card } from '../../interfaces/card.interfaces';
@@ -198,6 +198,16 @@ export const ShowOverview: React.FC<Props> = ({
     item: { id: number };
   }): ReactElement => <RowCard id={item.id} route='showOverview' />;
 
+  const flRefreshControl = (
+    <RefreshControl
+      colors={['white']}
+      tintColor={utils.color}
+      progressBackgroundColor={utils.color}
+      onRefresh={refresh}
+      refreshing={refreshing}
+    />
+  );
+
   return (
     <SafeAreaView edges={['top']} style={styles.container}>
       <StatusBar
@@ -214,14 +224,7 @@ export const ShowOverview: React.FC<Props> = ({
           onEndReached={loadMore}
           onEndReachedThreshold={0.01}
           removeClippedSubviews={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={refresh}
-              colors={[utils.color]}
-              tintColor={utils.color}
-            />
-          }
+          refreshControl={flRefreshControl}
           ListHeaderComponent={renderFListHeader()}
           ListEmptyComponent={renderFListEmpty()}
           ListFooterComponent={renderFListFooter()}

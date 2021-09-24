@@ -130,3 +130,74 @@ const transformText = (text?: string, showBar?: boolean): string => {
   }
   return '';
 };
+
+export const getContentType = function (
+  type: string,
+  bundle_count?: number,
+  lessons?: Card[]
+) {
+  let route, contentType;
+  switch (type) {
+    case 'course-part':
+      contentType = 'course';
+      break;
+    case 'song':
+    case 'song-part':
+      contentType = 'song';
+      break;
+    case 'play-along':
+      contentType = 'Play Along';
+      break;
+    case 'student-focus':
+      contentType = 'Student Focus';
+      break;
+    case 'pack-bundle-lesson':
+    case 'semester-pack-lesson':
+      contentType = 'pack';
+      break;
+    default:
+      contentType = 'show';
+  }
+  switch (type) {
+    case 'learning-path':
+      contentType = 'method';
+      route = 'method';
+      break;
+    case 'learning-path-level':
+      contentType = 'method';
+      route = 'level';
+      break;
+    case 'learning-path-course':
+      contentType = 'method';
+      route = 'courseOverview';
+      break;
+    case 'learning-path-lesson':
+      contentType = 'method';
+      route = 'courseMethodLesson';
+      break;
+    case 'course':
+      contentType = 'course';
+      route = 'courseOverview';
+      break;
+    case 'pack':
+      contentType = 'pack';
+      route = bundle_count === 1 ? 'packLessonOverview' : 'packBundleOverview';
+      break;
+    case 'pack-bundle':
+      contentType = 'pack';
+      route = 'packLessonOverview';
+      break;
+    case 'semester-pack':
+      contentType = 'pack';
+      route = 'packLessonOverview';
+      break;
+    case 'song':
+      contentType = 'song';
+      route = lessons ? 'songOverview' : 'lessonPart';
+      break;
+
+    default:
+      route = 'lessonPart';
+  }
+  return { route, contentType };
+};

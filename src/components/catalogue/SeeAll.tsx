@@ -9,7 +9,7 @@ import {
   Text,
   View
 } from 'react-native';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import { provider } from '../../services/catalogueSceneProvider.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import {
