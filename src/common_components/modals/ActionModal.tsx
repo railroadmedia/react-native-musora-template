@@ -25,53 +25,48 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export interface CustomRefObject {
-  toggle: (title: string, message: string) => void;
-}
+export const ActionModal = forwardRef<
+  { toggle: (title: string, message: string) => void },
+  Props
+>((props, ref) => {
+  const { btnText, icon, onAction, onCancel, children } = props;
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState('');
+  const [message, setMessage] = useState('');
+  const { theme } = useContext(ThemeContext);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
-const ActionModal = forwardRef(
-  (props: Props, ref: React.Ref<CustomRefObject>) => {
-    const { btnText, icon, onAction, onCancel, children } = props;
-    const [visible, setVisible] = useState(false);
-    const [title, setTitle] = useState('');
-    const [message, setMessage] = useState('');
-    const { theme } = useContext(ThemeContext);
-    let styles = useMemo(() => setStyles(theme), [theme]);
+  useImperativeHandle(ref, () => ({
+    toggle(title, message) {
+      setVisible(!visible);
+      setTitle(title || 'Unknown');
+      setMessage(message || 'Unknown error');
+    }
+  }));
 
-    useImperativeHandle(ref, () => ({
-      toggle(title, message) {
-        setVisible(!visible);
-        setTitle(title || 'Unknown');
-        setMessage(message || 'Unknown error');
-      }
-    }));
-
-    return (
-      <Modal transparent={true} visible={visible} onRequestClose={onCancel}>
-        <TouchableOpacity style={styles.modalBackground} onPress={onCancel}>
-          <View style={styles.animatedView}>
-            {!!icon && <View style={styles.icon}>{icon}</View>}
-            {!!title && <Text style={styles.title}>{title}</Text>}
-            <Text style={styles.message}>{message}</Text>
-            {!!onAction && (
-              <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
-                <Text style={styles.actionBtnText}>{btnText}</Text>
-              </TouchableOpacity>
-            )}
-            {!!onCancel && (
-              <TouchableOpacity onPress={onCancel}>
-                <Text style={styles.cancelBtnText}>CANCEL</Text>
-              </TouchableOpacity>
-            )}
-            {children}
-          </View>
-        </TouchableOpacity>
-      </Modal>
-    );
-  }
-);
-
-export default ActionModal;
+  return (
+    <Modal transparent={true} visible={visible} onRequestClose={onCancel}>
+      <TouchableOpacity style={styles.modalBackground} onPress={onCancel}>
+        <View style={styles.animatedView}>
+          {!!icon && <View style={styles.icon}>{icon}</View>}
+          {!!title && <Text style={styles.title}>{title}</Text>}
+          <Text style={styles.message}>{message}</Text>
+          {!!onAction && (
+            <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
+              <Text style={styles.actionBtnText}>{btnText}</Text>
+            </TouchableOpacity>
+          )}
+          {!!onCancel && (
+            <TouchableOpacity onPress={onCancel}>
+              <Text style={styles.cancelBtnText}>CANCEL</Text>
+            </TouchableOpacity>
+          )}
+          {children}
+        </View>
+      </TouchableOpacity>
+    </Modal>
+  );
+});
 
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({

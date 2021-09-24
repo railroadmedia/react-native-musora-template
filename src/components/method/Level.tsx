@@ -3,7 +3,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useReducer,
   useRef,
   useState
 } from 'react';
@@ -27,8 +26,7 @@ import { methodService } from '../../services/method.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { LevelBanner } from './LevelBanner';
-import ActionModal from '../../common_components/modals/ActionModal';
-import { userService } from '../../services/user.service';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
 import { method } from '../../images/svgs';
 import type { StackNavigationProp } from '@react-navigation/stack';
@@ -51,11 +49,11 @@ export const Level: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
-  const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [level, setLevel] = useState<I_Level>();
   const [refreshing, setRefreshing] = useState(false);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
+  const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -88,22 +86,6 @@ export const Level: React.FC<Props> = ({
     getLevel();
   };
 
-  const toggleMyList = useCallback(() => {
-    if (!level) return;
-    if (level.is_added_to_primary_playlist) {
-      if (showRemoveModal) {
-        userService.removeFromMyList(level.id);
-        setShowRemoveModal(false);
-        setLevel({ ...level, is_added_to_primary_playlist: false });
-      } else {
-        setShowRemoveModal(true);
-      }
-    } else {
-      userService.addToMyList(level.id);
-      setLevel({ ...level, is_added_to_primary_playlist: true });
-    }
-  }, [level?.is_added_to_primary_playlist, showRemoveModal]);
-
   const onMainBtnPress = useCallback(() => {
     // TODO navigate to next lesson
   }, []);
@@ -134,7 +116,7 @@ export const Level: React.FC<Props> = ({
             <LevelBanner
               {...level}
               is_added_to_primary_playlist={level.is_added_to_primary_playlist}
-              onToggleMyList={toggleMyList}
+              onToggleMyList={() => {}}
               onMainBtnPress={onMainBtnPress}
               customTitle={`LEVEL ${level.level_number}`}
               renderCustomLogo={() => (
@@ -178,15 +160,13 @@ export const Level: React.FC<Props> = ({
           color={utils.color}
         />
       )}
-      {showRemoveModal && (
-        <ActionModal
-          title='Hold your horses...'
-          message={`This will remove this lesson from\nyour list and cannot be undone.\nAre you sure about this?`}
-          btnText='REMOVE'
-          onAction={toggleMyList}
-          onCancel={() => setShowRemoveModal(false)}
-        />
-      )}
+
+      <ActionModal
+        ref={removeModalRef}
+        btnText='REMOVE'
+        onAction={() => {}}
+        onCancel={() => removeModalRef.current?.toggle('', '')}
+      />
     </View>
   );
 };

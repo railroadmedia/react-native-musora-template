@@ -29,9 +29,7 @@ import type {
 import { PacksBanner } from './PacksBanner';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { CardsContext } from '../../state/cards/CardsContext';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import RowCard from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
@@ -62,7 +60,7 @@ export const PackOverview: React.FC<Props> = ({
   const [pack, setPack] = useState<I_PackBundle | I_PackLessonBundle>();
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const resetModalRef = useRef<CustomRefObject>(null);
+  const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 

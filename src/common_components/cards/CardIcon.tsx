@@ -4,7 +4,7 @@ import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
 import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
-import ActionModal, { CustomRefObject } from '../modals/ActionModal';
+import { ActionModal } from '../modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Card } from '../../interfaces/card.interfaces';
 
@@ -37,9 +37,9 @@ export const CardIcon: React.FC<Props> = ({
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
     is_added_to_primary_playlist
   );
-  const removeModalRef = useRef<CustomRefObject>(null);
-  const resetModalRef = useRef<CustomRefObject>(null);
-  const calendarModalRef = useRef<CustomRefObject>(null);
+  const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const calendarModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   const addLessonToCalendar = useCallback(() => {
     const startDate = new Date(

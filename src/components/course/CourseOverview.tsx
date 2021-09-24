@@ -41,9 +41,7 @@ import RowCard from '../../common_components/cards/RowCard';
 import { NextLesson } from '../../common_components/NextLesson';
 import { methodService } from '../../services/method.service';
 import { userService } from '../../services/user.service';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';
 import type { MethodCourse } from '../../interfaces/method.interfaces';
 
@@ -72,8 +70,8 @@ export const CourseOverview: React.FC<Props> = ({
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const removeModalRef = useRef<CustomRefObject>(null);
-  const resetModalRef = useRef<CustomRefObject>(null);
+  const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   let styles = useMemo(() => setStyles(theme), [theme]);
 

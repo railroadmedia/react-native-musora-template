@@ -34,9 +34,7 @@ import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
 import { ProfileSettings } from './ProfileSettings';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 
 interface Props {}
 
@@ -53,9 +51,9 @@ export const Settings: React.FC<Props> = () => {
   const { user: cachedUser } = useContext(UserContext);
 
   const loadingRef = useRef<LoadingRefObject>(null);
-  const animatedAlert = useRef<CustomRefObject>(null);
-  const restoreAlert = useRef<CustomRefObject>(null);
-  const restoreSuccessfull = useRef<CustomRefObject>(null);
+  const animatedAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const restoreAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const restoreSuccessfull = useRef<React.ElementRef<typeof ActionModal>>(null);
   let alertBtn = useRef<string>();
   let styles = useMemo(() => setStyles(theme), [theme]);
 

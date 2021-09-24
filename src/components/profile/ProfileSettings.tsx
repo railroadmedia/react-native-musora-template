@@ -32,16 +32,14 @@ import type {
   UpdateAvatarResponse,
   UserAvatar
 } from '../../interfaces/user.interfaces';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 
 interface Props {
   closeModal: () => void;
 }
 
 export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
-  const customAlert = useRef<CustomRefObject>(null);
+  const customAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const textInput = useRef<TextInput>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
   const { theme } = useContext(ThemeContext);

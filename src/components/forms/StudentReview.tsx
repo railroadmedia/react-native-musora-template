@@ -31,9 +31,7 @@ import {
 } from '../../common_components/ExpandableView';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 
 interface SectionType {
   q: string;
@@ -71,7 +69,7 @@ export const StudentReview: React.FC<Props> = () => {
   const scrollView = useRef<ScrollView>(null);
   const expSkill = useRef<ExpandableViewRefObject>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
-  const alert = useRef<CustomRefObject>(null);
+  const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const nextScrollTo = useRef(0);
   const prevScrollTo = useRef(0);
   const goal = useRef('');

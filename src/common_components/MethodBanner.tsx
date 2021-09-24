@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo, useRef, useState } from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -27,7 +27,7 @@ import {
 import type { ParamListBase } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { Method } from '../interfaces/method.interfaces';
-import { ResetModal } from './modals/ResetModal';
+import { ActionModal } from '../common_components/modals/ActionModal';
 
 interface Props extends Method {
   expandableInfo?: boolean;
@@ -50,7 +50,7 @@ export const MethodBanner: React.FC<Props> = ({
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [infoVisible, setInfoVisivle] = useState(false);
-  const [resetVisible, setResetVisible] = useState(false);
+  const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
@@ -87,7 +87,11 @@ export const MethodBanner: React.FC<Props> = ({
           <TouchableOpacity
             onPress={() => {
               if (!completed) navigate('lessonPart', { id });
-              else setResetVisible(true);
+              else
+                resetModalRef.current?.toggle(
+                  'Hold your horses...',
+                  `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+                );
             }}
             style={styles.btnTOpacity}
           >
@@ -116,13 +120,11 @@ export const MethodBanner: React.FC<Props> = ({
         </View>
       </ImageBackground>
       {infoVisible && <Text style={styles.description}>{description}</Text>}
-      <ResetModal
-        visible={resetVisible}
-        onDismiss={reset => {
-          setResetVisible(false);
-          if (reset) {
-          }
-        }}
+      <ActionModal
+        ref={resetModalRef}
+        btnText='RESET'
+        onAction={() => {}}
+        onCancel={() => resetModalRef.current?.toggle('', '')}
       />
     </>
   );

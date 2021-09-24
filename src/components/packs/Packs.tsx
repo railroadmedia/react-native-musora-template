@@ -33,9 +33,7 @@ import type {
 } from '../../interfaces/packs.interfaces';
 import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 
 interface Props {}
@@ -56,7 +54,7 @@ export const Packs: React.FC<Props> = () => {
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-  const resetModalRef = useRef<CustomRefObject>(null);
+  const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   const multiplier = useMemo(() => {
     if (utils.isTablet) return 6;

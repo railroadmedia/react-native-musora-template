@@ -25,9 +25,7 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { parseXpValue } from './helpers';
 import { commentService } from '../../services/comment.service';
-import ActionModal, {
-  CustomRefObject
-} from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 
 interface Props {
   comment: Comment;
@@ -85,7 +83,7 @@ export const CommentCard = forwardRef(
 
     const { theme } = useContext(ThemeContext);
     const { user } = useContext(UserContext);
-    const alert = useRef<CustomRefObject>(null);
+    const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
 
     let styles = useMemo(() => setStyles(theme), [theme]);
 
