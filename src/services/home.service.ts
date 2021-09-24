@@ -48,6 +48,8 @@ export const homeService: SceneService = {
     ]);
   },
   getCache: async function () {
-    return JSON.parse((await AsyncStorage.getItem('@home')) || '{}');
+    const home = JSON.parse((await AsyncStorage.getItem('@home')) || '{}');
+    const method = JSON.parse((await AsyncStorage.getItem('@method')) || '{}');
+    return { ...home, method };
   }
 };

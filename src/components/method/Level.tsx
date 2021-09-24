@@ -17,19 +17,24 @@ import {
 } from 'react-native';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
+import { CardsContext } from '../../state/cards/CardsContext';
+
+import { NextLesson } from '../../common_components/NextLesson';
+import { LibraryCard } from '../../common_components/cards/LibraryCard';
+import { ActionModal } from '../../common_components/modals/ActionModal';
+
+import { LevelBanner } from './LevelBanner';
+
+import { methodService } from '../../services/method.service';
+
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
-import { NextLesson } from '../../common_components/NextLesson';
-import { methodService } from '../../services/method.service';
-import { CardsContext } from '../../state/cards/CardsContext';
-import { LibraryCard } from '../../common_components/cards/LibraryCard';
-import { LevelBanner } from './LevelBanner';
-import { ActionModal } from '../../common_components/modals/ActionModal';
+import { methodTag } from '../../images/svgs';
+
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
-import { method } from '../../images/svgs';
-import type { StackNavigationProp } from '@react-navigation/stack';
 
 interface Props {
   route: RouteProp<ParamListBase, 'level'> & {
@@ -124,7 +129,7 @@ export const Level: React.FC<Props> = ({
                   {utils.svgBrand({
                     icon: { width: '15%', fill: utils.color }
                   })}
-                  {method({
+                  {methodTag({
                     icon: { width: '25%', fill: 'white' },
                     container: { paddingTop: 5 }
                   })}

@@ -33,7 +33,7 @@ export interface Level {
 }
 
 export interface Method {
-  id: number;
+  id?: number;
   started?: boolean;
   level_rank?: string;
   title?: string;
@@ -48,7 +48,7 @@ export interface Method {
   thumbnail_url?: string;
   banner_background_image?: string;
   length_in_seconds?: string;
-  next_lesson: Card;
+  next_lesson?: Card;
 }
 
 export interface MethodReducer {
@@ -57,7 +57,7 @@ export interface MethodReducer {
 
 export interface MethodContext {
   method: Method;
-  updateUser: (method: Method) => void;
+  updateMethod: (method?: Method) => void;
 }
 
 export interface MethodCourse {

@@ -5,16 +5,10 @@ import React, {
   useMemo,
   useState
 } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  Modal
-} from 'react-native';
-import { utils } from '../../utils';
+import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
 import { ThemeContext } from '../../state/theme/ThemeContext';
+
+import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 
 interface Props {
@@ -26,7 +20,7 @@ interface Props {
 }
 
 export const ActionModal = forwardRef<
-  { toggle: (title: string, message: string) => void },
+  { toggle: (title?: string, message?: string) => void },
   Props
 >((props, ref) => {
   const { btnText, icon, onAction, onCancel, children } = props;
@@ -45,8 +39,17 @@ export const ActionModal = forwardRef<
   }));
 
   return (
-    <Modal transparent={true} visible={visible} onRequestClose={onCancel}>
-      <TouchableOpacity style={styles.modalBackground} onPress={onCancel}>
+    <Modal
+      transparent={true}
+      visible={visible}
+      onRequestClose={onCancel}
+      animationType={'fade'}
+    >
+      <TouchableOpacity
+        style={styles.modalBackground}
+        onPress={onCancel}
+        activeOpacity={0.95}
+      >
         <View style={styles.animatedView}>
           {!!icon && <View style={styles.icon}>{icon}</View>}
           {!!title && <Text style={styles.title}>{title}</Text>}

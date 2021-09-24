@@ -22,9 +22,11 @@ import {
   cardsReducer,
   UPDATE_CARD
 } from './cards/CardsReducer';
-import { methodReducer } from './method/MethodReducer';
+import { methodReducer, UPDATE_METHOD } from './method/MethodReducer';
 import type { Card } from '../interfaces/card.interfaces';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { Method } from '../interfaces/method.interfaces';
+import { MethodContext } from './method/MethodContext';
 
 export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
@@ -33,7 +35,7 @@ export const Store: React.FC = props => {
   );
   const [cards, dispatchCards] = useReducer(cardsReducer, {});
   const [user, dispatchUser] = useReducer(userReducer, {});
-  // const [method, dispatchMethod] = useReducer(methodReducer, {});
+  const [method, dispatchMethod] = useReducer(methodReducer, {});
 
   useEffect(() => {
     Orientation.addOrientationListener(updateOrientation);
@@ -67,6 +69,10 @@ export const Store: React.FC = props => {
     dispatchUser({ type: UPDATE_USER_AND_CACHE, user });
   };
 
+  const updateMethod = (method?: Method) => {
+    dispatchMethod({ type: UPDATE_METHOD, method });
+  };
+
   const toggleTheme = () => {
     let newTheme = theme === DARK ? LIGHT : DARK;
     AsyncStorage.setItem('@theme', newTheme);
@@ -80,23 +86,27 @@ export const Store: React.FC = props => {
       style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}
       edges={['right', 'left']}
     >
-      <CardsContext.Provider
-        value={{ cards, addCards, updateCard, addCardsAndCache }}
-      >
-        <UserContext.Provider value={{ user, updateUser, updateUserAndCache }}>
-          <ThemeContext.Provider value={{ theme, toggleTheme }}>
-            <OrientationContext.Provider
-              value={{
-                isLandscape: orientation.toLowerCase().includes('land'),
-                orientation,
-                updateOrientation
-              }}
-            >
-              {!!theme && props.children}
-            </OrientationContext.Provider>
-          </ThemeContext.Provider>
-        </UserContext.Provider>
-      </CardsContext.Provider>
+      <MethodContext.Provider value={{ method, updateMethod }}>
+        <CardsContext.Provider
+          value={{ cards, addCards, updateCard, addCardsAndCache }}
+        >
+          <UserContext.Provider
+            value={{ user, updateUser, updateUserAndCache }}
+          >
+            <ThemeContext.Provider value={{ theme, toggleTheme }}>
+              <OrientationContext.Provider
+                value={{
+                  isLandscape: orientation.toLowerCase().includes('land'),
+                  orientation,
+                  updateOrientation
+                }}
+              >
+                {!!theme && props.children}
+              </OrientationContext.Provider>
+            </ThemeContext.Provider>
+          </UserContext.Provider>
+        </CardsContext.Provider>
+      </MethodContext.Provider>
     </SafeAreaView>
   );
 };

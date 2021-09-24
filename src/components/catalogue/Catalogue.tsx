@@ -3,8 +3,7 @@ import React, {
   useEffect,
   useReducer,
   useMemo,
-  useRef,
-  useState
+  useRef
 } from 'react';
 import {
   StyleSheet,
@@ -17,11 +16,20 @@ import {
   TouchableOpacity
 } from 'react-native';
 
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase, RouteProp } from '@react-navigation/native';
+
+import { Carousel } from './Carousel';
+import { Filters } from './Filters';
+
 import { MethodBanner } from '../../common_components/MethodBanner';
+import { Sort } from '../../common_components/Sort';
+import { RowCard } from '../../common_components/cards/RowCard';
 
 import { CardsContext } from '../../state/cards/CardsContext';
-
-import { provider } from '../../services/catalogueSceneProvider.service';
+import { ThemeContext } from '../../state/theme/ThemeContext';
+import { UserContext } from '../../state/user/UserContext';
+import { MethodContext } from '../../state/method/MethodContext';
 import {
   ADD_ALL,
   SET_CATALOGUE_FROM_CACHE,
@@ -29,17 +37,12 @@ import {
   catalogueReducer,
   SET_ALL
 } from '../../state/catalogue/CatalogueReducer';
-import { ThemeContext } from '../../state/theme/ThemeContext';
-import { themeStyles } from '../../themeStyles';
-import { UserContext } from '../../state/user/UserContext';
-import { utils } from '../../utils';
-import { Carousel } from './Carousel';
-import { Filters } from './Filters';
-import { Sort } from '../../common_components/Sort';
-import { RowCard } from '../../common_components/cards/RowCard';
 
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { ParamListBase, RouteProp } from '@react-navigation/native';
+import { provider } from '../../services/catalogueSceneProvider.service';
+
+import { themeStyles } from '../../themeStyles';
+import { utils } from '../../utils';
+
 interface Props {
   route: RouteProp<ParamListBase>;
   navigation: StackNavigationProp<ParamListBase>;
@@ -52,26 +55,16 @@ export const Catalogue: React.FC<Props> = ({
   const hasMethodBanner = scene.match(/^(home)$/),
     hasUserInfo = scene.match(/^(home)$/);
 
+  const { updateMethod } = useContext(MethodContext);
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyles(theme), [theme]);
 
   const [
-    {
-      method,
-      recentlyViewed,
-      inProgress,
-      newContent,
-      all,
-      loadingMore,
-      refreshing
-    },
+    { recentlyViewed, inProgress, newContent, all, loadingMore, refreshing },
     dispatch
-  ] = useReducer(catalogueReducer, {
-    loadingMore: false,
-    refreshing: true
-  });
+  ] = useReducer(catalogueReducer, { loadingMore: false, refreshing: true });
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -84,8 +77,10 @@ export const Catalogue: React.FC<Props> = ({
     isMounted.current = true;
     abortC.current = new AbortController();
     provider[scene]?.getCache?.().then(cache => {
-      if (isMounted.current)
+      if (isMounted.current) {
+        updateMethod(cache.method);
         dispatch({ type: SET_CATALOGUE_FROM_CACHE, cache });
+      }
     });
     setCatalogue();
     return () => {
@@ -100,6 +95,7 @@ export const Catalogue: React.FC<Props> = ({
       .then(([aRes, ncRes, ipRes, rvRes, mRes]) => {
         if (isMounted.current) {
           filters.current = aRes?.meta?.filterOptions;
+          updateMethod(mRes);
           addCardsAndCache(
             aRes?.data
               ?.concat(ncRes?.data || [])
@@ -109,7 +105,6 @@ export const Catalogue: React.FC<Props> = ({
           dispatch({
             type: SET_CATALOGUE_THEN_CACHE,
             scene,
-            method: mRes,
             all: aRes?.data,
             inProgress: ipRes?.data,
             recentlyViewed: rvRes?.data,
@@ -153,9 +148,7 @@ export const Catalogue: React.FC<Props> = ({
 
   const flHeader = (
     <>
-      {!!hasMethodBanner && method && !method.completed && (
-        <MethodBanner {...method} />
-      )}
+      {!!hasMethodBanner && <MethodBanner />}
       {!!hasUserInfo ? (
         <View style={styles.userInfoContainer}>
           <Image source={{ uri: user.avatarUrl }} style={styles.avatarImg} />
