@@ -118,7 +118,11 @@ export const MethodBanner: React.FC<Props> = ({
       {infoVisible && <Text style={styles.description}>{description}</Text>}
       <ResetModal
         visible={resetVisible}
-        onDismiss={() => setResetVisible(false)}
+        onDismiss={reset => {
+          setResetVisible(false);
+          if (reset) {
+          }
+        }}
       />
     </>
   );

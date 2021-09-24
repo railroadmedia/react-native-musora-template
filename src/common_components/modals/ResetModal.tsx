@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Modal, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
@@ -6,7 +6,7 @@ import { themeStyles } from '../../themeStyles';
 
 interface Props {
   visible: boolean;
-  onDismiss: Function;
+  onDismiss: (reset?: boolean) => void;
 }
 
 export const ResetModal: React.FC<Props> = ({ visible, onDismiss }) => {
@@ -16,19 +16,25 @@ export const ResetModal: React.FC<Props> = ({ visible, onDismiss }) => {
   return (
     <Modal visible={visible} transparent={true} animationType={'fade'}>
       <TouchableOpacity
-        style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}
+        activeOpacity={0.95}
+        style={styles.containerBaclgroundTOpacity}
         onPress={() => onDismiss()}
       >
-        <Text style={styles.text}>Hold your horses...</Text>
-        <Text
-          style={styles.text}
-        >{`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}</Text>
-        <TouchableOpacity style={{ backgroundColor: utils.color }}>
-          <Text style={{ padding: 15 }}>RESET</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text>CANCEL</Text>
-        </TouchableOpacity>
+        <View style={styles.container}>
+          <Text style={styles.title}>Hold your horses...</Text>
+          <Text
+            style={styles.msg}
+          >{`This will reset your progress\nand cannot be undone.\nAre you sure about this?`}</Text>
+          <TouchableOpacity
+            style={styles.btnTOpacity}
+            onPress={() => onDismiss(true)}
+          >
+            <Text style={styles.btnText}>RESET</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => onDismiss()}>
+            <Text style={[styles.btnText, { color: utils.color }]}>CANCEL</Text>
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     </Modal>
   );
@@ -36,19 +42,39 @@ export const ResetModal: React.FC<Props> = ({ visible, onDismiss }) => {
 
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
-    text: {
-      color: current.textColor,
-      fontSize: 20,
-      fontFamily: 'OpenSans-Bold',
+    containerBaclgroundTOpacity: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    container: {
+      backgroundColor: current.background,
+      borderRadius: 10,
       padding: 15,
-      textAlign: 'center',
-      backgroundColor: 'red'
+      paddingBottom: 0,
+      alignItems: 'center'
+    },
+    title: {
+      color: current.textColor,
+      fontSize: utils.figmaFontSizeScaler(18),
+      fontFamily: 'OpenSans-Bold',
+      textAlign: 'center'
     },
     msg: {
-      padding: 15,
+      paddingVertical: 15,
       textAlign: 'center',
-      fontSize: utils.figmaFontSizeScaler(18),
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans',
       color: current.textColor
+    },
+    btnTOpacity: { backgroundColor: utils.color, borderRadius: 300 },
+    btnText: {
+      color: 'white',
+      padding: 15,
+      paddingHorizontal: 40,
+      textAlign: 'center',
+      fontFamily: 'RobotoCondensed-Bold',
+      fontSize: utils.figmaFontSizeScaler(14)
     }
   });
