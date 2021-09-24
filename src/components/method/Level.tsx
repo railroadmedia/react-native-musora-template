@@ -27,7 +27,7 @@ import { methodService } from '../../services/method.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { LevelBanner } from './LevelBanner';
-import ActionModal from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
 import { method } from '../../images/svgs';

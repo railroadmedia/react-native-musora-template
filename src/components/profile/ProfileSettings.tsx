@@ -32,7 +32,8 @@ import type {
   UpdateAvatarResponse,
   UserAvatar
 } from '../../interfaces/user.interfaces';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 

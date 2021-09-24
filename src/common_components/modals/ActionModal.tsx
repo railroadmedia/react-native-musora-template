@@ -29,7 +29,7 @@ export interface CustomRefObject {
   toggle: (title: string, message: string) => void;
 }
 
-const ActionModal = forwardRef(
+export const ActionModal = forwardRef(
   (props: Props, ref: React.Ref<CustomRefObject>) => {
     const { btnText, icon, onAction, onCancel, children } = props;
     const [visible, setVisible] = useState(false);
@@ -70,8 +70,6 @@ const ActionModal = forwardRef(
     );
   }
 );
-
-export default ActionModal;
 
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({

@@ -38,7 +38,7 @@ import {
   UPDATE_MY_LIST_LOADERS
 } from '../../state/myList/MyListReducer';
 import { myListService } from '../../services/myList.service';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 
 interface Props {}
 

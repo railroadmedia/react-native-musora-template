@@ -34,7 +34,7 @@ import type {
   Show as I_Show,
   ShowLessons
 } from '../../interfaces/show.interfaces';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import { showService } from '../../services/show.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import type { Card } from '../../interfaces/card.interfaces';

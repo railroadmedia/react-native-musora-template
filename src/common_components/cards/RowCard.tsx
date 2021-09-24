@@ -20,7 +20,7 @@ interface Props {
   onRemoveFromMyList?: (id: number) => void;
 }
 
-const RowCard: React.FC<Props> = props => {
+export const RowCard: React.FC<Props> = props => {
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string, props: {}) => void;
@@ -148,5 +148,3 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans'
     }
   });
-
-export default RowCard;

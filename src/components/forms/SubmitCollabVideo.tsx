@@ -26,7 +26,8 @@ import { themeStyles } from '../../themeStyles';
 import { back } from '../../images/svgs';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 

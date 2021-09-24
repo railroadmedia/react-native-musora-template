@@ -27,7 +27,7 @@ import { back } from '../../images/svgs';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
 import type { CustomRefObject } from '../../common_components/modals/ActionModal';
-import ActionModal from '../../common_components/modals/ActionModal';
+import { ActionModal } from '../../common_components/modals/ActionModal';
 
 const windowWidth = Dimensions.get('screen').width;
 

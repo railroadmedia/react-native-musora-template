@@ -25,7 +25,8 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { parseXpValue } from './helpers';
 import { commentService } from '../../services/comment.service';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 

@@ -33,7 +33,8 @@ import type {
 } from '../../interfaces/packs.interfaces';
 import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';

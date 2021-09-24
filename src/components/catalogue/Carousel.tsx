@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { FlatList, View } from 'react-native';
-import SliderCard from '../../common_components/cards/SliderCard';
+import { SliderCard } from '../../common_components/cards/SliderCard';
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import { utils } from '../../utils';
 

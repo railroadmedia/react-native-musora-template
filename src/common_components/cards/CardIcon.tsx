@@ -4,7 +4,7 @@ import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
 import { utils } from '../../utils';
 import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
-import ActionModal, { CustomRefObject } from '../modals/ActionModal';
+import { ActionModal, CustomRefObject } from '../modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Card } from '../../interfaces/card.interfaces';
 

@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { utils } from '../utils';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
-import RowCard from './cards/RowCard';
+import { RowCard } from './cards/RowCard';
 
 interface Props {
   progress: number;

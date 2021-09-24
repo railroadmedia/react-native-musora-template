@@ -29,11 +29,12 @@ import type {
 import { PacksBanner } from './PacksBanner';
 import { LibraryCard } from '../../common_components/cards/LibraryCard';
 import { CardsContext } from '../../state/cards/CardsContext';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
 
 interface Props {

@@ -37,11 +37,12 @@ import {
 } from '../../images/svgs';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
 
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 import { NextLesson } from '../../common_components/NextLesson';
 import { methodService } from '../../services/method.service';
 import { userService } from '../../services/user.service';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';

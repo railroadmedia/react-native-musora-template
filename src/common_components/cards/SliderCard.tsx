@@ -24,7 +24,7 @@ interface Props {
   route: string;
 }
 
-const SliderCard: React.FC<Props> = props => {
+export const SliderCard: React.FC<Props> = props => {
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string, props: {}) => void;
@@ -106,5 +106,3 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       fontFamily: 'OpenSans'
     }
   });
-
-export default SliderCard;

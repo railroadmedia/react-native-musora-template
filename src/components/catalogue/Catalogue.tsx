@@ -36,7 +36,7 @@ import { utils } from '../../utils';
 import { Carousel } from './Carousel';
 import { Filters } from './Filters';
 import { Sort } from '../../common_components/Sort';
-import RowCard from '../../common_components/cards/RowCard';
+import { RowCard } from '../../common_components/cards/RowCard';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';

@@ -34,7 +34,8 @@ import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { UserContext } from '../../state/user/UserContext';
 import { ProfileSettings } from './ProfileSettings';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 

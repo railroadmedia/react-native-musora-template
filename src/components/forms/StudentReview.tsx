@@ -31,7 +31,8 @@ import {
 } from '../../common_components/ExpandableView';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
-import ActionModal, {
+import {
+  ActionModal,
   CustomRefObject
 } from '../../common_components/modals/ActionModal';
 
