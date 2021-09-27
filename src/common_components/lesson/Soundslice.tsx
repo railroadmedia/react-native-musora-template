@@ -22,7 +22,6 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { x } from '../../images/svgs';
 import { userService } from '../../services/user.service';
-import { utils } from 'react-native-musora-templates';
 
 interface Props {
   slug: string;
@@ -154,8 +153,7 @@ export const Soundslice = forwardRef(
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: current.background
+      flex: 1
     },
     bottomPlaceholder: {
       height: 20,
