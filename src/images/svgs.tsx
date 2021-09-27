@@ -360,7 +360,7 @@ export const messageBubbles = (props: Props) =>
       </Svg>
     )
   });
-export const method = (props: Props) =>
+export const methodTag = (props: Props) =>
   touchifySvg({
     ...props,
     children: (

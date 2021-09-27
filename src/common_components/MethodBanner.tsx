@@ -7,10 +7,13 @@ import {
   View
 } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase } from '@react-navigation/native';
 
 import { ThemeContext } from '../state/theme/ThemeContext';
 
 import { Gradient } from './Gradient';
+import { ActionModal } from '../common_components/modals/ActionModal';
 
 import { utils } from '../utils';
 import { themeStyles } from '../themeStyles';
@@ -19,17 +22,14 @@ import {
   arrowRight,
   info,
   infoFilled,
-  method,
+  methodTag,
   play,
   reset
 } from '../images/svgs';
 
-import type { ParamListBase } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-import type { Method } from '../interfaces/method.interfaces';
-import { ActionModal } from '../common_components/modals/ActionModal';
+import { MethodContext } from '../state/method/MethodContext';
 
-interface Props extends Method {
+interface Props {
   expandableInfo?: boolean;
 }
 
@@ -39,22 +39,18 @@ const svgStyle = {
 };
 const infoSvgStyle = { icon: { height: 25, width: 25, fill: 'white' } };
 
-export const MethodBanner: React.FC<Props> = ({
-  thumbnail_url,
-  started,
-  completed,
-  description,
-  expandableInfo,
-  next_lesson: { id }
-}) => {
+export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [infoVisible, setInfoVisivle] = useState(false);
   const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
+  const { method, updateMethod } = useContext(MethodContext);
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
+  const { thumbnail_url, started, completed, description, next_lesson } =
+    method;
   return (
     <>
       <ImageBackground
@@ -78,7 +74,7 @@ export const MethodBanner: React.FC<Props> = ({
           />
         </View>
         {utils.svgBrand({ icon: { width: '25%', fill: utils.color } })}
-        {method({
+        {methodTag({
           icon: { width: '60%', fill: 'white' },
           container: { paddingTop: 15 }
         })}
@@ -86,7 +82,7 @@ export const MethodBanner: React.FC<Props> = ({
           {expandableInfo && <View style={styles.placeHolder} />}
           <TouchableOpacity
             onPress={() => {
-              if (!completed) navigate('lessonPart', { id });
+              if (!completed) navigate('lessonPart', { id: next_lesson?.id });
               else
                 resetModalRef.current?.toggle(
                   'Hold your horses...',
@@ -123,8 +119,15 @@ export const MethodBanner: React.FC<Props> = ({
       <ActionModal
         ref={resetModalRef}
         btnText='RESET'
-        onAction={() => {}}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+        onAction={() => {
+          updateMethod({
+            ...method,
+            completed: false,
+            started: false,
+            levels: method.levels?.map(l => ({ ...l, progress_percent: 0 }))
+          });
+        }}
+        onCancel={() => resetModalRef.current?.toggle()}
       />
     </>
   );

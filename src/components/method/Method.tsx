@@ -1,10 +1,4 @@
-import React, {
-  useContext,
-  useEffect,
-  useMemo,
-  useReducer,
-  useRef
-} from 'react';
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -18,25 +12,26 @@ import {
   ActivityIndicator,
   Image
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
-import { utils } from '../../utils';
-import { ThemeContext } from '../../state/theme/ThemeContext';
-import { themeStyles } from '../../themeStyles';
-import { MethodBanner } from '../../common_components/MethodBanner';
-import { UserContext } from '../../state/user/UserContext';
-import { completedCircle, inProgressCircle } from '../../images/svgs';
-import { getImageUri } from '../../common_components/cards/cardhelpers';
-import { Gradient } from '../../common_components/Gradient';
-import { methodService } from '../../services/method.service';
-import { NextLesson } from '../../common_components/NextLesson';
-import { CardsContext } from '../../state/cards/CardsContext';
-import {
-  catalogueReducer,
-  SET_METHOD
-} from '../../state/catalogue/CatalogueReducer';
+import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
+
+import { MethodBanner } from '../../common_components/MethodBanner';
+import { getImageUri } from '../../common_components/cards/cardhelpers';
+import { Gradient } from '../../common_components/Gradient';
+import { NextLesson } from '../../common_components/NextLesson';
+
+import { ThemeContext } from '../../state/theme/ThemeContext';
+import { CardsContext } from '../../state/cards/CardsContext';
+import { MethodContext } from '../../state/method/MethodContext';
+import { UserContext } from '../../state/user/UserContext';
+
+import { methodService } from '../../services/method.service';
+
+import { utils } from '../../utils';
+import { themeStyles } from '../../themeStyles';
+import { completedCircle, inProgressCircle } from '../../images/svgs';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
@@ -46,16 +41,13 @@ export const Method: React.FC = () => {
 
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
-
   const { user } = useContext(UserContext);
+  const { method, updateMethod } = useContext(MethodContext);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
-
-  const [{ method, refreshing }, dispatch] = useReducer(catalogueReducer, {
-    refreshing: true,
-    loadingMore: false
-  });
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -70,22 +62,17 @@ export const Method: React.FC = () => {
   }, []);
   const setMethod = () =>
     methodService.getMethod(abortC.current.signal).then(methodRes => {
-      methodRes.completed = true;
       if (isMounted.current) {
-        addCards([methodRes.next_lesson]);
-        dispatch({
-          type: SET_METHOD,
-          method: methodRes,
-          scene: 'home',
-          refreshing: false
-        });
+        if (methodRes.next_lesson) addCards([methodRes.next_lesson]);
+        setRefreshing(false);
+        updateMethod(methodRes);
       }
     });
 
   const refresh = (): void => {
     abortC.current.abort();
     abortC.current = new AbortController();
-    dispatch({ refreshing: true, loadingMore: false });
+    setRefreshing(true);
     setMethod();
   };
 
@@ -140,10 +127,7 @@ export const Method: React.FC = () => {
                         'method'
                       )
                     }}
-                    style={{
-                      aspectRatio: 1,
-                      width: windowW / 4
-                    }}
+                    style={{ aspectRatio: 1, width: windowW / 4 }}
                   >
                     {new Date(l.published_on) < new Date() && (
                       <View style={styles.gradientContainer}>
