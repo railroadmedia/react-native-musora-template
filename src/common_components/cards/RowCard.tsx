@@ -18,6 +18,7 @@ interface Props {
   iconType?: 'next-lesson' | 'progress' | null;
   onResetProgress?: (id: number) => void;
   onRemoveFromMyList?: (id: number) => void;
+  onNavigate?: () => void;
 }
 
 export const RowCard: React.FC<Props> = props => {
@@ -27,7 +28,14 @@ export const RowCard: React.FC<Props> = props => {
     }
   >();
 
-  const { id, route, onResetProgress, onRemoveFromMyList, iconType } = props;
+  const {
+    id,
+    route,
+    onResetProgress,
+    onRemoveFromMyList,
+    onNavigate,
+    iconType
+  } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
 
@@ -35,6 +43,7 @@ export const RowCard: React.FC<Props> = props => {
   let styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {
+    if (onNavigate) return onNavigate?.();
     let { route, contentType } = getContentType(
       item.type,
       item.bundle_count,
