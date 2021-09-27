@@ -11,15 +11,5 @@ export const contentService: ContentService = {
       url: `/musora-api/content/${id}${forDownload ? '?download=true' : ''}`,
       signal
     });
-  },
-  getContentByUrl: function (
-    mobile_app_url: string,
-    forDownload: boolean,
-    signal: AbortSignal
-  ) {
-    return call({
-      url: `${mobile_app_url}${forDownload ? '?download=true' : ''}`,
-      signal
-    });
   }
 };

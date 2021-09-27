@@ -93,5 +93,27 @@ export const userService: UserService = {
       }`,
       method: 'PUT'
     });
+  },
+  updateUsersVideoProgress: function (
+    id: number,
+    seconds: number,
+    lengthInSeconds: number,
+    media_id: number
+  ) {
+    return call({
+      url: `/musora-api/media/${id}?seconds_played=${seconds}&current_second=${seconds}&length_in_seconds=${lengthInSeconds}&media_id=${media_id}`,
+      method: 'PUT'
+    });
+  },
+  getMediaSessionId: function (
+    id: number,
+    content_id: number,
+    length_in_seconds: number,
+    media_category: string
+  ) {
+    return call({
+      url: `/musora-api/media?media_category=${media_category}&media_id=${id}&content_id=${content_id}&media_length_seconds=${length_in_seconds}&media_type=video`,
+      method: 'PUT'
+    });
   }
 };

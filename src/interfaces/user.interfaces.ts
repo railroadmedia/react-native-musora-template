@@ -37,6 +37,12 @@ export interface CompletedResponse {
   };
 }
 
+export interface MediaSessionResponse {
+  session_id: {
+    id: number;
+  };
+}
+
 export interface ResetProgressResponse {
   type?: string;
   progress_percent?: number;

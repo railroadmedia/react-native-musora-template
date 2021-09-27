@@ -37,7 +37,11 @@ import { AskQuestion } from './components/forms/AskQuestion';
 import { SubmitCollabVideo } from './components/forms/SubmitCollabVideo';
 import { LikeList } from './common_components/lesson/LikeList';
 import { Replies } from './common_components/lesson/Replies';
-import type { Comment, Lesson } from './interfaces/lesson.interfaces';
+import type {
+  Comment,
+  Lesson,
+  LessonResponse
+} from './interfaces/lesson.interfaces';
 import { LessonPart } from './common_components/lesson/LessonPart';
 
 type Scenes =
@@ -81,7 +85,7 @@ const Stack = createStackNavigator<{
     id: number;
     parentId: number;
     contentType: string;
-    item?: Lesson;
+    item?: LessonResponse;
   };
   likeList: {
     commentId: number;

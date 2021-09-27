@@ -11,3 +11,13 @@ export const parseXpValue = function (xp: number): string {
 export const capitalizeFirstLetter = (text: string) => {
   return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+export const getProgress = (user_progress: [{ progress_percent: number }]) => {
+  try {
+    return (
+      parseInt(Object.values(user_progress)[0].progress_percent.toFixed()) || 0
+    );
+  } catch (e) {
+    return 0;
+  }
+};
