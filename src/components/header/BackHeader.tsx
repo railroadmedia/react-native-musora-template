@@ -7,7 +7,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { back, settings } from '../../images/svgs';
 import { utils } from '../../utils';
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
@@ -24,6 +24,7 @@ export const BackHeader: React.FC<Props> = ({
   settingsVisible,
   onBack
 }) => {
+  const { top, left, right } = useSafeAreaInsets();
   const { navigate, goBack } =
     useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -31,11 +32,11 @@ export const BackHeader: React.FC<Props> = ({
   let styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
-    <SafeAreaView
-      edges={['left', 'right', 'top']}
+    <View
       style={[
         styles.safeAreaContainer,
-        transparent ? { backgroundColor: 'transparent' } : {}
+        transparent ? { backgroundColor: 'transparent' } : {},
+        { paddingTop: top, paddingLeft: left, paddingRight: right }
       ]}
     >
       <StatusBar
@@ -59,7 +60,7 @@ export const BackHeader: React.FC<Props> = ({
             onPress: () => navigate('settings')
           })}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

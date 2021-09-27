@@ -16,9 +16,10 @@ import { downloads, myList } from '../../images/svgs';
 import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const MainHeader: React.FC = () => {
+  const { top, left, right } = useSafeAreaInsets();
   const { navigate } = useNavigation<{ navigate: (scene: string) => void }>();
 
   const { theme } = useContext(ThemeContext);
@@ -38,9 +39,11 @@ export const MainHeader: React.FC = () => {
   }, []);
 
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={styles.safeAreaContainer}
+    <View
+      style={[
+        styles.safeAreaContainer,
+        { paddingTop: top, paddingLeft: left, paddingRight: right }
+      ]}
     >
       <StatusBar
         backgroundColor={themeStyles[theme].background}
@@ -72,7 +75,7 @@ export const MainHeader: React.FC = () => {
           style={{ height: 35, aspectRatio: 1, borderRadius: 20 }}
         />
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 
