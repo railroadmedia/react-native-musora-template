@@ -1,4 +1,11 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, {
+  forwardRef,
+  useCallback,
+  useContext,
+  useImperativeHandle,
+  useMemo,
+  useState
+} from 'react';
 import {
   Text,
   Modal,
@@ -7,7 +14,6 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
 import { x } from '../images/svgs';
@@ -28,76 +34,98 @@ const titles = [
 ];
 
 interface Props {
-  route: RouteProp<ParamListBase, 'navigationMenu'> & {
-    params: {
-      activeButton: string;
-    };
-  };
+  activeButton: string;
 }
 
-export const NavigationMenu: React.FC<Props> = ({
-  route: {
-    params: { activeButton }
-  }
-}) => {
-  const { navigate, goBack } = useNavigation<
-    NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props?: {}) => void;
-    }
-  >();
-  const { theme } = useContext(ThemeContext);
+export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
+  (props, ref) => {
+    const { navigate } = useNavigation<
+      NavigationProp<ReactNavigation.RootParamList> & {
+        navigate: (scene: string, props?: {}) => void;
+      }
+    >();
+    const { theme } = useContext(ThemeContext);
+    let styles = useMemo(() => setStyles(theme), [theme]);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+    const [visible, setVisible] = useState(false);
 
-  const onNavigate = useCallback((route: string) => {
-    goBack();
-    if (route === 'showOverview') {
-      navigate(route, {
-        show: {
-          thumbnailUrl:
-            'https://dpwjbsxqtam5n.cloudfront.net/shows/show-quick-tips.jpg',
-          name: 'Quick Tips',
-          type: 'quick-tips',
-          icon: 'icon-shows',
-          description:
-            'These videos are great for quick inspiration or if you don’t have time to sit \n                    down and watch a full lesson. They are short and to the point, giving you tips, concepts, \n                    and exercises you can take to your kit.',
-          allowableFilters: ['difficulty', 'instructor', 'topic', 'progress']
+    const toggleModal = useCallback(() => {
+      setVisible(!visible);
+    }, [visible]);
+
+    useImperativeHandle(ref, () => ({
+      toggle() {
+        toggleModal();
+      }
+    }));
+
+    const onNavigate = useCallback(
+      (route: string) => {
+        toggleModal();
+        if (route === 'showOverview') {
+          navigate(route, {
+            show: {
+              thumbnailUrl:
+                'https://dpwjbsxqtam5n.cloudfront.net/shows/show-quick-tips.jpg',
+              name: 'Quick Tips',
+              type: 'quick-tips',
+              icon: 'icon-shows',
+              description:
+                'These videos are great for quick inspiration or if you don’t have time to sit \n                    down and watch a full lesson. They are short and to the point, giving you tips, concepts, \n                    and exercises you can take to your kit.',
+              allowableFilters: [
+                'difficulty',
+                'instructor',
+                'topic',
+                'progress'
+              ]
+            }
+          });
+        } else {
+          navigate(route);
         }
-      });
-    } else {
-      navigate(route);
-    }
-  }, []);
+      },
+      [toggleModal]
+    );
 
-  const decideColor = useCallback((page: string) => {
-    if (activeButton === page) return utils.color;
-    return themeStyles[theme].textColor;
-  }, []);
+    const decideColor = useCallback(
+      (page: string) => {
+        if (props.activeButton === page) return utils.color;
+        return themeStyles[theme].textColor;
+      },
+      [props.activeButton]
+    );
 
-  return (
-    <SafeAreaView edges={['bottom']} style={styles.container}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.modalContentContainer}
-      >
-        {titles.map(({ title, route }: { title: string; route: string }) => (
-          <TouchableOpacity
-            key={title}
-            onPress={() => onNavigate(route)}
-            style={{ padding: 10 }}
+    return (
+      <Modal transparent={true} animationType='slide' visible={visible}>
+        <SafeAreaView edges={['bottom']} style={styles.container}>
+          <ScrollView
+            style={styles.container}
+            contentContainerStyle={styles.modalContentContainer}
           >
-            <Text style={[styles.smallTitle, { color: decideColor(route) }]}>
-              {title}
-            </Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity onPress={goBack} style={styles.xBtn}>
-          {x({ icon: { height: 30, width: 30, fill: 'white' } })}
-        </TouchableOpacity>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+            {titles.map(
+              ({ title, route }: { title: string; route: string }) => (
+                <TouchableOpacity
+                  key={title}
+                  onPress={() => onNavigate(route)}
+                  style={{ padding: 10 }}
+                >
+                  <Text
+                    style={[styles.smallTitle, { color: decideColor(route) }]}
+                  >
+                    {title}
+                  </Text>
+                </TouchableOpacity>
+              )
+            )}
+            <TouchableOpacity onPress={toggleModal} style={styles.xBtn}>
+              {x({ icon: { height: 30, width: 30, fill: 'white' } })}
+            </TouchableOpacity>
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
+    );
+  }
+);
 
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
