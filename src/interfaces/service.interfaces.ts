@@ -5,6 +5,7 @@ import type {
   LessonResponse,
   Likes
 } from './lesson.interfaces';
+import type { Live } from './live.interfaces';
 import type { Level, Method, MethodCourse } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
 import type {
@@ -100,11 +101,11 @@ export interface ServiceFunction<Response> {
 interface ServiceFunctionCatalogue {
   ({}: ProviderFunctionArgs): Promise<
     [
-      CatalogueSection | undefined,
-      CatalogueSection | undefined,
-      CatalogueSection | undefined,
-      CatalogueSection | undefined,
-      Method | undefined
+      CatalogueSection?,
+      CatalogueSection?,
+      CatalogueSection?,
+      CatalogueSection?,
+      Method?
     ]
   >;
 }
@@ -253,4 +254,7 @@ export interface CommentService {
     replyText: string,
     commentId: number
   ) => Promise<{ data: Comment[] }>;
+}
+export interface LiveService {
+  getLive: (signal: AbortSignal) => Promise<Live>;
 }

@@ -33,9 +33,7 @@ export const coursesService: SceneService = {
     return Promise.all([
       this.getAll(params),
       this.getNew?.(params),
-      this.getInProgress?.(params),
-      undefined,
-      undefined
+      this.getInProgress?.(params)
     ]);
   },
   getCache: async function () {
