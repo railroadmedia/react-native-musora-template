@@ -98,10 +98,12 @@ export const userService: UserService = {
     id: number,
     seconds: number,
     lengthInSeconds: number,
-    media_id: number
+    media_id: number,
+    media_category: string,
+    media_type: string
   ) {
     return call({
-      url: `/musora-api/media/${id}?seconds_played=${seconds}&current_second=${seconds}&length_in_seconds=${lengthInSeconds}&media_id=${media_id}`,
+      url: `/musora-api/media/${id}?seconds_played=${seconds}&current_second=${seconds}&length_in_seconds=${lengthInSeconds}&media_id=${media_id}&media_category=${media_category}&media_type=${media_type}`,
       method: 'PUT'
     });
   },

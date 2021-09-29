@@ -99,8 +99,6 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
     });
   };
 
-  console.log(activeScene);
-
   return (
     <Animated.View
       style={[

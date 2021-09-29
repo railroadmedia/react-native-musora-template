@@ -170,7 +170,9 @@ export interface UserService {
     id: number,
     seconds: number,
     lengthInSeconds: number,
-    media_id: number
+    media_id: number,
+    media_category: string,
+    media_type: string
   ) => Promise<{}>;
   getMediaSessionId: (
     id: number,

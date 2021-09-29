@@ -28,7 +28,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Rate, { AndroidMarket } from 'react-native-rate';
-// import Video from 'RNVideoEnhanced';
+import Video from 'RNVideoEnhanced';
 
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import {
@@ -65,13 +65,12 @@ import { RowCard } from '../../common_components/cards/RowCard';
 import { Soundslice, SoundsliceRefObj } from './Soundslice';
 import { LessonProgress } from './LessonProgress';
 import { ActionModal } from '../../common_components/modals/ActionModal';
-import { capitalizeFirstLetter, getProgress } from './helpers';
+import { capitalizeFirstLetter, formatTime, getProgress } from './helpers';
 import { userService } from '../../services/user.service';
 import type {
   CompletedResponse,
   ResetProgressResponse
 } from 'src/interfaces/user.interfaces';
-import type { ErrorResponse } from '../../interfaces/service.interfaces';
 
 interface SelectedAssignment extends Assignment {
   index?: number;
@@ -106,7 +105,7 @@ export const LessonPart: React.FC<Props> = ({
   const [refreshing, setRefreshing] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [videoType, setVideoType] = useState('audio');
+  const [videoType, setVideoType] = useState<'audio' | 'video'>('video');
   const [assignmentFSStyle, setAssignmentFSStyle] = useState<ViewStyle | null>(
     null
   );
@@ -123,7 +122,7 @@ export const LessonPart: React.FC<Props> = ({
 
   const abortC = useRef(new AbortController());
   const isMounted = useRef(true);
-  const video = useRef();
+  const video = useRef<any>(null);
   const soundsliceRef = useRef<SoundsliceRefObj>(null);
   const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
@@ -167,7 +166,6 @@ export const LessonPart: React.FC<Props> = ({
   }, [id]);
 
   const getLesson = async (lessonId: number) => {
-    console.log(lessonId, contentType);
     let content: LessonResponse;
     if (item) {
       content = item;
@@ -190,7 +188,9 @@ export const LessonPart: React.FC<Props> = ({
       );
       addCards(content.related_lessons);
       setRefreshing(false);
-
+      if (contentType === 'Play Along') {
+        setVideoType('audio');
+      }
       if (
         contentType !== 'song' &&
         !content.video_playback_endpoints &&
@@ -207,12 +207,46 @@ export const LessonPart: React.FC<Props> = ({
   const onAndroidBack = useCallback(() => {
     if (assignmentFSStyle) setAssignmentFSStyle(null);
     else if (selectedAssignment) setSelectedAssignment(null);
-    // else if (fullscreen) this.video?.handleBack?.();
+    else if (fullscreen) video.current?.handleBack();
     else goBack();
     return true;
   }, [assignmentFSStyle, selectedAssignment]);
 
   const createResourcesArr = useCallback(() => {}, []);
+
+  const createMp3sArray = () => {
+    if (!lesson || contentType !== 'Play Along') return;
+
+    let mp3s = [];
+    if (lesson.mp3_no_drums_no_click_url)
+      mp3s.push({
+        id: 'mp3_no_drums_no_click_url',
+        key: 'mp3_no_drums_no_click_url',
+        value: lesson.mp3_no_drums_no_click_url
+      });
+    if (lesson.mp3_no_drums_yes_click_url)
+      mp3s.push({
+        id: 'mp3_no_drums_yes_click_url',
+        key: 'mp3_no_drums_yes_click_url',
+        value: lesson.mp3_no_drums_yes_click_url
+      });
+
+    if (lesson.mp3_yes_drums_no_click_url)
+      mp3s.push({
+        id: 'mp3_yes_drums_no_click_url',
+        key: 'mp3_yes_drums_no_click_url',
+        value: lesson.mp3_yes_drums_no_click_url
+      });
+
+    if (lesson.mp3_yes_drums_yes_click_url)
+      mp3s.push({
+        id: 'mp3_yes_drums_yes_click_url',
+        key: 'mp3_yes_drums_yes_click_url',
+        value: lesson.mp3_yes_drums_yes_click_url
+      });
+
+    return mp3s;
+  };
 
   const refresh = useCallback(() => {
     if (!lesson) return;
@@ -299,7 +333,7 @@ export const LessonPart: React.FC<Props> = ({
 
   const toggleVideoAudio = useCallback(() => {
     setVideoType(videoType === 'audio' ? 'video' : 'audio');
-    // dldService.gCasting && this.video.gCastMedia()
+    // dldService.gCasting && video.current.gCastMedia()
   }, [videoType]);
 
   const selectAssignment = useCallback(
@@ -530,7 +564,12 @@ export const LessonPart: React.FC<Props> = ({
     });
   }, [lesson, selectedAssignment]);
 
-  const onSeek = useCallback(() => {}, []);
+  const onSeek = useCallback(
+    (timeCode: number | string) => {
+      video.current?.onSeek(timeCode);
+    },
+    [video]
+  );
 
   const toSupport = useCallback(() => {
     alert.current?.toggle();
@@ -540,7 +579,7 @@ export const LessonPart: React.FC<Props> = ({
 
   const togglePausedVideo = useCallback(() => {
     if (video) {
-      // video.current?.togglePaused(true, true);
+      video.current?.togglePaused(true, true);
     }
   }, [video]);
 
@@ -568,7 +607,6 @@ export const LessonPart: React.FC<Props> = ({
       currentTime: number,
       mediaCategory: string
     ) => {
-      // if (!this.context.isConnected) return;
       userService.updateUsersVideoProgress(
         (
           await userService.getMediaSessionId(
@@ -580,7 +618,9 @@ export const LessonPart: React.FC<Props> = ({
         )?.session_id?.id,
         currentTime,
         lengthInSec,
-        id
+        id,
+        mediaCategory,
+        'video'
       );
     },
     []
@@ -647,12 +687,7 @@ export const LessonPart: React.FC<Props> = ({
             <TouchableOpacity
               key={c.chapter_timecode}
               style={styles.chapterMarkersCont}
-              onPress={
-                () => {}
-                // this.video?.onSeek(
-                //   c.chapter_timecode
-                // )
-              }
+              onPress={() => onSeek(c.chapter_timecode)}
             >
               <Text style={styles.infoText}>{c.chapter_description}</Text>
               <Text style={styles.chapterTime}>
@@ -762,71 +797,82 @@ export const LessonPart: React.FC<Props> = ({
         </SafeAreaView>
       ) : (
         (!!lesson.vimeo_video_id || !!lesson.youtube_video_id) && (
-          <View />
-          // <Video
-          //   testID='video'
-          //   repeat={false}
-          //   paused={true}
-          //   type={videoType}
-          //   showControls={true}
-          //   youtubeId={lesson.youtube_video_id}
-          //   onRefresh={refresh}
-          //   live={!!item?.apiKey}
-          //   toSupport={toSupport}
-          //   ref={video}
-          //   onBack={onAndroidBack}
-          //   content={lesson}
-          //   // connection={this.context.isConnected}
-          //   maxWidth={undefined}
-          //   onEndLive={onEndLive}
-          //   onStartLive={onStartLive}
-          //   onFullscreen={(isFullscreen: boolean) => onFullscreen(isFullscreen)}
-          //   goToNextLesson={() => switchLesson(lesson.next_lesson.id)}
-          //   goToPreviousLesson={() => switchLesson(lesson.previous_lesson.id)}
-          //   onUpdateVideoProgress={(
-          //     videoId: number,
-          //     id: number,
-          //     lengthInSec: number,
-          //     currentTime: number,
-          //     mediaCategory: string
-          //   ) =>
-          //     onUpdateVideoProgress(
-          //       videoId,
-          //       id,
-          //       lengthInSec,
-          //       currentTime,
-          //       mediaCategory
-          //     )
-          //   }
-          //   styles={{
-          //     timerCursorBackground: utils.color,
-          //     beforeTimerCursorBackground: utils.color,
-          //     settings: {
-          //       cancel: { color: utils.color },
-          //       selectedOptionTextColor: utils.color,
-          //       separatorColor: styles.videoSettings.borderColor,
-          //       background: styles.videoSettings.backgroundColor,
-          //       optionsBorderColor: styles.videoSettings.borderColor,
-          //       unselectedOptionTextColor: styles.videoSettings.color,
-          //       save: { background: utils.color, color: 'white' },
-          //       downloadIcon: {
-          //         width: 20,
-          //         height: 20,
-          //         fill: utils.color
-          //       }
-          //     },
-          //     alert: {
-          //       titleTextColor: styles.videoSettings.color,
-          //       subtitleTextColor: styles.videoSettings.color,
-          //       background: styles.videoSettings.backgroundColor,
-          //       contactSupport: { color: styles.videoSettings.color },
-          //       reloadLesson: {
-          //         color: 'white',
-          //         background: utils.color
-          //       }
-          //     }
-          //   }}
-          // />
+          <Video
+            repeat={false}
+            paused={true}
+            type={videoType}
+            showControls={true}
+            youtubeId={lesson.youtube_video_id}
+            onRefresh={refresh}
+            live={!!item?.apiKey}
+            toSupport={toSupport}
+            ref={video}
+            onBack={onAndroidBack}
+            content={{
+              ...lesson,
+              lastWatchedPosInSec: lesson.last_watch_position_in_seconds,
+              lengthInSec: lesson.length_in_seconds,
+              thumbnailUrl: lesson.thumbnail_url,
+              videoId: lesson.vimeo_video_id,
+              signal: abortC.current.signal,
+              endTime: `${lesson.live_event_end_time} UTC`,
+              startTime: `${lesson.live_event_start_time} UTC`,
+              formatTime: formatTime,
+              nextLessonId: lesson.next_lesson?.id,
+              previousLessonId: lesson.previous_lesson?.id,
+              mp3s: createMp3sArray()
+            }}
+            connection={true}
+            maxWidth={undefined}
+            onEndLive={onEndLive}
+            onStartLive={onStartLive}
+            onFullscreen={(isFullscreen: boolean) => onFullscreen(isFullscreen)}
+            goToNextLesson={() => switchLesson(lesson.next_lesson.id)}
+            goToPreviousLesson={() => switchLesson(lesson.previous_lesson.id)}
+            onUpdateVideoProgress={(
+              videoId: number,
+              id: number,
+              lengthInSec: number,
+              currentTime: number,
+              mediaCategory: string
+            ) =>
+              onUpdateVideoProgress(
+                videoId,
+                id,
+                lengthInSec,
+                currentTime,
+                mediaCategory
+              )
+            }
+            styles={{
+              timerCursorBackground: utils.color,
+              beforeTimerCursorBackground: utils.color,
+              settings: {
+                cancel: { color: utils.color },
+                selectedOptionTextColor: utils.color,
+                separatorColor: styles.videoSettings.borderColor,
+                background: styles.videoSettings.backgroundColor,
+                optionsBorderColor: styles.videoSettings.borderColor,
+                unselectedOptionTextColor: styles.videoSettings.color,
+                save: { backgroundColor: utils.color, color: 'white' },
+                downloadIcon: {
+                  width: 20,
+                  height: 20,
+                  fill: utils.color
+                }
+              },
+              alert: {
+                titleTextColor: styles.videoSettings.color,
+                subtitleTextColor: styles.videoSettings.color,
+                background: styles.videoSettings.backgroundColor,
+                contactSupport: { color: styles.videoSettings.color },
+                reloadLesson: {
+                  color: 'white',
+                  background: utils.color
+                }
+              }
+            }}
+          />
         )
       )}
       <KeyboardAvoidingView
@@ -914,7 +960,7 @@ export const LessonPart: React.FC<Props> = ({
 
                       <Text style={styles.iconText}>Info</Text>
                     </TouchableOpacity>
-                    {contentType === 'play-along' && (
+                    {contentType === 'Play Along' && (
                       <TouchableOpacity
                         onPress={toggleVideoAudio}
                         style={styles.underCompleteTOpacities}

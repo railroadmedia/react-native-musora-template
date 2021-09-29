@@ -32,3 +32,9 @@ include ':react-native-rate'
 project(':react-native-rate').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-rate/android')
 include ':react-native-webview'
 project(':react-native-webview').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-webview/android')
+include ':rn-fetch-blob'
+project(':rn-fetch-blob').projectDir = new File(rootProject.projectDir, '../../node_modules/rn-fetch-blob/android')
+include ':react-native-google-cast'
+project(':react-native-google-cast').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-google-cast/android')
+include ':react-native-video'
+project(':react-native-video').projectDir = new File(rootProject.projectDir, '../../node_modules/react-native-video/android-exoplayer')
