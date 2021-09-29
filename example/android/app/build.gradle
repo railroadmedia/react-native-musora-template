@@ -201,6 +201,7 @@ dependencies {
     implementation project(':react-native-video')
     implementation project(':@react-native-community_netinfo')
     implementation project(':react-native-background-downloader')
+    implementation project(':react-native-android-keyboard-adjust')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
