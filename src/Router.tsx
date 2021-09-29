@@ -154,7 +154,6 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                     {props => <Catalogue {...props} />}
                   </Stack.Screen>
                 ))}
-
                 <Stack.Screen name='navigationMenu'>
                   {props => <NavigationMenu {...props} />}
                 </Stack.Screen>

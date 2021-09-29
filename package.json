@@ -149,7 +149,9 @@
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/stack": "^6.0.7",
+    "MusoraChat": "git+https://github.com/railroadmedia/MusoraChat.git",
     "react-native-add-calendar-event": "^4.0.0",
+    "react-native-android-keyboard-adjust": "^1.2.0",
     "react-native-device-info": "^8.1.5",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-crop-picker": "^0.36.2",
@@ -161,6 +163,7 @@
     "react-native-screens": "^3.6.0",
     "react-native-svg": "^12.1.1",
     "react-native-view-pdf": "^0.11.1",
-    "react-native-webview": "git+https://github.com/railroadmedia/react-native-webview.git"
+    "react-native-webview": "git+https://github.com/railroadmedia/react-native-webview.git",
+    "stream-chat": "^3.13.1"
   }
 }

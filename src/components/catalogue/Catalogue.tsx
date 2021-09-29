@@ -42,6 +42,7 @@ import { provider } from '../../services/catalogueSceneProvider.service';
 
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
+import { Live } from './Live';
 
 interface Props {
   route: RouteProp<ParamListBase>;
@@ -180,6 +181,7 @@ export const Catalogue: React.FC<Props> = ({
       ) : (
         <Text style={styles.sceneTitle}>{scene}</Text>
       )}
+      <Live />
       {!!recentlyViewed?.length ? (
         renderCarousel(recentlyViewed, 'Recently Viewed')
       ) : (

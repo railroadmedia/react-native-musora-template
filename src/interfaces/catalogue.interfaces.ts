@@ -1,11 +1,8 @@
-import type { Method } from './method.interfaces';
-
 export interface CatalogueState {
   all?: number[];
   newContent?: number[];
   inProgress?: number[];
   recentlyViewed?: number[];
-  method?: Method;
   refreshing: boolean;
   loadingMore: boolean;
 }
@@ -21,7 +18,6 @@ interface CatalogueCache {
   newContent?: number[];
   inProgress?: number[];
   recentlyViewed?: number[];
-  method?: Method;
 }
 
 interface CatalogueAction {
@@ -32,7 +28,6 @@ interface CatalogueAction {
   newContent?: { id: number }[];
   inProgress?: { id: number }[];
   recentlyViewed?: { id: number }[];
-  method?: Method;
   refreshing?: boolean;
   loadingMore?: boolean;
 }
