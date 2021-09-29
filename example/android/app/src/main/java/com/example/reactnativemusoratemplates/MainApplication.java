@@ -25,6 +25,12 @@ import com.swmansion.gesturehandler.react.RNGestureHandlerPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.rumax.reactnative.pdfviewer.PDFViewPackage;
+import com.reactnativerate.RNRatePackage;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
+import com.reactnative.googlecast.GoogleCastPackage;
+import com.brentvatne.react.ReactVideoPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -53,7 +59,11 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNScreensPackage());
           packages.add(new RNGestureHandlerPackage());
           packages.add(new PDFViewPackage());
-          
+          packages.add(new RNRatePackage());
+          packages.add(new RNCWebViewPackage());
+          packages.add(new RNFetchBlobPackage());
+          packages.add(new GoogleCastPackage());
+          packages.add(new ReactVideoPackage());
           return packages;
         }
 

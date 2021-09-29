@@ -1,5 +1,10 @@
 import type { Card } from './card.interfaces';
-import type { Comment, Lesson, Likes } from './lesson.interfaces';
+import type {
+  Comment,
+  Lesson,
+  LessonResponse,
+  Likes
+} from './lesson.interfaces';
 import type { Live } from './live.interfaces';
 import type { Level, Method, MethodCourse } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
@@ -18,6 +23,7 @@ import type {
 } from './studentFocus.interfaces';
 import type {
   CompletedResponse,
+  MediaSessionResponse,
   ResetProgressResponse,
   UpdateAvatarResponse,
   User,
@@ -76,6 +82,11 @@ export interface Call {
   }): Promise<Response>;
 }
 
+export interface ErrorResponse {
+  title: string;
+  message: string;
+}
+
 interface ProviderFunctionArgs {
   page?: number;
   filters?: string;
@@ -130,12 +141,7 @@ export interface ContentService {
     id: number,
     forDownload: boolean,
     signal: AbortSignal
-  ) => Promise<Lesson>;
-  getContentByUrl: (
-    mobile_app_url: string,
-    forDownload: boolean,
-    signal: AbortSignal
-  ) => Promise<Lesson>;
+  ) => Promise<LessonResponse>;
 }
 
 export interface UserService {
@@ -161,6 +167,20 @@ export interface UserService {
     currentSecond: number,
     mediaLengthSeconds: number
   ) => Promise<{}>;
+  updateUsersVideoProgress: (
+    id: number,
+    seconds: number,
+    lengthInSeconds: number,
+    media_id: number,
+    media_category: string,
+    media_type: string
+  ) => Promise<{}>;
+  getMediaSessionId: (
+    id: number,
+    content_id: number,
+    length_in_seconds: number,
+    media_category: string
+  ) => Promise<MediaSessionResponse>;
 }
 
 export interface MethodService {

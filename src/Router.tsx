@@ -30,7 +30,6 @@ import { Packs } from './components/packs/Packs';
 import { PackOverview } from './components/packs/PackOverview';
 import { ShowOverview } from './components/show/ShowOverview';
 import type { Show } from './interfaces/show.interfaces';
-import { NavigationMenu } from './common_components/NavigationMenu';
 import { Method } from './components/method/Method';
 import { CourseOverview } from './components/course/CourseOverview';
 import { StudentReview } from './components/forms/StudentReview';
@@ -38,7 +37,12 @@ import { AskQuestion } from './components/forms/AskQuestion';
 import { SubmitCollabVideo } from './components/forms/SubmitCollabVideo';
 import { LikeList } from './common_components/lesson/LikeList';
 import { Replies } from './common_components/lesson/Replies';
-import type { Comment } from './interfaces/lesson.interfaces';
+import type {
+  Comment,
+  Lesson,
+  LessonResponse
+} from './interfaces/lesson.interfaces';
+import { LessonPart } from './common_components/lesson/LessonPart';
 
 type Scenes =
   | 'home'
@@ -73,12 +77,15 @@ const Stack = createStackNavigator<{
   showOverview: {
     show: Show;
   };
-  navigationMenu: {
-    activeButton: string;
-  };
   courseOverview: {
     mobile_app_url: string;
     isMethod: boolean;
+  };
+  lessonPart: {
+    id: number;
+    parentId: number;
+    contentType: string;
+    item?: LessonResponse;
   };
   likeList: {
     commentId: number;
@@ -110,7 +117,8 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'packoverview',
       'studentreview',
       'askquestion',
-      'submitcollabvideo'
+      'submitcollabvideo',
+      'lesson'
     ];
     return titleExceptions.includes(title?.toLowerCase());
   }, []);
@@ -154,9 +162,6 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                     {props => <Catalogue {...props} />}
                   </Stack.Screen>
                 ))}
-                <Stack.Screen name='navigationMenu'>
-                  {props => <NavigationMenu {...props} />}
-                </Stack.Screen>
                 <Stack.Screen name='search' options={{ title: 'Search' }}>
                   {props => <Search {...props} />}
                 </Stack.Screen>
@@ -184,6 +189,9 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                   options={{ title: 'CourseOverview' }}
                 >
                   {props => <CourseOverview {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name='lessonPart' options={{ title: 'Lesson' }}>
+                  {props => <LessonPart {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name='packs'>
                   {props => <Packs {...props} />}

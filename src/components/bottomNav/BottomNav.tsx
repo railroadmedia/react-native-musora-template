@@ -13,6 +13,7 @@ import {
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
+import { NavigationMenu } from '../../common_components/NavigationMenu';
 
 interface Props {
   visibleOn: string[];
@@ -31,9 +32,11 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const scaleX = useRef(new Animated.Value(0));
   const translateY = useRef(new Animated.Value(300));
   const layouts = useRef<{ [key: string]: { x: number; width: number } }>({});
+  const navigationMenu = useRef<React.ElementRef<typeof NavigationMenu>>(null);
 
   const [selected, setSelected] = useState(0);
   const [position, setPosition] = useState<'absolute' | 'relative'>('absolute');
+  const [activeScene, setActiveScene] = useState('home');
 
   const { theme } = useContext(ThemeContext);
   let styles = useMemo(() => setStyle(theme), [theme]);
@@ -48,6 +51,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   useEffect(() => {
     navListener = addListener('state', () => {
       changeActiveBtn(getCurrentRoute().name);
+      setActiveScene(getCurrentRoute().name);
       setVisibility(visibleOn.includes(getCurrentRoute().name));
     });
     return navListener;
@@ -181,12 +185,11 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
           container: { padding: 20 },
           onPress: () => {
             changeActiveBtn?.('menu');
-            navigate('navigationMenu', {
-              activeButton: getCurrentRoute().name
-            });
+            navigationMenu.current?.toggle();
           }
         })}
       </View>
+      <NavigationMenu ref={navigationMenu} activeButton={activeScene} />
     </Animated.View>
   );
 };

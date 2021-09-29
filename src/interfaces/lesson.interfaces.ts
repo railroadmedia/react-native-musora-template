@@ -1,6 +1,7 @@
 import type { Card } from './card.interfaces';
 import type { Level, MethodCourse } from './method.interfaces';
 import type { PackBundle } from './packs.interfaces';
+import type { ErrorResponse } from './service.interfaces';
 
 export interface Lesson {
   assignments: Assignment[];
@@ -55,6 +56,8 @@ export interface Lesson {
   last_watch_position_in_seconds: number;
   apiKey?: string;
 }
+
+export interface LessonResponse extends Lesson, ErrorResponse {}
 
 export interface Assignment {
   id: number;
