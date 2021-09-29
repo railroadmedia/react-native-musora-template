@@ -199,6 +199,8 @@ dependencies {
     implementation project(':rn-fetch-blob')
     implementation project(':react-native-google-cast')
     implementation project(':react-native-video')
+    implementation project(':@react-native-community_netinfo')
+    implementation project(':react-native-background-downloader')
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion

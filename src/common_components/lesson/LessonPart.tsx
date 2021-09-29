@@ -21,7 +21,8 @@ import {
   KeyboardAvoidingView,
   Dimensions,
   StyleSheet,
-  ViewStyle
+  ViewStyle,
+  Modal
 } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -29,6 +30,7 @@ import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import Video from 'RNVideoEnhanced';
+import { Download_V2, DownloadResources } from 'RNDownload';
 
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import {
@@ -52,7 +54,8 @@ import {
 import type {
   Assignment,
   Lesson,
-  LessonResponse
+  LessonResponse,
+  Resource
 } from '../../interfaces/lesson.interfaces';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -65,7 +68,13 @@ import { RowCard } from '../../common_components/cards/RowCard';
 import { Soundslice, SoundsliceRefObj } from './Soundslice';
 import { LessonProgress } from './LessonProgress';
 import { ActionModal } from '../../common_components/modals/ActionModal';
-import { capitalizeFirstLetter, formatTime, getProgress } from './helpers';
+import {
+  capitalizeFirstLetter,
+  decideExtension,
+  formatTime,
+  getExtensionByType,
+  getProgress
+} from './helpers';
 import { userService } from '../../services/user.service';
 import type {
   CompletedResponse,
@@ -75,6 +84,10 @@ import type {
 interface SelectedAssignment extends Assignment {
   index?: number;
   progress: number;
+}
+
+interface ResourceWithExtension extends Resource {
+  wasWithoutExtension?: boolean;
 }
 
 interface Props {
@@ -105,6 +118,7 @@ export const LessonPart: React.FC<Props> = ({
   const [refreshing, setRefreshing] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showResourcesModal, setShowResourcesModal] = useState(false);
   const [videoType, setVideoType] = useState<'audio' | 'video'>('video');
   const [assignmentFSStyle, setAssignmentFSStyle] = useState<ViewStyle | null>(
     null
@@ -115,6 +129,7 @@ export const LessonPart: React.FC<Props> = ({
     number | undefined
   >(-1);
   const [progress, setProgress] = useState(0);
+  const [resourcesArr, setResourcesArr] = useState<ResourceWithExtension[]>([]);
 
   const { theme } = useContext(ThemeContext);
   const { isLandscape } = useContext(OrientationContext);
@@ -191,6 +206,7 @@ export const LessonPart: React.FC<Props> = ({
       if (contentType === 'Play Along') {
         setVideoType('audio');
       }
+      if (content.resources) createResourcesArr(content.resources);
       if (
         contentType !== 'song' &&
         !content.video_playback_endpoints &&
@@ -212,7 +228,38 @@ export const LessonPart: React.FC<Props> = ({
     return true;
   }, [assignmentFSStyle, selectedAssignment]);
 
-  const createResourcesArr = useCallback(() => {}, []);
+  const createResourcesArr = useCallback((lessonResources: Resource[]) => {
+    const extensions = ['mp3', 'pdf', 'zip'];
+
+    lessonResources.forEach((resource: Resource) => {
+      let extension = decideExtension(resource.resource_url);
+      resource.extension = extension;
+      if (!extensions.includes(extension)) {
+        fetch(resource.resource_url)
+          .then((res: any) => {
+            extension = getExtensionByType(res?.headers?.map['content-type']);
+            setResourcesArr(
+              lessonResources.map((r: Resource) =>
+                r.resource_id === resource.resource_id
+                  ? { ...r, extension, wasWithoutExtension: true }
+                  : r
+              )
+            );
+          })
+          .catch(() => {});
+      } else {
+        setResourcesArr(
+          lessonResources.map((r: Resource) =>
+            r.resource_id === resource.resource_id ? { ...r, extension } : r
+          )
+        );
+      }
+    });
+  }, []);
+
+  const toggleResourcesModal = useCallback(() => {
+    setShowResourcesModal(!showResourcesModal);
+  }, [showResourcesModal]);
 
   const createMp3sArray = () => {
     if (!lesson || contentType !== 'Play Along') return;
@@ -932,18 +979,42 @@ export const LessonPart: React.FC<Props> = ({
                       </Text>
                     </TouchableOpacity>
 
-                    {/* {contentType !== 'song' && !refreshing && (
+                    {contentType !== 'song' && !refreshing && lesson && (
                       <Download_V2
-                      
+                        entity={{
+                          id: lesson.id,
+                          comments: lesson.comments,
+                          content: contentService.getContentById(
+                            lesson.id,
+                            true,
+                            abortC.current.signal
+                          )
+                        }}
+                        styles={{
+                          touchable: { flex: 1 },
+                          iconDownloadColor: utils.color,
+                          activityIndicatorColor: utils.color,
+                          animatedProgressBackground: utils.color,
+                          textStatus: styles.iconText,
+                          alert: {
+                            alertTextMessageFontFamily: 'OpenSans',
+                            alertTouchableTextDeleteColor: 'white',
+                            alertTextTitleColor: styles.title.color,
+                            alertTextMessageColor: styles.title.color,
+                            alertTextTitleFontFamily: 'OpenSans-Bold',
+                            alertTouchableTextCancelColor: utils.color,
+                            alertTouchableDeleteBackground: utils.color,
+                            alertBackground: styles.container.backgroundColor,
+                            alertTouchableTextDeleteFontFamily: 'OpenSans-Bold',
+                            alertTouchableTextCancelFontFamily: 'OpenSans-Bold'
+                          }
+                        }}
                       />
-                    )} */}
+                    )}
                     {!!lesson?.resources?.length && (
                       <TouchableOpacity
                         style={styles.underCompleteTOpacities}
-                        onPress={
-                          () => {}
-                          // this.actionModal.toggleModal()
-                        }
+                        onPress={toggleResourcesModal}
                       >
                         {resources({ icon: coloredIcon })}
 
@@ -1150,6 +1221,39 @@ export const LessonPart: React.FC<Props> = ({
           <Text style={styles.contactSupportText}>CONTACT SUPPORT</Text>
         </TouchableOpacity>
       </ActionModal>
+      {lesson && (
+        <Modal
+          transparent={true}
+          visible={showResourcesModal}
+          onRequestClose={toggleResourcesModal}
+          supportedOrientations={['portrait', 'landscape']}
+          animationType='slide'
+        >
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={toggleResourcesModal}
+            style={styles.resourcesModal}
+          >
+            <View style={styles.resourcesModalContent}>
+              <DownloadResources
+                styles={{
+                  container: {
+                    backgroundColor: themeStyles[theme].background
+                  },
+                  touchableTextResourceNameFontFamily: 'OpenSans',
+                  touchableTextResourceExtensionFontFamily: 'OpenSans',
+                  touchableTextResourceCancelFontFamily: 'OpenSans',
+                  borderColor: themeStyles[theme].borderColor,
+                  color: themeStyles[theme].textColor
+                }}
+                resources={resourcesArr}
+                lessonTitle={lesson.title}
+                onClose={toggleResourcesModal}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </View>
   );
 };
@@ -1389,5 +1493,16 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       fontFamily: 'OpenSans',
       textDecorationLine: 'underline'
+    },
+    resourcesModal: {
+      backgroundColor: 'rgba(0, 0, 0, .8)',
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center'
+    },
+    resourcesModalContent: {
+      width: '100%',
+      maxHeight: 300,
+      alignSelf: 'flex-end'
     }
   });

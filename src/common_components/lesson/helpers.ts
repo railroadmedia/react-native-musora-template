@@ -32,3 +32,17 @@ export const formatTime = (seconds: number) => {
   m = m < 10 ? (h ? `0${m}` : `${m}`) : `${m}`;
   return h ? `${h}:${m}:${s}` : `${m}:${s}`;
 };
+
+export const decideExtension = (url: string): string => {
+  const lastDot = url.lastIndexOf('.');
+  const extension = url.substr(lastDot + 1).toLowerCase();
+
+  return extension;
+};
+
+export const getExtensionByType = (path: string): string => {
+  if (path === 'audio/mp3') return 'mp3';
+  if (path === 'application/pdf') return 'pdf';
+  if (path === 'application/zip') return 'zip';
+  return '';
+};
