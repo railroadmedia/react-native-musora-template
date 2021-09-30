@@ -23,32 +23,26 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { DoubleTapArea } from '../../common_components/lesson/DoubleTapArea';
+import type { SelectedAssignment } from './LessonPart';
 
 interface Props {
-  index: number;
-  title: string;
-  sheets: MusicSheet[];
-  timecode: number;
-  description: string;
+  assignment: SelectedAssignment;
   onSeek?: (timecode: number) => void;
   onCloseView: () => void;
+  onSheetDoubleTapped: (hide: boolean) => void;
 }
 
 export const Assignment: React.FC<Props> = ({
-  index,
-  title,
-  sheets,
-  timecode,
-  description,
+  assignment,
   onSeek,
-  onCloseView
+  onCloseView,
+  onSheetDoubleTapped
 }) => {
   const [hideTitles, setHideTitles] = useState(false);
   const [width, setWidth] = useState(Dimensions.get('screen').width);
-  const scrollViewRef = useRef<ScrollView>(null);
 
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);
@@ -63,8 +57,8 @@ export const Assignment: React.FC<Props> = ({
 
   const renderDots = (i: number) => (
     <View style={styles.dots}>
-      {!!sheets &&
-        sheets?.map((dot, index) => (
+      {!!assignment.sheet_music_image_url &&
+        assignment.sheet_music_image_url?.map((dot, index) => (
           <View
             key={index}
             style={[
@@ -80,11 +74,12 @@ export const Assignment: React.FC<Props> = ({
 
   const onDoubleTapSheet = useCallback(() => {
     setHideTitles(!hideTitles);
-  }, [hideTitles]);
+    onSheetDoubleTapped(!hideTitles);
+  }, [hideTitles, onSheetDoubleTapped]);
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
-      <ScrollView scrollEnabled={true} style={{ flex: 1 }} ref={scrollViewRef}>
+      <ScrollView scrollEnabled={true} style={{ flex: 1 }}>
         <TouchableOpacity
           onPress={onCloseView}
           style={[hideTitles ? { padding: 20 } : styles.xBtn]}
@@ -100,10 +95,12 @@ export const Assignment: React.FC<Props> = ({
         {!hideTitles && (
           <>
             <View style={styles.titleContainer}>
-              <Text style={styles.section}>ASSIGNMENT# {index + 1}</Text>
-              <Text style={styles.title}>{title}</Text>
-              {Array.isArray(timecode) ? (
-                timecode.map(tc => (
+              <Text style={styles.section}>
+                ASSIGNMENT# {assignment.index + 1}
+              </Text>
+              <Text style={styles.title}>{assignment.title}</Text>
+              {Array.isArray(assignment.timecode) ? (
+                assignment.timecode.map(tc => (
                   <TouchableOpacity
                     key={tc}
                     onPress={() => onSeek?.(tc)}
@@ -117,43 +114,72 @@ export const Assignment: React.FC<Props> = ({
                     </Text>
                   </TouchableOpacity>
                 ))
-              ) : !!timecode ? (
+              ) : !!assignment.timecode ? (
                 <TouchableOpacity
-                  onPress={() => onSeek?.(timecode)}
+                  onPress={() => onSeek?.(assignment.timecode)}
                   style={styles.timeCodeBtn}
                 >
                   <Text style={styles.timeCode}>
                     SKIP VIDEO TO{' '}
-                    {timecode < 36000
-                      ? new Date(timecode * 1000).toISOString().substr(14, 5)
-                      : new Date(timecode * 1000).toISOString().substr(11, 8)}
+                    {assignment.timecode < 36000
+                      ? new Date(assignment.timecode * 1000)
+                          .toISOString()
+                          .substr(14, 5)
+                      : new Date(assignment.timecode * 1000)
+                          .toISOString()
+                          .substr(11, 8)}
                   </Text>
                 </TouchableOpacity>
               ) : null}
             </View>
 
             <Text style={styles.description}>
-              {description?.replace(/<(.*?)>/g, '')}
+              {assignment.description?.replace(/<(.*?)>/g, '')}
             </Text>
           </>
         )}
-
-        <ScrollView
-          horizontal={true}
-          style={{ flex: 1 }}
-          pagingEnabled={true}
-          removeClippedSubviews={false}
-          showsHorizontalScrollIndicator={false}
-        >
-          <View
-            style={{
-              width: width * sheets?.length,
-              flexDirection: 'row'
-            }}
+        {!!assignment.sheet_music_image_url && (
+          <ScrollView
+            horizontal={true}
+            style={{ flex: 1 }}
+            pagingEnabled={true}
+            removeClippedSubviews={false}
+            showsHorizontalScrollIndicator={false}
           >
-            {!!sheets &&
-              sheets?.map((sheet: MusicSheet, i: number) => {
-                if (sheet.value.indexOf('.pdf') < 0) {
+            <View
+              style={{
+                width: width * assignment.sheet_music_image_url?.length,
+                flexDirection: 'row'
+              }}
+            >
+              {assignment.sheet_music_image_url?.map(
+                (sheet: MusicSheet, i: number) => {
+                  if (sheet.value.indexOf('.pdf') < 0) {
+                    return (
+                      <DoubleTapArea
+                        key={i}
+                        styles={[styles.sheetContainer, { width }]}
+                        onDoubleTap={onDoubleTapSheet}
+                      >
+                        <View
+                          style={{
+                            aspectRatio: sheet.whRatio,
+                            backgroundColor: 'transparent',
+                            marginHorizontal: 10,
+                            width: width - 20
+                          }}
+                        >
+                          <SvgUri
+                            uri={sheet.value}
+                            width={'100%'}
+                            height={'100%'}
+                          />
+                        </View>
+                        {assignment.sheet_music_image_url?.length !== 1 &&
+                          renderDots(i)}
+                      </DoubleTapArea>
+                    );
+                  }
                   return (
                     <DoubleTapArea
                       key={i}
@@ -162,50 +188,29 @@ export const Assignment: React.FC<Props> = ({
                     >
                       <View
                         style={{
-                          aspectRatio: sheet.whRatio,
+                          aspectRatio: 1 / Math.sqrt(2),
                           backgroundColor: 'transparent',
                           marginHorizontal: 10,
-                          width: width - 20
+                          width: true ? width - 20 : width // TBD: replace true with this.context.isConnected
                         }}
                       >
-                        <SvgUri
-                          uri={sheet.value}
-                          width={'100%'}
-                          height={'100%'}
+                        <View style={styles.container} />
+                        <PDFView
+                          resourceType={true ? 'url' : 'file'} // TBD: replace true with this.context.isConnected
+                          resource={sheet.value}
+                          fadeInDuration={250.0}
+                          style={styles.pdf}
                         />
                       </View>
-                      {sheets?.length !== 1 && renderDots(i)}
+                      {assignment.sheet_music_image_url?.length !== 1 &&
+                        renderDots(i)}
                     </DoubleTapArea>
                   );
                 }
-                return (
-                  <DoubleTapArea
-                    key={i}
-                    styles={[styles.sheetContainer, { width }]}
-                    onDoubleTap={onDoubleTapSheet}
-                  >
-                    <View
-                      style={{
-                        aspectRatio: 1 / Math.sqrt(2),
-                        backgroundColor: 'transparent',
-                        marginHorizontal: 10,
-                        width: true ? width - 20 : width // TBD: replace true with this.context.isConnected
-                      }}
-                    >
-                      <View style={styles.container} />
-                      <PDFView
-                        resourceType={true ? 'url' : 'file'} // TBD: replace true with this.context.isConnected
-                        resource={sheet.value}
-                        fadeInDuration={250.0}
-                        style={styles.pdf}
-                      />
-                    </View>
-                    {sheets?.length !== 1 && renderDots(i)}
-                  </DoubleTapArea>
-                );
-              })}
-          </View>
-        </ScrollView>
+              )}
+            </View>
+          </ScrollView>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -288,6 +293,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     sheetContainer: {
       flex: 1,
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+      backgroundColor: 'white'
     }
   });

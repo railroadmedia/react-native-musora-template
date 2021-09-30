@@ -73,7 +73,8 @@ import {
   decideExtension,
   formatTime,
   getExtensionByType,
-  getProgress
+  getProgress,
+  getSheetWHRatio
 } from './helpers';
 import { userService } from '../../services/user.service';
 import type {
@@ -81,8 +82,8 @@ import type {
   ResetProgressResponse
 } from 'src/interfaces/user.interfaces';
 
-interface SelectedAssignment extends Assignment {
-  index?: number;
+export interface SelectedAssignment extends Assignment {
+  index: number;
   progress: number;
 }
 
@@ -180,54 +181,6 @@ export const LessonPart: React.FC<Props> = ({
     };
   }, [id]);
 
-  const getLesson = async (lessonId: number) => {
-    let content: LessonResponse;
-    if (item) {
-      content = item;
-    } else {
-      content = await contentService.getContentById(
-        lessonId,
-        false,
-        abortC.current.signal
-      );
-      if (content.title && content.message) {
-        return alert.current?.toggle(content.title, content.message);
-      }
-
-      setLesson(content);
-      setProgress(getProgress(content.user_progress));
-      setIncompleteLessonId(
-        content.type === 'course-part'
-          ? content.next_lesson.id
-          : content.parent?.next_lesson?.id
-      );
-      addCards(content.related_lessons);
-      setRefreshing(false);
-      if (contentType === 'Play Along') {
-        setVideoType('audio');
-      }
-      if (content.resources) createResourcesArr(content.resources);
-      if (
-        contentType !== 'song' &&
-        !content.video_playback_endpoints &&
-        !lesson?.youtube_video_id
-      ) {
-        alert.current?.toggle(
-          `We're sorry, there was an issue loading this video, try reloading the lesson.`,
-          `If the problem persists please contact support.`
-        );
-      }
-    }
-  };
-
-  const onAndroidBack = useCallback(() => {
-    if (assignmentFSStyle) setAssignmentFSStyle(null);
-    else if (selectedAssignment) setSelectedAssignment(null);
-    else if (fullscreen) video.current?.handleBack();
-    else goBack();
-    return true;
-  }, [assignmentFSStyle, selectedAssignment]);
-
   const createResourcesArr = useCallback((lessonResources: Resource[]) => {
     const extensions = ['mp3', 'pdf', 'zip'];
 
@@ -256,6 +209,56 @@ export const LessonPart: React.FC<Props> = ({
       }
     });
   }, []);
+
+  const getLesson = useCallback(
+    async (lessonId: number) => {
+      let content: LessonResponse;
+      if (item) {
+        content = item;
+      } else {
+        content = await contentService.getContentById(
+          lessonId,
+          false,
+          abortC.current.signal
+        );
+        if (content.title && content.message) {
+          return alert.current?.toggle(content.title, content.message);
+        }
+        setLesson(content);
+        setProgress(getProgress(content.user_progress));
+        setIncompleteLessonId(
+          content.type === 'course-part'
+            ? content.next_lesson.id
+            : content.parent?.next_lesson?.id
+        );
+        addCards(content.related_lessons);
+        setRefreshing(false);
+        if (contentType === 'Play Along') {
+          setVideoType('audio');
+        }
+        if (content.resources) createResourcesArr(content.resources);
+        if (
+          contentType !== 'song' &&
+          !content.video_playback_endpoints &&
+          !content?.youtube_video_id
+        ) {
+          alert.current?.toggle(
+            `We're sorry, there was an issue loading this video, try reloading the lesson.`,
+            `If the problem persists please contact support.`
+          );
+        }
+      }
+    },
+    [alert, contentType, createResourcesArr, item, addCards]
+  );
+
+  const onAndroidBack = useCallback(() => {
+    if (assignmentFSStyle) setAssignmentFSStyle(null);
+    else if (selectedAssignment) setSelectedAssignment(null);
+    else if (fullscreen) video.current?.handleBack();
+    else goBack();
+    return true;
+  }, [assignmentFSStyle, selectedAssignment, fullscreen, goBack]);
 
   const toggleResourcesModal = useCallback(() => {
     setShowResourcesModal(!showResourcesModal);
@@ -300,7 +303,7 @@ export const LessonPart: React.FC<Props> = ({
 
     setRefreshing(true);
     getLesson(lesson.id);
-  }, [lesson?.id]);
+  }, [lesson?.id, getLesson]);
 
   const renderTagsDependingOnContentType = useCallback(() => {
     const {
@@ -361,7 +364,7 @@ export const LessonPart: React.FC<Props> = ({
       like_count: is_liked_by_current_user ? like_count - 1 : like_count + 1,
       is_liked_by_current_user: !is_liked_by_current_user
     });
-  }, [lesson?.id, lesson?.is_liked_by_current_user, lesson?.like_count]);
+  }, [lesson]);
 
   const toggleMyList = useCallback(() => {
     if (!lesson) return;
@@ -376,7 +379,7 @@ export const LessonPart: React.FC<Props> = ({
       ...lesson,
       is_added_to_primary_playlist: !lesson.is_added_to_primary_playlist
     });
-  }, [lesson?.is_added_to_primary_playlist, lesson?.id, removeModalRef]);
+  }, [lesson, removeModalRef]);
 
   const toggleVideoAudio = useCallback(() => {
     setVideoType(videoType === 'audio' ? 'video' : 'audio');
@@ -384,11 +387,14 @@ export const LessonPart: React.FC<Props> = ({
   }, [videoType]);
 
   const selectAssignment = useCallback(
-    (assignment: Assignment, index: number) => {
+    async (assignment: Assignment, index: number) => {
       setSelectedAssignment({
         ...assignment,
         index,
-        progress: getProgress(assignment.user_progress)
+        progress: getProgress(assignment.user_progress),
+        sheet_music_image_url: assignment.sheet_music_image_url
+          ? await getSheetWHRatio(assignment.sheet_music_image_url)
+          : undefined
       });
     },
     []
@@ -407,17 +413,21 @@ export const LessonPart: React.FC<Props> = ({
     } else {
       toggleMyList();
     }
-  }, [removeModalRef, lesson?.is_added_to_primary_playlist]);
+  }, [removeModalRef, lesson?.is_added_to_primary_playlist, toggleMyList]);
 
   const toggleShowInfo = useCallback(() => {
     setShowInfo(!showInfo);
   }, [showInfo]);
 
-  const switchLesson = useCallback((lessonId: number) => {
-    setSelectedAssignment(null);
-    setRefreshing(true);
-    getLesson(lessonId);
-  }, []);
+  const switchLesson = useCallback(
+    (lessonId: number) => {
+      setSelectedAssignment(null);
+      setShowInfo(false);
+      setRefreshing(true);
+      getLesson(lessonId);
+    },
+    [getLesson]
+  );
 
   const goToLessons = useCallback(() => {
     if (!lesson) return;
@@ -450,7 +460,13 @@ export const LessonPart: React.FC<Props> = ({
     if (incompleteLessonId) {
       getLesson(incompleteLessonId);
     }
-  }, [completeLessonPage, completeOverviewPage, lesson, incompleteLessonId]);
+  }, [
+    completeLessonPage,
+    completeOverviewPage,
+    lesson,
+    incompleteLessonId,
+    getLesson
+  ]);
 
   const goToMarket = useCallback(() => {
     Rate.rate(
@@ -480,30 +496,6 @@ export const LessonPart: React.FC<Props> = ({
       ],
       { cancelable: false }
     );
-
-  const onLessonProgressBtnPress = useCallback(() => {
-    if (progress === 100) {
-      resetModalRef.current?.toggle(
-        'Hold your horses...',
-        `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
-      );
-    } else {
-      onComplete();
-    }
-  }, [progress, resetModalRef]);
-
-  const onCompleteAssignment = useCallback(() => {
-    if (selectedAssignment) {
-      if (selectedAssignment.progress !== 100) {
-        onComplete(selectedAssignment.id);
-      } else {
-        resetModalRef.current?.toggle(
-          'Hold your horses...',
-          `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
-        );
-      }
-    }
-  }, [selectedAssignment, resetModalRef]);
 
   const onComplete = useCallback(
     async (assignmentId?: number) => {
@@ -576,9 +568,34 @@ export const LessonPart: React.FC<Props> = ({
       lesson,
       overviewCompleteText,
       progress,
-      selectedAssignment
+      selectedAssignment,
+      showRatingModal
     ]
   );
+
+  const onCompleteAssignment = useCallback(() => {
+    if (selectedAssignment) {
+      if (selectedAssignment.progress !== 100) {
+        onComplete(selectedAssignment.id);
+      } else {
+        resetModalRef.current?.toggle(
+          'Hold your horses...',
+          `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+        );
+      }
+    }
+  }, [selectedAssignment, resetModalRef, onComplete]);
+
+  const onLessonProgressBtnPress = useCallback(() => {
+    if (progress === 100) {
+      resetModalRef.current?.toggle(
+        'Hold your horses...',
+        `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+      );
+    } else {
+      onComplete();
+    }
+  }, [progress, resetModalRef, onComplete]);
 
   const resetProgress = useCallback(async () => {
     if (!lesson) return;
@@ -618,17 +635,17 @@ export const LessonPart: React.FC<Props> = ({
     [video]
   );
 
-  const toSupport = useCallback(() => {
-    alert.current?.toggle();
-    togglePausedVideo();
-    navigate('support');
-  }, []);
-
   const togglePausedVideo = useCallback(() => {
     if (video) {
       video.current?.togglePaused(true, true);
     }
   }, [video]);
+
+  const toSupport = useCallback(() => {
+    alert.current?.toggle();
+    togglePausedVideo();
+    navigate('support');
+  }, [alert, togglePausedVideo, navigate]);
 
   const onEndLive = useCallback(() => {
     if (lesson) {
@@ -636,7 +653,7 @@ export const LessonPart: React.FC<Props> = ({
         setLesson({ ...lesson, isLive: false });
       }, 15 * 60000);
     }
-  }, []);
+  }, [lesson]);
 
   const onStartLive = useCallback(() => {
     if (lesson) {
@@ -644,12 +661,12 @@ export const LessonPart: React.FC<Props> = ({
         setLesson({ ...lesson, isLive: true });
       }, 15 * 60000);
     }
-  }, []);
+  }, [lesson]);
 
   const onUpdateVideoProgress = useCallback(
     async (
       videoId: number,
-      id: number,
+      contentId: number,
       lengthInSec: number,
       currentTime: number,
       mediaCategory: string
@@ -658,14 +675,14 @@ export const LessonPart: React.FC<Props> = ({
         (
           await userService.getMediaSessionId(
             videoId,
-            id,
+            contentId,
             lengthInSec,
             mediaCategory
           )
         )?.session_id?.id,
         currentTime,
         lengthInSec,
-        id,
+        contentId,
         mediaCategory,
         'video'
       );
@@ -673,27 +690,42 @@ export const LessonPart: React.FC<Props> = ({
     []
   );
 
-  const onFullscreen = useCallback((isFullscreen: boolean) => {
-    setFullscreen(isFullscreen);
-    setTimeout(
-      () =>
-        StatusBar.setBarStyle(
-          utils.isiOS
-            ? 'light-content'
-            : theme === 'dark'
-            ? 'light-content'
-            : 'dark-content'
-        ),
-      500
-    );
-  }, []);
+  const onFullscreen = useCallback(
+    (isFullscreen: boolean) => {
+      setFullscreen(isFullscreen);
+      setTimeout(
+        () =>
+          StatusBar.setBarStyle(
+            utils.isiOS
+              ? 'light-content'
+              : theme === 'DARK'
+              ? 'light-content'
+              : 'dark-content'
+          ),
+        500
+      );
+    },
+    [theme]
+  );
 
   const onReloadBtnPressed = useCallback(() => {
     refresh();
     alert.current?.toggle();
-  }, [alert]);
+  }, [alert, refresh]);
 
-  let SafeView = assignmentFSStyle ? SafeAreaView : View;
+  const onSheetDoubleTapped = useCallback((hide: boolean) => {
+    setAssignmentFSStyle(
+      hide
+        ? {
+            zIndex: 10,
+            width: '100%',
+            position: 'absolute',
+            top: 0,
+            bottom: 0
+          }
+        : null
+    );
+  }, []);
 
   const flRefreshControl = (
     <RefreshControl
@@ -923,7 +955,7 @@ export const LessonPart: React.FC<Props> = ({
         )
       )}
       <KeyboardAvoidingView
-        style={styles.container}
+        style={[styles.container, { ...assignmentFSStyle }]}
         behavior={utils.isiOS ? 'padding' : undefined}
       >
         <View style={{ flex: 1 }}>
@@ -1093,7 +1125,7 @@ export const LessonPart: React.FC<Props> = ({
                 )}
               </ScrollView>
               {!!selectedAssignment && (
-                <SafeView
+                <SafeAreaView
                   edges={['top', 'bottom']}
                   style={[
                     styles.asssignmentContainer,
@@ -1101,13 +1133,10 @@ export const LessonPart: React.FC<Props> = ({
                   ]}
                 >
                   <AssignmentComponent
-                    index={0}
-                    title={selectedAssignment.title}
-                    sheets={selectedAssignment.sheet_music_image_url}
-                    timecode={selectedAssignment.timecode}
-                    description={selectedAssignment.description}
+                    assignment={selectedAssignment}
                     onSeek={onSeek}
                     onCloseView={onAndroidBack}
+                    onSheetDoubleTapped={onSheetDoubleTapped}
                   />
 
                   {!assignmentFSStyle && (
@@ -1144,7 +1173,7 @@ export const LessonPart: React.FC<Props> = ({
                       </TouchableOpacity>
                     </View>
                   )}
-                </SafeView>
+                </SafeAreaView>
               )}
             </>
           ) : (
@@ -1179,13 +1208,13 @@ export const LessonPart: React.FC<Props> = ({
         )}
       <ActionModal
         ref={removeModalRef}
-        btnText='REMOVE'
+        primaryBtnText='REMOVE'
         onAction={toggleMyList}
         onCancel={() => removeModalRef.current?.toggle('', '')}
       />
       <ActionModal
         ref={resetModalRef}
-        btnText='RESET'
+        primaryBtnText='RESET'
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle('', '')}
       />
@@ -1194,25 +1223,23 @@ export const LessonPart: React.FC<Props> = ({
           <ActionModal
             ref={completeLessonPage}
             icon={LessonComplete({ icon: { height: 140, width: 200 } })}
-            btnText={'START NEXT LESSON'}
+            primaryBtnText={'START NEXT LESSON'}
             onAction={goToNextLesson}
-            onCancel={() => completeLessonPage.current?.toggle('', '')}
           />
 
           <ActionModal
             ref={completeOverviewPage}
             icon={CourseComplete({ icon: { height: 140, width: 200 } })}
             onAction={goToLessons}
-            btnText={`VIEW MORE ${
+            primaryBtnText={`VIEW MORE ${
               contentType === 'coach-stream'
                 ? 'LESSON'
                 : capitalizeFirstLetter(contentType).toUpperCase()
             }${contentType === 'Student Focus' ? '' : 'S'}`}
-            onCancel={() => completeOverviewPage.current?.toggle('', '')}
           />
         </>
       )}
-      <ActionModal ref={alert} onCancel={() => alert.current?.toggle()}>
+      <ActionModal ref={alert}>
         <TouchableOpacity style={styles.reloadBtn} onPress={onReloadBtnPressed}>
           <Text style={styles.reloadBtnText}>RELOAD LESSON</Text>
         </TouchableOpacity>

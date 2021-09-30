@@ -1,3 +1,6 @@
+import type { MusicSheet } from '../../interfaces/lesson.interfaces';
+import { Image } from 'react-native';
+
 export const parseXpValue = function (xp: number): string {
   if (xp >= 100000 && xp < 1000000) {
     return Math.round(xp / 1000) + 'K';
@@ -45,4 +48,63 @@ export const getExtensionByType = (path: string): string => {
   if (path === 'application/pdf') return 'pdf';
   if (path === 'application/zip') return 'zip';
   return '';
+};
+
+export const getSheetWHRatio = async (
+  sheets: MusicSheet[]
+): Promise<MusicSheet[]> => {
+  let assignPromises = [];
+  let svgs: MusicSheet[] = [];
+  let nsvgs: MusicSheet[] = [];
+  sheets.map(sheet => {
+    if (sheet.value.includes('.pdf')) return;
+    if (sheet.value.includes('.svg')) svgs.push({ ...sheet });
+    else nsvgs.push({ ...sheet });
+  });
+  if (svgs.length) {
+    let a: Promise<MusicSheet[]> = new Promise(async res => {
+      let vbPromises: Promise<Response>[] = [];
+      svgs.map(s => vbPromises.push(fetch(s.value)));
+      (await Promise.all(vbPromises)).map(async (vbResp: any, i: number) => {
+        let vbArr;
+        try {
+          vbArr = vbResp._bodyText
+            .split('viewBox="')[1]
+            .split('" ')[0]
+            .split(' ');
+        } catch (e) {
+          vbArr = (await vbResp.text())
+            .split('viewBox="')[1]
+            .split('" ')[0]
+            .split(' ');
+        }
+        svgs[i].whRatio = vbArr[2] / vbArr[3];
+        if (i === svgs.length - 1) return res(svgs);
+      });
+    });
+    // a.then((ares:MusicSheet[]) => assignPromises.push([...ares]));
+    // let b:MusicSheet[] = await a;
+    assignPromises.push(a);
+  }
+  if (nsvgs.length) {
+    nsvgs.map(ns => {
+      let c: Promise<MusicSheet[]> = new Promise(res => {
+        Image.getSize(
+          ns.value,
+          (w, h) => {
+            ns.whRatio = w / h;
+            res(nsvgs);
+          },
+          e => {
+            ns.whRatio = 1;
+            res(nsvgs);
+          }
+        );
+      });
+      assignPromises.push(c);
+    });
+  }
+  let res = (await Promise.all(assignPromises)).flat();
+  console.log('res', res);
+  return res;
 };
