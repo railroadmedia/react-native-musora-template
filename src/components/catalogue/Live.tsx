@@ -17,6 +17,7 @@ import { plus, pswdVisible, x, addToCalendar } from '../../images/svgs';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../..';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { CountDown } from '../../common_components/CountDown';
 
 const { watchersListener } = require('MusoraChat');
 
@@ -44,7 +45,6 @@ export const Live: React.FC = () => {
   const removeWatchersListener = useRef<Function>();
   const calendarModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const calendarErrorRef = useRef<React.ElementRef<typeof ActionModal>>(null);
-  const tremRef = useRef<TextInput>(null);
 
   useEffect(() => {
     isMounted.current = true;
@@ -59,10 +59,7 @@ export const Live: React.FC = () => {
           liveRes.userId,
           liveRes.token,
           (viewers: number) => setLive({ ...liveRes, viewersNo: viewers })
-        ).then((rwl: Function) => {
-          removeWatchersListener.current = rwl;
-          if (!liveRes.isLive) handleCountdown(liveRes.live_event_start_time);
-        });
+        ).then((rwl: Function) => (removeWatchersListener.current = rwl));
       }
     });
     return () => {
@@ -71,25 +68,6 @@ export const Live: React.FC = () => {
       removeWatchersListener.current?.();
     };
   }, []);
-
-  const handleCountdown = (time?: string) => {
-    let trem = Math.floor(
-      (new Date(`${time} UTC`).getTime() - new Date().getTime()) / 1000
-    );
-    setInterval(
-      () => tremRef.current?.setNativeProps({ text: formatTrem(--trem) }),
-      1000
-    );
-  };
-
-  const formatTrem = (seconds: number) => {
-    let hours: number | string = Math.floor(seconds / 3600);
-    let minutes: number | string = Math.floor((seconds -= hours * 3600) / 60);
-    seconds -= minutes * 60;
-    return `${hours < 10 ? 0 : ''}${hours} : ${
-      minutes < 10 ? 0 : ''
-    }${minutes} : ${seconds < 10 ? 0 : ''}${seconds}`;
-  };
 
   const toggleMyList = () =>
     setLive(l => ({
@@ -126,50 +104,8 @@ export const Live: React.FC = () => {
         />
 
         {!isLive && (
-          <View
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              backgroundColor: 'rgba(0,0,0,0.7)',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            <View>
-              <TextInput
-                editable={false}
-                ref={tremRef}
-                style={{
-                  color: 'white',
-                  fontFamily: 'RobotoCondensed-Regular',
-                  fontSize: 40,
-                  fontWeight: '700'
-                }}
-              />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between'
-                }}
-              >
-                {['HOURS', 'MINUTES', 'SECONDS'].map((t, i) => (
-                  <Text
-                    key={t}
-                    style={{
-                      color: 'white',
-                      fontFamily: 'RobotoCondensed-Regular',
-                      fontSize: 10,
-                      fontWeight: '700',
-                      flex: 1,
-                      textAlign: i > 1 ? 'right' : i ? 'center' : 'left'
-                    }}
-                  >
-                    {t}
-                  </Text>
-                ))}
-              </View>
-            </View>
+          <View style={styles.countDownContainer}>
+            <CountDown startTime={startTime} />
           </View>
         )}
       </TouchableOpacity>
@@ -263,5 +199,14 @@ const setStyle = (theme: string, current = themeStyles[theme]) =>
       fontSize: utils.figmaFontSizeScaler(11),
       fontWeight: '400',
       color: current.contrastTextColor
+    },
+    countDownContainer: {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      backgroundColor: 'rgba(0,0,0,0.7)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row'
     }
   });
