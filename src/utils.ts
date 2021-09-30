@@ -29,6 +29,8 @@ class Utils implements UtilsInterface {
   navigationAnimationSpeed = 250;
   fallbackAvatar =
     'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
+  fallbackThumb =
+    'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
 
   private _color: {
     [brand: string]: 'rgba(11, 118, 219, 1)' | 'rgba(251, 27, 47, 1)';

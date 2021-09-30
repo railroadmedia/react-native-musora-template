@@ -6,7 +6,7 @@ export const liveService: LiveService = {
     return call({
       url: `/musora-api/live-event?timezone=${
         Intl.DateTimeFormat().resolvedOptions().timeZone
-      }`,
+      }&forced-content-id=306545`, //&forced-content-id=306509
       signal
     });
   }

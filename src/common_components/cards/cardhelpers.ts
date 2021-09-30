@@ -1,4 +1,5 @@
 import { Dimensions } from 'react-native';
+import { utils } from '../../utils';
 import type { Card } from '../../interfaces/card.interfaces';
 
 const contentTypes = [
@@ -19,9 +20,6 @@ const contentTypes = [
   'coach-stream'
 ];
 
-const fallbackThumb =
-  'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
-
 const secondsToHms = (d: number | string | undefined): string => {
   if (d) {
     d = Number(d);
@@ -40,7 +38,7 @@ const dateToLocaleString = function (date: Date, options: any): string {
 };
 
 export const getImageUri = function (
-  thumbUri = fallbackThumb,
+  thumbUri = utils.fallbackThumb,
   published_on: string,
   type: string
 ) {
