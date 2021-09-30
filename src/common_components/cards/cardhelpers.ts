@@ -171,7 +171,7 @@ export const getContentType = function (
       break;
     case 'learning-path-lesson':
       contentType = 'method';
-      route = 'courseMethodLesson';
+      route = 'lessonPart';
       break;
     case 'course':
       contentType = 'course';

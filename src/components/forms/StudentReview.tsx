@@ -84,7 +84,7 @@ export const StudentReview: React.FC<Props> = () => {
   const [nextDisabled, setNextDisabled] = useState(false);
   const [experienceTitle, setExperienceTitle] = useState('Beginner');
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);

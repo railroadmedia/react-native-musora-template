@@ -73,7 +73,7 @@ export const CourseOverview: React.FC<Props> = ({
   const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -414,14 +414,14 @@ export const CourseOverview: React.FC<Props> = ({
 
         <ActionModal
           ref={removeModalRef}
-          btnText='REMOVE'
+          primaryBtnText='REMOVE'
           onAction={addToMyList}
           onCancel={() => removeModalRef.current?.toggle('', '')}
         />
 
         <ActionModal
           ref={resetModalRef}
-          btnText='RESET'
+          primaryBtnText='RESET'
           onAction={resetProgress}
           onCancel={() => resetModalRef.current?.toggle('', '')}
         />

@@ -59,7 +59,7 @@ export const SeeAll: React.FC<Props> = ({
 
   const { addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;

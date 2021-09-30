@@ -60,7 +60,7 @@ export const Catalogue: React.FC<Props> = ({
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const [
     { recentlyViewed, inProgress, newContent, all, loadingMore, refreshing },

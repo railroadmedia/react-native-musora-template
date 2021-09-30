@@ -125,13 +125,13 @@ export const CardIcon: React.FC<Props> = ({
           })}
       <ActionModal
         ref={removeModalRef}
-        btnText='REMOVE'
+        primaryBtnText='REMOVE'
         onAction={removeFromMyList}
         onCancel={() => removeModalRef.current?.toggle('', '')}
       />
       <ActionModal
         ref={resetModalRef}
-        btnText='RESET'
+        primaryBtnText='RESET'
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle('', '')}
       />
@@ -140,7 +140,7 @@ export const CardIcon: React.FC<Props> = ({
         icon={addToCalendar({
           icon: { height: 128, width: 300, fill: utils.color }
         })}
-        btnText='ADD TO CALENDAR'
+        primaryBtnText='ADD TO CALENDAR'
         onAction={addLessonToCalendar}
         onCancel={() => calendarModalRef.current?.toggle('', '')}
       />

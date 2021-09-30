@@ -14,7 +14,7 @@ export const Notification: React.FC<Props> = ({
   onNotificationThreeDotsMenu
 }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>

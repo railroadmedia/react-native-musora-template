@@ -40,7 +40,7 @@ export const RowCard: React.FC<Props> = props => {
   const item: Card = cards[id];
 
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {
     if (onNavigate) return onNavigate?.();

@@ -17,15 +17,18 @@ export const DoubleTapArea: React.FC<Props> = ({
 
   const onTap = useCallback(() => {
     clickCount.current++;
-    if (clickCount.current == 2) {
-      if (timeout.current) clearTimeout(timeout.current);
+    if (clickCount.current === 2) {
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
       onDoubleTap();
+      clickCount.current = 0;
     } else {
       timeout.current = setTimeout(() => {
         clickCount.current = 0;
       }, 300);
     }
-  }, [clickCount]);
+  }, [onDoubleTap]);
 
   return (
     <TouchableOpacity onPress={onTap} style={styles}>

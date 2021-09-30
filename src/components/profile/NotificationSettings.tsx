@@ -22,7 +22,7 @@ export const NotificationSettings: React.FC<Props> = () => {
     notifications_summary_frequency_minutes
   } = user || {};
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const changeNotificationStatus = useCallback(data => {
     // if (!this.context.isConnected) return this.context.showNoConnectionAlert();

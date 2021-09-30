@@ -57,7 +57,7 @@ export const Profile: React.FC = () => {
       refreshing: true
     });
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;

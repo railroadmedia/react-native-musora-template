@@ -68,7 +68,7 @@ export const ShowOverview: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const page = useRef(1);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;

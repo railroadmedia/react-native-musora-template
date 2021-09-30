@@ -118,7 +118,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
       {infoVisible && <Text style={styles.description}>{description}</Text>}
       <ActionModal
         ref={resetModalRef}
-        btnText='RESET'
+        primaryBtnText='RESET'
         onAction={() => {
           updateMethod({
             ...method,

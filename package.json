@@ -146,12 +146,15 @@
     ]
   },
   "dependencies": {
+    "@react-native-community/netinfo": "^5.9.9",
     "@react-native-async-storage/async-storage": "^1.15.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/stack": "^6.0.7",
     "MusoraChat": "git+https://github.com/railroadmedia/MusoraChat.git",
     "react-native-airplay-ios": "git+https://github.com/gazedash/react-native-airplay-ios.git#1.0.9",
     "RNVideoEnhanced": "git+https://github.com/railroadmedia/RNVideoEnhanced.git",
+    "RNDownload": "git+https://github.com/railroadmedia/RNDownload.git",
+    "react-native-background-downloader": "git+https://github.com/railroadmedia/react-native-background-downloader.git#2.3.4.1",
     "react-native-add-calendar-event": "^4.0.0",
     "react-native-android-keyboard-adjust": "^1.2.0",
     "react-native-device-info": "^8.1.5",

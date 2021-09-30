@@ -55,7 +55,7 @@ export const Settings: React.FC<Props> = () => {
   const restoreAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const restoreSuccessfull = useRef<React.ElementRef<typeof ActionModal>>(null);
   let alertBtn = useRef<string>();
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const iconStyle = useMemo(() => {
     return { height: 20, width: 20, fill: utils.color };
@@ -205,18 +205,12 @@ export const Settings: React.FC<Props> = () => {
       </ScrollView>
       <ActionModal
         ref={animatedAlert}
-        onCancel={() => animatedAlert.current?.toggle('', '')}
-      >
-        <TouchableOpacity
-          style={styles.additionalBtn}
-          onPress={onViewSubscription}
-        >
-          <Text style={styles.additionalBtnText}>{alertBtnText}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={onContactSupport}>
-          <Text style={styles.additionalTextBtn}>Contact Support</Text>
-        </TouchableOpacity>
-      </ActionModal>
+        primaryBtnText={alertBtnText}
+        secondaryBtnText='Contact Support'
+        onCancel={onContactSupport}
+        onAction={onViewSubscription}
+      />
+
       <ActionModal
         ref={restoreAlert}
         onCancel={() => {

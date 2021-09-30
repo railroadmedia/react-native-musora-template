@@ -62,7 +62,7 @@ export const PackOverview: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -178,7 +178,7 @@ export const PackOverview: React.FC<Props> = ({
 
       <ActionModal
         ref={resetModalRef}
-        btnText='RESET'
+        primaryBtnText='RESET'
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle('', '')}
       />

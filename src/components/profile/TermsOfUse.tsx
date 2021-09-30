@@ -10,7 +10,7 @@ interface Props {
 
 export const TermsOfUse: React.FC<Props> = ({ from }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>

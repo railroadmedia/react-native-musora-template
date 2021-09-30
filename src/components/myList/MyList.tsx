@@ -60,7 +60,7 @@ export const MyList: React.FC<Props> = ({}) => {
       refreshing: true
     });
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const backButtonHandler = useCallback(() => {
     setPageTitle('My List');

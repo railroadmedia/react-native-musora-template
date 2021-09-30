@@ -29,7 +29,7 @@ export const BackHeader: React.FC<Props> = ({
     useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View

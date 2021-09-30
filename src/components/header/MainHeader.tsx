@@ -24,7 +24,7 @@ export const MainHeader: React.FC = () => {
 
   const { theme } = useContext(ThemeContext);
   const { user, updateUserAndCache } = useContext(UserContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const abortC = useRef(new AbortController());
 

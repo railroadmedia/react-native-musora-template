@@ -39,7 +39,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const [activeScene, setActiveScene] = useState('home');
 
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyle(theme), [theme]);
+  const styles = useMemo(() => setStyle(theme), [theme]);
 
   const homeIndexCorespondent: { [key: string]: number } = {
     home: 0,

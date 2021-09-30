@@ -24,7 +24,7 @@ interface Props {
 }
 export const Filters: React.FC<Props> = ({ options, onApply }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
   const { contrastTextColor } = themeStyles[theme];
 
   const [visible, setVisible] = useState(false);
@@ -360,7 +360,7 @@ const SkillLevel: React.FC<{
   allHeight: number;
 }> = ({ onChange, allHeight, initialLevel }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
   const { contrastTextColor } = themeStyles[theme];
 
   const [level, setLevel] = useState(initialLevel);

@@ -14,7 +14,7 @@ import { themeStyles } from '../../themeStyles';
 
 export const Support: React.FC = () => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onChatSupport = useCallback(() => {}, []);
 

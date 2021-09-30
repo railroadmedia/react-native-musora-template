@@ -66,7 +66,7 @@ export interface Assignment {
   title: string;
   description: string;
   soundslice_slug: string;
-  sheet_music_image_url: MusicSheet[];
+  sheet_music_image_url?: MusicSheet[];
   timecode: number;
 }
 

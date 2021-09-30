@@ -30,7 +30,9 @@ import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.reactnative.googlecast.GoogleCastPackage;
 import com.brentvatne.react.ReactVideoPackage;
-
+import com.reactnativecommunity.netinfo.NetInfoPackage;
+import com.eko.RNBackgroundDownloaderPackage;
+import net.zubricky.AndroidKeyboardAdjust.AndroidKeyboardAdjustPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -64,6 +66,9 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNFetchBlobPackage());
           packages.add(new GoogleCastPackage());
           packages.add(new ReactVideoPackage());
+          packages.add(new NetInfoPackage());
+          packages.add(new RNBackgroundDownloaderPackage());
+          packages.add(new AndroidKeyboardAdjustPackage());
           return packages;
         }
 
