@@ -55,7 +55,7 @@ export const Settings: React.FC<Props> = () => {
   const restoreAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const restoreSuccessfull = useRef<React.ElementRef<typeof ActionModal>>(null);
   let alertBtn = useRef<string>();
-  const styles = useMemo(() => setStyles(theme), [theme]);
+  let styles = useMemo(() => setStyles(theme), [theme]);
 
   const iconStyle = useMemo(() => {
     return { height: 20, width: 20, fill: utils.color };
@@ -85,10 +85,6 @@ export const Settings: React.FC<Props> = () => {
       { title: 'Log out', icon: turnOff({ icon: iconStyle }) }
     ];
   }, []);
-
-  useEffect(() => {
-    styles = setStyles(theme);
-  }, [theme]);
 
   const onButtonPress = useCallback((title: string, route?: string) => {
     if (title === 'Manage Subscription') manageSubscription();

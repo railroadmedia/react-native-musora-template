@@ -18,6 +18,8 @@ target 'MusoraTemplatesExample' do
   pod 'RNGestureHandler', :path => '../../node_modules/react-native-gesture-handler'
   pod 'RNReanimated', :path => '../../node_modules/react-native-reanimated'
   pod 'RNScreens', :path => '../../node_modules/react-native-screens'
+  pod 'RNDeviceInfo', :path => '../../node_modules/react-native-device-info'
+  pod 'react-native-background-downloader', :path => '../../node_modules/react-native-background-downloader'
 
   # Enables Flipper.
   #

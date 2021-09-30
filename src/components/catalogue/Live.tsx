@@ -207,13 +207,11 @@ export const Live: React.FC = () => {
         icon={addToCalendar({
           icon: { height: 128, width: 300, fill: utils.color }
         })}
-        btnText='ADD TO CALENDAR'
         onAction={launchCalendarPicker}
         onCancel={() => calendarModalRef.current?.toggle()}
       />
       <ActionModal
         ref={calendarErrorRef}
-        btnText='OK'
         onAction={() => calendarErrorRef.current?.toggle()}
       />
     </>
