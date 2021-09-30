@@ -38,7 +38,7 @@ export const Soundslice = forwardRef(
     const webViewRef = useRef<WebView>(null);
 
     const { theme } = useContext(ThemeContext);
-    let styles = useMemo(() => setStyles(theme), [theme]);
+    const styles = useMemo(() => setStyles(theme), [theme]);
 
     useImperativeHandle(ref, () => ({
       toggleSoundslice() {

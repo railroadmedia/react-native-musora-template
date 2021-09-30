@@ -16,7 +16,7 @@ interface Props {
 
 export const NextLesson: React.FC<Props> = ({ progress, text, item }) => {
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <SafeAreaView edges={['left', 'right', 'bottom']}>

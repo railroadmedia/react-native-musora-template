@@ -85,7 +85,7 @@ export const CommentCard = forwardRef(
     const { user } = useContext(UserContext);
     const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
 
-    let styles = useMemo(() => setStyles(theme), [theme]);
+    const styles = useMemo(() => setStyles(theme), [theme]);
 
     const goToReplies = useCallback(() => {
       if (lessonId) {

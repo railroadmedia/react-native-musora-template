@@ -1,8 +1,10 @@
 import React, {
   forwardRef,
+  useCallback,
   useContext,
   useImperativeHandle,
   useMemo,
+  useRef,
   useState
 } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
@@ -12,10 +14,11 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 
 interface Props {
-  btnText?: string;
+  primaryBtnText?: string;
+  secondaryBtnText?: string;
   icon?: Element;
   onAction?: () => void;
-  onCancel: () => void;
+  onCancel?: () => void;
   children?: React.ReactNode;
 }
 
@@ -23,45 +26,58 @@ export const ActionModal = forwardRef<
   { toggle: (title?: string, message?: string) => void },
   Props
 >((props, ref) => {
-  const { btnText, icon, onAction, onCancel, children } = props;
+  const {
+    primaryBtnText,
+    secondaryBtnText,
+    icon,
+    onAction,
+    onCancel,
+    children
+  } = props;
   const [visible, setVisible] = useState(false);
-  const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
+  const title = useRef('');
+  const message = useRef('');
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useImperativeHandle(ref, () => ({
-    toggle(title, message) {
+    toggle(modalTitle, modalMessage) {
+      title.current = modalTitle || 'Unknown';
+      message.current = modalMessage || 'Unknown error';
       setVisible(!visible);
-      setTitle(title || 'Unknown');
-      setMessage(message || 'Unknown error');
     }
   }));
+
+  const closeModal = useCallback(() => {
+    setVisible(false);
+  }, []);
 
   return (
     <Modal
       transparent={true}
       visible={visible}
-      onRequestClose={onCancel}
+      onRequestClose={closeModal}
       animationType={'fade'}
     >
       <TouchableOpacity
         style={styles.modalBackground}
-        onPress={onCancel}
+        onPress={closeModal}
         activeOpacity={0.95}
       >
         <View style={styles.animatedView}>
           {!!icon && <View style={styles.icon}>{icon}</View>}
-          {!!title && <Text style={styles.title}>{title}</Text>}
-          <Text style={styles.message}>{message}</Text>
+          {!!title.current && <Text style={styles.title}>{title.current}</Text>}
+          <Text style={styles.message}>{message.current}</Text>
           {!!onAction && (
             <TouchableOpacity onPress={onAction} style={styles.actionBtn}>
-              <Text style={styles.actionBtnText}>{btnText}</Text>
+              <Text style={styles.actionBtnText}>{primaryBtnText}</Text>
             </TouchableOpacity>
           )}
           {!!onCancel && (
             <TouchableOpacity onPress={onCancel}>
-              <Text style={styles.cancelBtnText}>CANCEL</Text>
+              <Text style={styles.cancelBtnText}>
+                {secondaryBtnText || 'CANCEL'}
+              </Text>
             </TouchableOpacity>
           )}
           {children}

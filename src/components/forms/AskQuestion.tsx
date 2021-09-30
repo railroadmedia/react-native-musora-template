@@ -44,7 +44,7 @@ export const AskQuestion: React.FC<Props> = () => {
   const scrollView = useRef<ScrollView>(null);
   const question = useRef<string>('');
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
     setWidth(e.window.width);

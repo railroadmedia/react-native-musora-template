@@ -25,7 +25,7 @@ export const LessonProgress: React.FC<Props> = ({
 }) => {
   const { theme } = useContext(ThemeContext);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <SafeAreaView style={styles.safearea} edges={['bottom']}>

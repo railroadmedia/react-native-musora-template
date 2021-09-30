@@ -47,7 +47,7 @@ export const LevelBanner: React.FC<Props> = ({
 
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useContext(ThemeContext);
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <>

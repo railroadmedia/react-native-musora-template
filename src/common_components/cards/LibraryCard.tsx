@@ -44,7 +44,7 @@ export const LibraryCard: React.FC<Props> = ({
   } = item;
   const { theme } = useContext(ThemeContext);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   return (
     <View style={styles.container}>

@@ -61,7 +61,7 @@ export const Packs: React.FC<Props> = () => {
     return 3;
   }, []);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -302,7 +302,7 @@ export const Packs: React.FC<Props> = () => {
 
       <ActionModal
         ref={resetModalRef}
-        btnText='RESET'
+        primaryBtnText='RESET'
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle('', '')}
       />

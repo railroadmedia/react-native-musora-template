@@ -40,7 +40,7 @@ export const LikeList: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const [likes, setLikes] = useState<Likes[]>([]);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const getLikeList = useCallback(async () => {
     const likeList: { data: Likes[] } = await commentService.getCommentLikes(

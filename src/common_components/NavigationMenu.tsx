@@ -45,7 +45,7 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
       }
     >();
     const { theme } = useContext(ThemeContext);
-    let styles = useMemo(() => setStyles(theme), [theme]);
+    const styles = useMemo(() => setStyles(theme), [theme]);
 
     const [visible, setVisible] = useState(false);
 

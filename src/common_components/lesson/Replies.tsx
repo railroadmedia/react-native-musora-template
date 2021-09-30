@@ -59,7 +59,7 @@ export const Replies: React.FC<Props> = ({
   const [comment, setComment] = useState<Comment>(parentComment);
   const actionModalCommentInput = useRef<CommentInputModalRefObj>(null);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const addReply = useCallback(async () => {
     actionModalCommentInput.current?.toggle();

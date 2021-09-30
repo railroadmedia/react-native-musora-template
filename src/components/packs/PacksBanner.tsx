@@ -62,7 +62,7 @@ export const PacksBanner: React.FC<Props> = ({
 
   const [showInfo, setShowInfo] = useState(false);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const getAspectRatio = useMemo(() => {
     if (utils.isTablet) {

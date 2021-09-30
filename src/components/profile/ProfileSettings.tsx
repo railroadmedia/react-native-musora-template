@@ -48,7 +48,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   const [image, setImage] = useState(user.avatarUrl);
   const [croppedImage, setCroppedImage] = useState<UserAvatar>();
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onSave = useCallback(async () => {
     textInput.current?.blur();

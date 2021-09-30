@@ -60,7 +60,7 @@ export const Level: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
-  let styles = useMemo(() => setStyles(theme), [theme]);
+  const styles = useMemo(() => setStyles(theme), [theme]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -168,7 +168,7 @@ export const Level: React.FC<Props> = ({
 
       <ActionModal
         ref={removeModalRef}
-        btnText='REMOVE'
+        primaryBtnText='REMOVE'
         onAction={() => {}}
         onCancel={() => removeModalRef.current?.toggle('', '')}
       />
