@@ -55,7 +55,9 @@ import type {
   Assignment,
   Lesson,
   LessonResponse,
-  Resource
+  Resource,
+  ResourceWithExtension,
+  SelectedAssignment
 } from '../../interfaces/lesson.interfaces';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -80,16 +82,7 @@ import { userService } from '../../services/user.service';
 import type {
   CompletedResponse,
   ResetProgressResponse
-} from 'src/interfaces/user.interfaces';
-
-export interface SelectedAssignment extends Assignment {
-  index: number;
-  progress: number;
-}
-
-interface ResourceWithExtension extends Resource {
-  wasWithoutExtension?: boolean;
-}
+} from '../../interfaces/user.interfaces';
 
 interface Props {
   route: RouteProp<ParamListBase, 'lessonPart'> & {
@@ -383,7 +376,6 @@ export const LessonPart: React.FC<Props> = ({
 
   const toggleVideoAudio = useCallback(() => {
     setVideoType(videoType === 'audio' ? 'video' : 'audio');
-    // dldService.gCasting && video.current.gCastMedia()
   }, [videoType]);
 
   const selectAssignment = useCallback(
@@ -432,7 +424,6 @@ export const LessonPart: React.FC<Props> = ({
   const goToLessons = useCallback(() => {
     if (!lesson) return;
 
-    completeLessonPage.current?.toggle('', '');
     completeOverviewPage.current?.toggle('', '');
 
     setRefreshing(true);
@@ -450,23 +441,16 @@ export const LessonPart: React.FC<Props> = ({
 
       navigate(route);
     }
-  }, [completeLessonPage, completeOverviewPage, lesson, contentType]);
+  }, [completeOverviewPage, lesson, contentType]);
 
   const goToNextLesson = useCallback(() => {
     if (!lesson) return;
 
     completeLessonPage.current?.toggle('', '');
-    completeOverviewPage.current?.toggle('', '');
     if (incompleteLessonId) {
       getLesson(incompleteLessonId);
     }
-  }, [
-    completeLessonPage,
-    completeOverviewPage,
-    lesson,
-    incompleteLessonId,
-    getLesson
-  ]);
+  }, [completeLessonPage, lesson, incompleteLessonId, getLesson]);
 
   const goToMarket = useCallback(() => {
     Rate.rate(
@@ -1016,10 +1000,14 @@ export const LessonPart: React.FC<Props> = ({
                         entity={{
                           id: lesson.id,
                           comments: lesson.comments,
-                          content: contentService.getContentById(
-                            lesson.id,
-                            true,
-                            abortC.current.signal
+                          content: new Promise(async res =>
+                            res(
+                              contentService.getContentById(
+                                lesson.id,
+                                true,
+                                abortC.current.signal
+                              )
+                            )
                           )
                         }}
                         styles={{
@@ -1334,7 +1322,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginLeft: 15,
       padding: 5,
       color: current.textColor,
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold'
     },
     rowContainer: {
@@ -1347,7 +1335,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     tag: {
       textAlign: 'center',
       color: current.contrastTextColor,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans-Semibold'
     },
     underCompleteTOpacities: {
@@ -1357,23 +1345,23 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     iconText: {
       marginTop: 5,
       color: current.textColor,
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans'
     },
     infoTitle: {
       marginVertical: 10,
       color: current.contrastTextColor,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans-Semibold'
     },
     infoText: {
       color: current.textColor,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       flex: 1
     },
     xpText: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans-Semibold',
       color: current.contrastTextColor
     },
@@ -1389,7 +1377,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     subtitle: {
       color: current.contrastTextColor,
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold'
     },
     assignmentCont: {
@@ -1422,7 +1410,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: current.background
     },
     additionalTextBtn: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       color: utils.color,
       textAlign: 'center',
       fontFamily: 'OpenSans',
@@ -1435,7 +1423,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     additionalBtnText: {
       padding: 15,
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: '#ffffff',
       textAlign: 'center',
       fontFamily: 'OpenSans-Bold'
@@ -1472,7 +1460,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       height: '100%'
     },
     assignmentTitle: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans-Bold',
       flex: 1,
       color: current.contrastTextColor
@@ -1492,14 +1480,14 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       borderColor: current.borderColor
     },
     chapterTime: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans-Semibold',
       color: current.contrastTextColor
     },
     buttonText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: utils.color
     },
     reloadBtn: {
@@ -1509,13 +1497,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     reloadBtnText: {
       padding: 15,
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: '#ffffff',
       textAlign: 'center',
       fontFamily: 'OpenSans-Bold'
     },
     contactSupportText: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       color: utils.color,
       textAlign: 'center',
       fontFamily: 'OpenSans',

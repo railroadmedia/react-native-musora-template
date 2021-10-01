@@ -22,6 +22,7 @@ import { themeStyles } from '../../themeStyles';
 import { commentService } from '../../services/comment.service';
 import type { Likes } from '../../interfaces/lesson.interfaces';
 import { parseXpValue } from './helpers';
+import { utils } from '../../utils';
 
 interface Props {
   route: RouteProp<ParamListBase, 'likeList'> & {
@@ -133,19 +134,19 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginRight: 15
     },
     smallTitle: {
-      fontSize: 24,
+      fontSize: utils.figmaFontSizeScaler(24),
       fontFamily: 'OpenSans-Bold',
       marginLeft: 15,
       color: current.textColor
     },
     name: {
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans-Bold',
       marginBottom: 5,
       color: current.textColor
     },
     xp: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       color: current.contrastTextColor
     }

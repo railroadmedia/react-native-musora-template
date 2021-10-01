@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-
+import { Download_V2 } from 'RNDownload';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
@@ -44,6 +44,7 @@ import { userService } from '../../services/user.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';
 import type { MethodCourse } from '../../interfaces/method.interfaces';
+import { contentService } from '../../services/content.service';
 
 interface Props {
   route: RouteProp<ParamListBase, 'courseOverview'> & {
@@ -312,18 +313,25 @@ export const CourseOverview: React.FC<Props> = ({
                       </Text>
                     </TouchableOpacity>
 
-                    {/* <Download_V2
+                    <Download_V2
                       entity={{
-                        id,
+                        id: course.id,
                         content: new Promise(async res =>
                           isMethod
                             ? res(
-                                await methodService.getLevelCourse(
-                                  this.props.route?.params?.url,
+                                await methodService.getMethodCourse(
+                                  course.mobile_app_url,
+                                  abortC.current.signal,
                                   true
                                 )
                               )
-                            : res(await coursesService.getContent(id, true))
+                            : res(
+                                await contentService.getContentById(
+                                  course.id,
+                                  true,
+                                  abortC.current.signal
+                                )
+                              )
                         )
                       }}
                       styles={{
@@ -331,30 +339,21 @@ export const CourseOverview: React.FC<Props> = ({
                         iconDownloadColor: utils.color,
                         activityIndicatorColor: utils.color,
                         animatedProgressBackground: utils.color,
-                        textStatus: {
-                          ...globalStyles.extraSmallText,
-                          color: getThemeColor('greyText', theme)
-                        },
+                        textStatus: styles.iconText,
                         alert: {
                           alertTextMessageFontFamily: 'OpenSans',
                           alertTouchableTextDeleteColor: 'white',
-                          alertTextTitleColor: getThemeColor(
-                            'whiteBlackText',
-                            theme
-                          ),
-                          alertTextMessageColor: getThemeColor(
-                            'whiteBlackText',
-                            theme
-                          ),
+                          alertTextTitleColor: themeStyles[theme].textColor,
+                          alertTextMessageColor: themeStyles[theme].textColor,
                           alertTextTitleFontFamily: 'OpenSans-Bold',
                           alertTouchableTextCancelColor: utils.color,
                           alertTouchableDeleteBackground: utils.color,
-                          alertBackground: getThemeColor('background', theme),
+                          alertBackground: themeStyles[theme].background,
                           alertTouchableTextDeleteFontFamily: 'OpenSans-Bold',
                           alertTouchableTextCancelFontFamily: 'OpenSans-Bold'
                         }
                       }}
-                    /> */}
+                    />
                     <TouchableOpacity
                       style={styles.underCompleteTOpacities}
                       onPress={() =>
@@ -473,7 +472,6 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignItems: 'center',
       justifyContent: 'center'
     },
-
     rowContainer: {
       flexDirection: 'row',
       justifyContent: 'center',
@@ -546,5 +544,11 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       fontSize: utils.figmaFontSizeScaler(15),
       color: 'white',
       marginLeft: 10
+    },
+    iconText: {
+      marginTop: 5,
+      color: current.textColor,
+      fontSize: 10,
+      fontFamily: 'OpenSans'
     }
   });

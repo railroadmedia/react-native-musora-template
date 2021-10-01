@@ -21,9 +21,11 @@ import {
   infoFilled,
   play,
   plus,
-  reset
+  reset,
+  resources as resourcesIcon
 } from '../../images/svgs';
 import { Gradient } from '../../common_components/Gradient';
+import type { Resource } from '../../interfaces/lesson.interfaces';
 
 const iconStyle = {
   fill: '#FFFFFF',
@@ -37,11 +39,14 @@ interface Props {
   started?: boolean;
   is_owned?: boolean;
   thumbnail?: string;
+  resources?: Resource[];
   completed?: boolean;
   description?: string;
   price?: string;
   onMainBtnClick: () => void;
   onSeeMoreBtnClick?: () => void;
+  onToggleResourcesModal?: () => void;
+  onReset?: () => void;
 }
 
 export const PacksBanner: React.FC<Props> = ({
@@ -51,9 +56,12 @@ export const PacksBanner: React.FC<Props> = ({
   is_owned,
   thumbnail,
   completed,
+  resources,
   description,
   onMainBtnClick,
-  onSeeMoreBtnClick
+  onSeeMoreBtnClick,
+  onToggleResourcesModal,
+  onReset
 }) => {
   const { goBack } = useNavigation();
 
@@ -112,7 +120,7 @@ export const PacksBanner: React.FC<Props> = ({
       {!isMainPacksPage && (
         <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
           {back({
-            icon: { fill: themeStyles[theme].background, height: 15, width: 15 }
+            icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
           })}
         </TouchableOpacity>
       )}
@@ -179,7 +187,35 @@ export const PacksBanner: React.FC<Props> = ({
           )}
         </View>
       </ImageBackground>
-      {showInfo && <Text style={styles.description}>{description}</Text>}
+      {showInfo && (
+        <View>
+          <Text style={styles.description}>{description}</Text>
+          <View style={[styles.rowContainer, styles.extraMargin]}>
+            {!!resources && resources.length > 0 && (
+              <TouchableOpacity
+                style={styles.underCompleteTOpacities}
+                onPress={onToggleResourcesModal}
+              >
+                {resourcesIcon({
+                  icon: { width: 25, height: 25, fill: utils.color }
+                })}
+
+                <Text style={styles.iconText}>Resources</Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={styles.underCompleteTOpacities}
+              onPress={onReset}
+            >
+              {reset({
+                icon: { fill: utils.color, height: 25, width: 25 }
+              })}
+              <Text style={styles.belowIconText}>Restart</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </>
   );
 };
@@ -296,5 +332,30 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       flexDirection: 'row',
       alignItems: 'center',
       padding: 5
+    },
+    rowContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingBottom: 10
+    },
+    extraMargin: {
+      marginHorizontal: 40
+    },
+    belowIconText: {
+      marginTop: 5,
+      color: current.textColor,
+      fontSize: utils.figmaFontSizeScaler(10),
+      fontFamily: 'OpenSans'
+    },
+    underCompleteTOpacities: {
+      flex: 1,
+      alignItems: 'center'
+    },
+    iconText: {
+      marginTop: 5,
+      color: current.textColor,
+      fontSize: utils.figmaFontSizeScaler(10),
+      fontFamily: 'OpenSans'
     }
   });
