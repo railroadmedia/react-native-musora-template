@@ -70,6 +70,11 @@ export interface Assignment {
   timecode: number;
 }
 
+export interface SelectedAssignment extends Assignment {
+  index: number;
+  progress: number;
+}
+
 export interface Comment {
   comment: string;
   created_on: string;
@@ -118,6 +123,10 @@ export interface Resource {
   resource_id: number;
   resource_name: string;
   resource_url: string;
+}
+
+export interface ResourceWithExtension extends Resource {
+  wasWithoutExtension?: boolean;
 }
 
 export interface MusicSheet {

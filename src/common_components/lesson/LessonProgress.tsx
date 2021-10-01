@@ -115,7 +115,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     buttonText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: '#FFFFFF'
     },
     arrowContainer: {

@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-  StatusBar
+  StatusBar,
+  Modal,
+  TouchableOpacity
 } from 'react-native';
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -33,6 +35,15 @@ import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import { RowCard } from '../../common_components/cards/RowCard';
 import type { Card } from '../../interfaces/card.interfaces';
+import { DownloadResources } from 'RNDownload';
+import type {
+  Resource,
+  ResourceWithExtension
+} from '../../interfaces/lesson.interfaces';
+import {
+  decideExtension,
+  getExtensionByType
+} from '../../common_components/lesson/helpers';
 
 interface Props {
   route: RouteProp<ParamListBase, 'packOverview'> & {
@@ -57,7 +68,10 @@ export const PackOverview: React.FC<Props> = ({
   const { addCards } = useContext(CardsContext);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [showResourcesModal, setShowResourcesModal] = useState(false);
   const [pack, setPack] = useState<I_PackBundle | I_PackLessonBundle>();
+  const [resourcesArr, setResourcesArr] = useState<ResourceWithExtension[]>([]);
+
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
@@ -85,12 +99,43 @@ export const PackOverview: React.FC<Props> = ({
           addCards((packRes as I_PackBundle).bundles);
         }
         setPack(packRes);
+        console.log(packRes);
+        if (packRes.resources) createResourcesArr(packRes.resources);
         setRefreshing(false);
       });
 
   const refresh = useCallback(() => {
     setRefreshing(true);
     getPack();
+  }, []);
+
+  const createResourcesArr = useCallback((lessonResources: Resource[]) => {
+    const extensions = ['mp3', 'pdf', 'zip'];
+
+    lessonResources.forEach((resource: Resource) => {
+      let extension = decideExtension(resource.resource_url);
+      resource.extension = extension;
+      if (!extensions.includes(extension)) {
+        fetch(resource.resource_url)
+          .then((res: any) => {
+            extension = getExtensionByType(res?.headers?.map['content-type']);
+            setResourcesArr(
+              lessonResources.map((r: Resource) =>
+                r.resource_id === resource.resource_id
+                  ? { ...r, extension, wasWithoutExtension: true }
+                  : r
+              )
+            );
+          })
+          .catch(() => {});
+      } else {
+        setResourcesArr(
+          lessonResources.map((r: Resource) =>
+            r.resource_id === resource.resource_id ? { ...r, extension } : r
+          )
+        );
+      }
+    });
   }, []);
 
   const onMainBtnClick = useCallback(() => {
@@ -116,6 +161,10 @@ export const PackOverview: React.FC<Props> = ({
     push('packOverview', { mobile_app_url });
   }, []);
 
+  const toggleResourcesModal = useCallback(() => {
+    setShowResourcesModal(!showResourcesModal);
+  }, [showResourcesModal]);
+
   const flRefreshControl = (
     <RefreshControl
       colors={['white']}
@@ -138,6 +187,13 @@ export const PackOverview: React.FC<Props> = ({
             {...pack}
             isMainPacksPage={false}
             onMainBtnClick={onMainBtnClick}
+            onToggleResourcesModal={toggleResourcesModal}
+            onReset={() =>
+              resetModalRef.current?.toggle(
+                'Hold your horses...',
+                `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+              )
+            }
           />
           <View style={styles.cardContainer}>
             {(pack as I_PackBundle).bundles?.map((b: I_PackLessonBundle) => (
@@ -182,6 +238,39 @@ export const PackOverview: React.FC<Props> = ({
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle('', '')}
       />
+      {pack && (
+        <Modal
+          transparent={true}
+          visible={showResourcesModal}
+          onRequestClose={toggleResourcesModal}
+          supportedOrientations={['portrait', 'landscape']}
+          animationType='slide'
+        >
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={toggleResourcesModal}
+            style={styles.resourcesModal}
+          >
+            <View style={styles.resourcesModalContent}>
+              <DownloadResources
+                styles={{
+                  container: {
+                    backgroundColor: themeStyles[theme].background
+                  },
+                  touchableTextResourceNameFontFamily: 'OpenSans',
+                  touchableTextResourceExtensionFontFamily: 'OpenSans',
+                  touchableTextResourceCancelFontFamily: 'OpenSans',
+                  borderColor: themeStyles[theme].borderColor,
+                  color: themeStyles[theme].textColor
+                }}
+                resources={resourcesArr}
+                lessonTitle={pack.title}
+                onClose={toggleResourcesModal}
+              />
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -195,5 +284,16 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     cardContainer: {
       backgroundColor: current.background,
       paddingTop: 10
+    },
+    resourcesModal: {
+      backgroundColor: 'rgba(0, 0, 0, .8)',
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center'
+    },
+    resourcesModalContent: {
+      width: '100%',
+      maxHeight: 300,
+      alignSelf: 'flex-end'
     }
   });

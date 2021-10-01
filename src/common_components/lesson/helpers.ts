@@ -1,4 +1,8 @@
-import type { MusicSheet } from '../../interfaces/lesson.interfaces';
+import type {
+  MusicSheet,
+  Resource,
+  ResourceWithExtension
+} from '../../interfaces/lesson.interfaces';
 import { Image } from 'react-native';
 
 export const parseXpValue = function (xp: number): string {
@@ -82,8 +86,6 @@ export const getSheetWHRatio = async (
         if (i === svgs.length - 1) return res(svgs);
       });
     });
-    // a.then((ares:MusicSheet[]) => assignPromises.push([...ares]));
-    // let b:MusicSheet[] = await a;
     assignPromises.push(a);
   }
   if (nsvgs.length) {
@@ -104,7 +106,6 @@ export const getSheetWHRatio = async (
       assignPromises.push(c);
     });
   }
-  let res = (await Promise.all(assignPromises)).flat();
-  console.log('res', res);
-  return res;
+
+  return (await Promise.all(assignPromises)).flat();
 };

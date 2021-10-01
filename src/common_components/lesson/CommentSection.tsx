@@ -49,12 +49,13 @@ export const CommentSection: React.FC<Props> = ({
 }) => {
   const [comments, setComments] = useState(commentsArray);
   const [commentText, setCommentText] = useState('');
-  const [sortByComments, setSortByComments] = useState('');
+  const [sortByComments, setSortByComments] = useState('latest');
   const [animate, setAnimate] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [selectedFilterIndex, setSelectedFilterIndex] = useState(1);
-  const allCommentsNum = useRef<number>(nrOfComments);
-  const limit = useRef<number>(10);
+  const allCommentsNum = useRef(nrOfComments);
+  const page = useRef(1);
+  const allowScroll = useRef(true);
   const input = useRef<TextInput>(null);
   const commentCardRef = useRef<CommentCardRefObj>(null);
   const actionModalCommentInput = useRef<CommentInputModalRefObj>(null);
@@ -66,6 +67,7 @@ export const CommentSection: React.FC<Props> = ({
   const addComment = useCallback(async () => {
     actionModalCommentInput.current?.toggle();
     if (commentText.length > 0) {
+      page.current = 1;
       const encodedCommentText = encodeURIComponent(commentText);
       await commentService.addComment(encodedCommentText, lessonId);
 
@@ -91,18 +93,15 @@ export const CommentSection: React.FC<Props> = ({
 
   const selectFilter = useCallback(
     async (index: number, sort: string) => {
+      page.current = 1;
       toggleFilterModal();
-      const c = await commentService.getComments(
-        lessonId,
-        sortByComments,
-        limit.current
-      );
+      const c = await commentService.getComments(lessonId, sort, page.current);
       allCommentsNum.current = c.meta.totalCommentsAndReplies;
       setComments(c.data);
       setSelectedFilterIndex(index);
       setSortByComments(sort);
     },
-    [lessonId, sortByComments]
+    [lessonId, sortByComments, toggleFilterModal]
   );
 
   const onDeleteComment = useCallback(
@@ -115,18 +114,24 @@ export const CommentSection: React.FC<Props> = ({
   );
 
   const loadMoreComments = useCallback(async () => {
-    if (limit.current < nrOfComments) {
+    if (!allowScroll.current) {
+      return;
+    }
+
+    if (page.current * 10 < nrOfComments) {
       setAnimate(true);
 
-      limit.current += 10;
+      page.current += 1;
+      allowScroll.current = false;
       const c = await commentService.getComments(
         lessonId,
         sortByComments,
-        limit.current
+        page.current
       );
       allCommentsNum.current = c.meta.totalCommentsAndReplies;
-      setComments(c.data);
+      setComments(page.current === 1 ? c.data : comments.concat(c.data));
       setAnimate(false);
+      allowScroll.current = true;
     }
   }, [lessonId, nrOfComments, sortByComments]);
 
@@ -134,10 +139,10 @@ export const CommentSection: React.FC<Props> = ({
     const c = await commentService.getComments(
       lessonId,
       sortByComments,
-      limit.current
+      page.current
     );
     allCommentsNum.current = c.meta.totalCommentsAndReplies;
-    setComments(c.data);
+    setComments(page.current === 1 ? c.data : comments.concat(c.data));
   }, [lessonId, sortByComments]);
 
   return (
@@ -152,7 +157,7 @@ export const CommentSection: React.FC<Props> = ({
         </Text>
 
         <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-          {filters({ icon: { height: 23, width: 23, fill: utils.color } })}
+          {filters({ icon: { height: 25, width: 25, fill: utils.color } })}
         </TouchableOpacity>
 
         <Modal
@@ -292,13 +297,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: current.background
     },
     subtitle: {
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold',
       marginLeft: 15,
       color: current.contrastTextColor
     },
     filterText: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans'
     },
     selectedFilter: {
@@ -318,7 +323,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     textInput: {
       flex: 1,
       maxHeight: 300,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       color: current.textColor
     },
@@ -332,7 +337,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       height: 200
     },
     cancelText: {
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       marginLeft: 5,
       color: current.textColor
@@ -390,7 +395,6 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     modalContainer: {
       backgroundColor: 'rgba(0, 0, 0, .8)',
       flex: 1,
-      justifyContent: 'flex-end',
-      alignItems: 'center'
+      justifyContent: 'flex-end'
     }
   });

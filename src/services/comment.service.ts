@@ -2,8 +2,8 @@ import type { CommentService } from '../interfaces/service.interfaces';
 import { call } from './auth.service';
 
 export const commentService: CommentService = {
-  getComments: function (id: number, sortBy: string, limit: number) {
-    let url = `/api/railcontent/comments?content_id=${id}&limit=${limit}`;
+  getComments: function (id: number, sortBy: string, page: number) {
+    let url = `/api/railcontent/comments?content_id=${id}&limit=10&page=${page}`;
     if (sortBy === 'popular') {
       url += `&sort=-like_count`;
     } else if (sortBy === 'latest') {

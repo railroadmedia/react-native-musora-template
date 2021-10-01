@@ -89,12 +89,17 @@ export const CommentCard = forwardRef(
 
     const goToReplies = useCallback(() => {
       if (lessonId) {
-        navigate('replies', { selectedComment: comment });
+        navigate('replies', {
+          parentComment: comment,
+          onDeleteComment: deleteComment,
+          likeOrDislikeComment: likeOrDislikeComment,
+          onAddOrRemoveReply: onAddOrRemoveReplyParent
+        });
       }
     }, [comment, lessonId]);
 
     const goToLikeList = useCallback(() => {
-      navigate('likeList', {});
+      navigate('likeList', { commentId: comment.id });
     }, []);
 
     const showDeleteAlert = useCallback(() => {
@@ -321,7 +326,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       alignItems: 'center'
     },
     xpStyle: {
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'RobotoCondensed-Bold',
       color: current.contrastTextColor
     },
@@ -334,7 +339,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     commentText: {
       color: current.textColor,
-      fontSize: 14,
+      fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans'
     },
     iconContainer: {
@@ -345,17 +350,17 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     bubbleText: {
       color: utils.color,
       padding: 2,
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans'
     },
     repliesLabel: {
       color: current.contrastTextColor,
       marginBottom: 15,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans'
     },
     tag: {
-      fontSize: 11,
+      fontSize: utils.figmaFontSizeScaler(11),
       fontFamily: 'OpenSans',
       color: current.contrastTextColor
     },
@@ -378,14 +383,14 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     deleteBtnText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       padding: 15,
       color: '#ffffff'
     },
     cancelBtnText: {
       textAlign: 'center',
       fontFamily: 'RobotoCondensed-Bold',
-      fontSize: 15,
+      fontSize: utils.figmaFontSizeScaler(15),
       color: utils.color,
       marginTop: 10
     }

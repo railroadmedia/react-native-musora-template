@@ -207,7 +207,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     textInput: {
       flex: 1,
       maxHeight: 300,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       color: current.textColor
     },
@@ -238,7 +238,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       color: current.textColor
     },
     subtitle: {
-      fontSize: 18,
+      fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans-Bold',
       marginLeft: 15,
       color: current.textColor

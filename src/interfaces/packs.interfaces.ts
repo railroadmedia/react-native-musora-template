@@ -1,4 +1,5 @@
 import type { Card } from './card.interfaces';
+import type { Resource } from './lesson.interfaces';
 
 export interface Pack {
   id: number;
@@ -22,6 +23,7 @@ export interface Pack {
   is_added_to_primary_playlist: boolean;
   current_lesson_index: number;
   next_lesson: Card;
+  resources: Resource[];
 }
 
 export interface BannerPack extends Pack {

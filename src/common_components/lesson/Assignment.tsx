@@ -241,21 +241,21 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     section: {
       textAlign: 'center',
       paddingBottom: 20,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       color: current.contrastTextColor
     },
     title: {
       textAlign: 'center',
       paddingBottom: 20,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans',
       color: current.textColor
     },
     timeCode: {
       textAlign: 'center',
       alignSelf: 'center',
-      fontSize: 10,
+      fontSize: utils.figmaFontSizeScaler(10),
       fontFamily: 'OpenSans',
       color: current.contrastTextColor
     },
@@ -264,7 +264,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textAlign: 'center',
       paddingVertical: 20,
       color: current.textColor,
-      fontSize: 12,
+      fontSize: utils.figmaFontSizeScaler(12),
       fontFamily: 'OpenSans'
     },
     dots: {
