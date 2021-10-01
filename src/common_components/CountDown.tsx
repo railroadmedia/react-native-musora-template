@@ -3,14 +3,16 @@ import { StyleSheet, Text } from 'react-native';
 
 interface Props {
   startTime: string | undefined;
+  onStart: () => void;
 }
 
-export const CountDown: React.FC<Props> = ({ startTime }) => {
+export const CountDown: React.FC<Props> = ({ startTime, onStart }) => {
   let tDiff = Math.floor(
     (new Date(`${startTime} UTC`).getTime() - new Date().getTime()) / 1000
   );
 
   const formatTrem = (s: number) => {
+    if (s < 1) return { HOURS: '--', MINUTES: '--', SECONDS: '--' };
     let h = Math.floor(s / 3600);
     let m = Math.floor((s -= h * 3600) / 60);
     s -= m * 60;
@@ -23,7 +25,14 @@ export const CountDown: React.FC<Props> = ({ startTime }) => {
   );
 
   useEffect(() => {
-    setInterval(() => setTrem(formatTrem(--tDiff)), 1000);
+    if (tDiff > 0) {
+      const interval = setInterval(() => {
+        if (tDiff < 2) {
+          clearInterval(interval);
+          onStart();
+        } else setTrem(formatTrem(--tDiff));
+      }, 1000);
+    }
   }, []);
 
   return (

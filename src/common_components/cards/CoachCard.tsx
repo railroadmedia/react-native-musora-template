@@ -63,8 +63,8 @@ export const CoachCard: React.FC<Props> = ({ coach, index }) => {
               colors={[
                 'transparent',
                 'transparent',
-                utils.getColorWithAlpha(10),
-                utils.getColorWithAlpha(30)
+                utils.getColorWithAlpha(0.1),
+                utils.getColorWithAlpha(0.3)
               ]}
               height={'100%'}
               width={'100%'}

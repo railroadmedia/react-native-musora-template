@@ -66,7 +66,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
           <Gradient
             colors={[
               'transparent',
-              utils.getColorWithAlpha(30),
+              utils.getColorWithAlpha(0.3),
               themeStyles[theme].background || ''
             ]}
             height={'100%'}

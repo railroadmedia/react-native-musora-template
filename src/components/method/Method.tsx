@@ -135,8 +135,8 @@ export const Method: React.FC = () => {
                           colors={[
                             'transparent',
                             'transparent',
-                            utils.getColorWithAlpha(60),
-                            utils.getColorWithAlpha(100)
+                            utils.getColorWithAlpha(0.6),
+                            utils.color
                           ]}
                           height={'100%'}
                           width={'100%'}

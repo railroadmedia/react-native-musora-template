@@ -15,7 +15,6 @@ export interface Live {
   type?: string;
   userId?: number;
   youtube_video_id?: string;
-  viewersNo?: number;
 }
 
 export interface LiveReducer {

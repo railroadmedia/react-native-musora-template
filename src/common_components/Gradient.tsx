@@ -16,13 +16,9 @@ export const Gradient: React.FC<Props> = ({
   verticalStripes,
   children
 }) => {
-  const [parentWidth, setParentwidth] = useState(0);
   return (
-    <View
-      style={{ width, height }}
-      onLayout={({ nativeEvent: { layout } }) => setParentwidth(layout.width)}
-    >
-      <Svg style={{ width: '100%', height: '100%' }} key={parentWidth}>
+    <View style={{ width, height }}>
+      <Svg style={{ width: '100%', height: '100%' }}>
         <Defs>
           <LinearGradient
             id='gradient'
@@ -40,8 +36,7 @@ export const Gradient: React.FC<Props> = ({
                   c === 'transparent'
                     ? 0
                     : c.includes('rgba')
-                    ? parseInt(c.split(',').pop()?.replace(')', '') || '100') /
-                      100
+                    ? parseInt(c.split(',').pop()?.replace(')', '') || '1')
                     : 1
                 }
               />

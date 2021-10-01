@@ -5,7 +5,7 @@ import {
   Text,
   View,
   TouchableOpacity,
-  TextInput
+  Modal
 } from 'react-native';
 
 import { liveService } from '../../services/live.service';
@@ -18,6 +18,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../..';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { CountDown } from '../../common_components/CountDown';
+import { Gradient } from '../../common_components/Gradient';
 
 const { watchersListener } = require('MusoraChat');
 
@@ -25,12 +26,13 @@ export const Live: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyle(theme), [theme]);
 
+  const [watchModalVisible, setWatchModalVisible] = useState(false);
+  const [viewersNo, setViewersNo] = useState(0);
   const [
     {
       id,
       isLive,
       thumbnail_url: thumb,
-      viewersNo,
       title,
       instructors,
       live_event_start_time: startTime,
@@ -50,15 +52,17 @@ export const Live: React.FC = () => {
     isMounted.current = true;
     abortC.current = new AbortController();
     liveService.getLive(abortC.current.signal).then(liveRes => {
-      liveRes.isLive = false;
       console.log('lres', liveRes);
+      liveRes.isLive = false;
+      liveRes.live_event_start_time = '2021/10/01 14:20:55';
+      setLive(liveRes);
       if (liveRes?.id) {
         watchersListener(
           liveRes.apiKey,
           liveRes.chatChannelName,
           liveRes.userId,
           liveRes.token,
-          (viewers: number) => setLive({ ...liveRes, viewersNo: viewers })
+          (viewers: number) => setViewersNo(viewers)
         ).then((rwl: Function) => (removeWatchersListener.current = rwl));
       }
     });
@@ -92,7 +96,7 @@ export const Live: React.FC = () => {
 
   return id ? (
     <>
-      <Text>LIVE</Text>
+      <Text style={styles.liveTitleTxt}>LIVE</Text>
       <TouchableOpacity onPress={() => {}} disabled={!isLive}>
         <Image
           source={{
@@ -105,29 +109,51 @@ export const Live: React.FC = () => {
 
         {!isLive && (
           <View style={styles.countDownContainer}>
-            <CountDown startTime={startTime} />
+            <View style={styles.upcommingTxtContainer}>
+              <View style={styles.gradientContainer}>
+                <Gradient
+                  width={'100%'}
+                  height={'100%'}
+                  colors={[utils.color, 'transparent']}
+                  verticalStripes={true}
+                />
+              </View>
+              <Text style={styles.upcommingTxt}>UPCOMMING EVENT</Text>
+            </View>
+            <CountDown
+              startTime={startTime}
+              onStart={() => {
+                setLive(l => ({ ...l, isLive: true }));
+                setWatchModalVisible(true);
+              }}
+            />
           </View>
         )}
       </TouchableOpacity>
       <View style={{ flexDirection: 'row' }}>
         <View style={styles.titleContainer}>
-          <View style={{ backgroundColor: '#F71B26', borderRadius: 3 }}>
-            <Text style={styles.liveTxt}>LIVE</Text>
-          </View>
-          <View style={styles.viewersNoContainer}>
-            {pswdVisible({
-              icon: { fill: 'white', width: utils.figmaFontSizeScaler(11) }
-            })}
-            <Text style={styles.viewersNoTxt}>{viewersNo}</Text>
-          </View>
+          {isLive && (
+            <>
+              <View style={{ backgroundColor: '#F71B26', borderRadius: 3 }}>
+                <Text style={styles.liveTxt}>LIVE</Text>
+              </View>
+              <View style={styles.viewersNoContainer}>
+                {pswdVisible({
+                  icon: { fill: 'white', width: utils.figmaFontSizeScaler(11) }
+                })}
+                <Text style={styles.viewersNoTxt}>{viewersNo}</Text>
+              </View>
+            </>
+          )}
           <Text style={styles.titleTxt}>{title}</Text>
           <Text style={styles.instructorsTxt}>{instructors?.join(', ')}</Text>
         </View>
-        {(isAdded ? x : plus)({
-          icon: { width: 30, fill: utils.color },
-          container: { padding: 5, paddingRight: 0 },
-          onPress: toggleMyList
-        })}
+        {isLive &&
+          (isAdded ? x : plus)({
+            icon: { width: 30, fill: utils.color },
+            container: { padding: 5, paddingRight: 0 },
+            onPress: toggleMyList
+          })}
         {addToCalendar({
           icon: { width: 30, fill: utils.color },
           container: { padding: 5, paddingRight: 0 },
@@ -138,6 +164,30 @@ export const Live: React.FC = () => {
             )
         })}
       </View>
+      <Modal
+        transparent={true}
+        visible={true}
+        onRequestClose={() => setWatchModalVisible(false)}
+        animationType={'fade'}
+      >
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          activeOpacity={0.95}
+          onPress={() => setWatchModalVisible(false)}
+        >
+          <View style={styles.watchModalContainer}>
+            <Text style={{ textAlign: 'center' }}>
+              {instructors?.join()} just went like.{`\n`}Would you like to join?
+              {`\n`}Join {instructors?.join()} and {viewersNo} members
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </Modal>
       <ActionModal
         ref={calendarModalRef}
         icon={addToCalendar({
@@ -156,6 +206,13 @@ export const Live: React.FC = () => {
 
 const setStyle = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
+    liveTitleTxt: {
+      fontSize: 20,
+      paddingVertical: 5,
+      color: themeStyles[theme].contrastTextColor,
+      fontFamily: 'RobotoCondensed-Regular',
+      fontWeight: '700'
+    },
     thumbnail: { width: '100%', aspectRatio: 16 / 9, borderRadius: 5 },
     titleContainer: {
       flexDirection: 'row',
@@ -208,5 +265,16 @@ const setStyle = (theme: string, current = themeStyles[theme]) =>
       alignItems: 'center',
       justifyContent: 'center',
       flexDirection: 'row'
+    },
+    gradientContainer: { position: 'absolute', width: '200%', height: '100%' },
+    upcommingTxtContainer: { position: 'absolute', top: 15, left: 15 },
+    upcommingTxt: {
+      padding: 5,
+      fontFamily: 'RobotoCondensed-Regular',
+      fontWeight: '700',
+      color: 'white'
+    },
+    watchModalContainer: {
+      backgroundColor: 'white'
     }
   });
