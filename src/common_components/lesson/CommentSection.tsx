@@ -52,13 +52,14 @@ export const CommentSection: React.FC<Props> = ({
   const [sortByComments, setSortByComments] = useState('latest');
   const [animate, setAnimate] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
-  const [selectedFilterIndex, setSelectedFilterIndex] = useState(1);
+
   const allCommentsNum = useRef(nrOfComments);
   const page = useRef(1);
   const allowScroll = useRef(true);
   const input = useRef<TextInput>(null);
   const commentCardRef = useRef<CommentCardRefObj>(null);
   const actionModalCommentInput = useRef<CommentInputModalRefObj>(null);
+
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
 
@@ -92,13 +93,12 @@ export const CommentSection: React.FC<Props> = ({
   }, [filterModalVisible]);
 
   const selectFilter = useCallback(
-    async (index: number, sort: string) => {
+    async (sort: string) => {
       page.current = 1;
       toggleFilterModal();
       const c = await commentService.getComments(lessonId, sort, page.current);
       allCommentsNum.current = c.meta.totalCommentsAndReplies;
       setComments(c.data);
-      setSelectedFilterIndex(index);
       setSortByComments(sort);
     },
     [lessonId, sortByComments, toggleFilterModal]
@@ -177,9 +177,9 @@ export const CommentSection: React.FC<Props> = ({
                 <TouchableOpacity
                   style={styles.filterContainer}
                   key={index}
-                  onPress={() => selectFilter(index, option.value)}
+                  onPress={() => selectFilter(option.value)}
                 >
-                  {selectedFilterIndex === index &&
+                  {option.value === sortByComments &&
                     check({
                       icon: {
                         width: 18,
@@ -190,7 +190,7 @@ export const CommentSection: React.FC<Props> = ({
                   <Text
                     style={[
                       styles.filterText,
-                      selectedFilterIndex === index
+                      option.value === sortByComments
                         ? styles.selectedFilter
                         : styles.unselectedFilter
                     ]}

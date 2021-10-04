@@ -138,7 +138,7 @@ export const Settings: React.FC<Props> = () => {
 
   const onContactSupport = useCallback(() => {
     alertBtn.current = '';
-    animatedAlert.current?.toggle('', '');
+    animatedAlert.current?.toggle();
     Linking.openURL(`mailto:support@${utils.brand}.com`);
   }, []);
 
@@ -147,7 +147,7 @@ export const Settings: React.FC<Props> = () => {
       Linking.openURL('itms-apps://apps.apple.com/account/subscriptions');
     else if (alertBtn.current === 'viewAndroid')
       Linking.openURL('https://play.google.com/store/account/subscriptions');
-    animatedAlert.current?.toggle('', '');
+    animatedAlert.current?.toggle();
     alertBtn.current = '';
   }, []);
 
@@ -211,7 +211,7 @@ export const Settings: React.FC<Props> = () => {
         ref={restoreAlert}
         onCancel={() => {
           if (loadingRef) loadingRef.current?.toggleLoading(false);
-          restoreAlert.current?.toggle('', '');
+          restoreAlert.current?.toggle();
         }}
       />
       <Loading ref={loadingRef} />
@@ -219,11 +219,11 @@ export const Settings: React.FC<Props> = () => {
         ref={restoreSuccessfull}
         onCancel={() => {
           if (loadingRef) loadingRef.current?.toggleLoading(false);
-          restoreSuccessfull.current?.toggle('', '');
+          restoreSuccessfull.current?.toggle();
         }}
       >
         <TouchableOpacity
-          onPress={() => restoreSuccessfull.current?.toggle('', '')}
+          onPress={() => restoreSuccessfull.current?.toggle()}
           style={styles.additionalBtn}
         >
           <Text style={styles.additionalBtnText}>OK</Text>

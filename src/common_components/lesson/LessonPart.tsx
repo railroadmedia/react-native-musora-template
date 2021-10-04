@@ -364,7 +364,7 @@ export const LessonPart: React.FC<Props> = ({
 
     if (lesson.is_added_to_primary_playlist) {
       userService.removeFromMyList(lesson.id);
-      removeModalRef.current?.toggle('', '');
+      removeModalRef.current?.toggle();
     } else {
       userService.addToMyList(lesson.id);
     }
@@ -424,7 +424,7 @@ export const LessonPart: React.FC<Props> = ({
   const goToLessons = useCallback(() => {
     if (!lesson) return;
 
-    completeOverviewPage.current?.toggle('', '');
+    completeOverviewPage.current?.toggle();
 
     setRefreshing(true);
     if (contentType === 'pack') {
@@ -446,7 +446,7 @@ export const LessonPart: React.FC<Props> = ({
   const goToNextLesson = useCallback(() => {
     if (!lesson) return;
 
-    completeLessonPage.current?.toggle('', '');
+    completeLessonPage.current?.toggle();
     if (incompleteLessonId) {
       getLesson(incompleteLessonId);
     }
@@ -585,7 +585,7 @@ export const LessonPart: React.FC<Props> = ({
     if (!lesson) return;
 
     const resetId = selectedAssignment ? selectedAssignment.id : lesson.id;
-    resetModalRef.current?.toggle('', '');
+    resetModalRef.current?.toggle();
     const res: ResetProgressResponse = await userService.resetProgress(resetId);
     if (selectedAssignment) {
       setSelectedAssignment({ ...selectedAssignment, progress: 0 });
@@ -1198,13 +1198,13 @@ export const LessonPart: React.FC<Props> = ({
         ref={removeModalRef}
         primaryBtnText='REMOVE'
         onAction={toggleMyList}
-        onCancel={() => removeModalRef.current?.toggle('', '')}
+        onCancel={() => removeModalRef.current?.toggle()}
       />
       <ActionModal
         ref={resetModalRef}
         primaryBtnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+        onCancel={() => resetModalRef.current?.toggle()}
       />
       {lesson && (
         <>

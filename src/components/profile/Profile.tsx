@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -37,6 +38,7 @@ import {
   UPDATE_PROFILE
 } from '../../state/profile/ProfileReducer';
 import type { Notification as I_Notification } from '../../interfaces/notification.interfaces';
+import { ProfileSettings } from './ProfileSettings';
 
 export const Profile: React.FC = () => {
   const isMounted = useRef(true);
@@ -46,6 +48,7 @@ export const Profile: React.FC = () => {
 
   const [flHeaderHeight, setFLHeaderHeight] = useState(0);
   const [headerNavHeight, setHeaderNavHeight] = useState(0);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   const { user, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
@@ -102,6 +105,10 @@ export const Profile: React.FC = () => {
             notifications: data || []
           });
       });
+
+  const showEditProfile = useCallback(() => {
+    setShowProfileSettings(!showProfileSettings);
+  }, [showProfileSettings]);
 
   const renderStickyHeader = () => (
     <View
@@ -180,7 +187,10 @@ export const Profile: React.FC = () => {
           style={styles.avatar}
         />
         <Text style={styles.displayName}>{user?.display_name}</Text>
-        <TouchableOpacity style={styles.editProfileTOpacity}>
+        <TouchableOpacity
+          style={styles.editProfileTOpacity}
+          onPress={showEditProfile}
+        >
           <Text style={styles.editProfileTxt}>EDIT PROFILE</Text>
         </TouchableOpacity>
       </View>
@@ -193,6 +203,9 @@ export const Profile: React.FC = () => {
         <Text style={styles.xpValue}>{user?.xpRank}</Text>
       </View>
       <Text style={styles.notificationsHeader}>Notifications</Text>
+      {showProfileSettings && (
+        <ProfileSettings closeModal={() => setShowProfileSettings(false)} />
+      )}
     </>
   );
 

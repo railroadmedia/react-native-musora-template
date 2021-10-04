@@ -99,7 +99,6 @@ export const PackOverview: React.FC<Props> = ({
           addCards((packRes as I_PackBundle).bundles);
         }
         setPack(packRes);
-        console.log(packRes);
         if (packRes.resources) createResourcesArr(packRes.resources);
         setRefreshing(false);
       });
@@ -151,7 +150,7 @@ export const PackOverview: React.FC<Props> = ({
 
   const resetProgress = useCallback(() => {
     if (pack) {
-      resetModalRef.current?.toggle('', '');
+      resetModalRef.current?.toggle();
       userService.resetProgress(pack.id);
       refresh();
     }
@@ -236,7 +235,7 @@ export const PackOverview: React.FC<Props> = ({
         ref={resetModalRef}
         primaryBtnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+        onCancel={() => resetModalRef.current?.toggle()}
       />
       {pack && (
         <Modal

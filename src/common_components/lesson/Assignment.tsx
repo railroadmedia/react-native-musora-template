@@ -17,13 +17,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgUri } from 'react-native-svg';
 import PDFView from 'react-native-view-pdf';
-import type { MusicSheet } from '../../interfaces/lesson.interfaces';
+import type {
+  MusicSheet,
+  SelectedAssignment
+} from '../../interfaces/lesson.interfaces';
 import { x } from '../../images/svgs';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { DoubleTapArea } from '../../common_components/lesson/DoubleTapArea';
-import type { SelectedAssignment } from './LessonPart';
 
 interface Props {
   assignment: SelectedAssignment;
@@ -58,7 +60,7 @@ export const Assignment: React.FC<Props> = ({
   const renderDots = (i: number) => (
     <View style={styles.dots}>
       {!!assignment.sheet_music_image_url &&
-        assignment.sheet_music_image_url?.map((dot, index) => (
+        assignment.sheet_music_image_url?.map((_, index: number) => (
           <View
             key={index}
             style={[
@@ -100,7 +102,7 @@ export const Assignment: React.FC<Props> = ({
               </Text>
               <Text style={styles.title}>{assignment.title}</Text>
               {Array.isArray(assignment.timecode) ? (
-                assignment.timecode.map(tc => (
+                assignment.timecode.map((tc: number) => (
                   <TouchableOpacity
                     key={tc}
                     onPress={() => onSeek?.(tc)}

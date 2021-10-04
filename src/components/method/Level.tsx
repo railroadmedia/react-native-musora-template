@@ -170,7 +170,7 @@ export const Level: React.FC<Props> = ({
         ref={removeModalRef}
         primaryBtnText='REMOVE'
         onAction={() => {}}
-        onCancel={() => removeModalRef.current?.toggle('', '')}
+        onCancel={() => removeModalRef.current?.toggle()}
       />
     </View>
   );

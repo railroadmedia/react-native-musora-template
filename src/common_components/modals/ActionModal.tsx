@@ -73,6 +73,7 @@ export const ActionModal = forwardRef<
               <Text style={styles.actionBtnText}>{primaryBtnText}</Text>
             </TouchableOpacity>
           )}
+          {children}
           {!!onCancel && (
             <TouchableOpacity onPress={onCancel}>
               <Text style={styles.cancelBtnText}>
@@ -80,7 +81,6 @@ export const ActionModal = forwardRef<
               </Text>
             </TouchableOpacity>
           )}
-          {children}
         </View>
       </TouchableOpacity>
     </Modal>
@@ -90,7 +90,7 @@ export const ActionModal = forwardRef<
 let setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({
     actionBtn: {
-      padding: 15,
+      marginVertical: 15,
       marginHorizontal: 30,
       backgroundColor: utils.color,
       borderRadius: 25,
@@ -118,14 +118,16 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       backgroundColor: 'rgba(0,0,0,.5)'
     },
     title: {
-      padding: 15,
+      paddingHorizontal: 15,
+      paddingTop: 5,
       textAlign: 'center',
       color: current.textColor,
       fontSize: utils.figmaFontSizeScaler(20),
       fontFamily: 'OpenSans-Bold'
     },
     message: {
-      padding: 15,
+      paddingHorizontal: 15,
+      paddingTop: 5,
       textAlign: 'center',
       fontSize: utils.figmaFontSizeScaler(18),
       fontFamily: 'OpenSans',
