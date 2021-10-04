@@ -15,11 +15,6 @@ import {
   TextInput,
   KeyboardAvoidingView
 } from 'react-native';
-import {
-  ImageLibraryOptions,
-  ImagePickerResponse,
-  launchImageLibrary
-} from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 
 import { utils } from '../../utils';
@@ -33,6 +28,7 @@ import type {
   UserAvatar
 } from '../../interfaces/user.interfaces';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { camera, library } from '../../images/svgs';
 
 interface Props {
   closeModal: () => void;
@@ -40,6 +36,7 @@ interface Props {
 
 export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   const customAlert = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const choosePhotoModal = useRef<React.ElementRef<typeof ActionModal>>(null);
   const textInput = useRef<TextInput>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
   const { theme } = useContext(ThemeContext);
@@ -70,10 +67,10 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       let res: UpdateAvatarResponse = await userService.updateAvatar(
         croppedImage
       );
-
-      if (res.success) {
-        let r = await userService.updateUserDetails(res.data?.[0]?.url);
+      if (res.data) {
+        userService.updateUserDetails(res.data?.[0]?.url);
         updateUser({ ...user, avatarUrl: res.data?.[0]?.url });
+        closeModal();
       } else {
         customAlert.current?.toggle(
           'Something went wrong.',
@@ -83,48 +80,68 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
     }
   }, [name, croppedImage, customAlert.current]);
 
-  const handleChoosePhoto = useCallback(async () => {
-    // if (!this.context.isConnected) {
-    //   return this.context.showNoConnectionAlert();
-    // }
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      maxHeight: 300,
-      maxWidth: 300
-    };
-    loadingRef.current?.toggleLoading(true);
-    launchImageLibrary(options, (response: ImagePickerResponse) => {
-      if (response?.assets?.[0]?.uri) {
-        ImagePicker.openCropper({
-          path: response?.assets?.[0]?.uri,
-          width: 300,
-          height: 300,
-          mediaType: 'photo'
-        })
-          .then(async image => {
-            loadingRef.current?.toggleLoading(false);
-            if (image) {
-              setImage(image.path);
-              const croppedImg = {
-                fileName: 'avatar',
-                type: image.mime,
-                uri: image.path
-              };
-              setCroppedImage(croppedImg);
-            }
-          })
-          .catch(error => {
-            loadingRef.current?.toggleLoading(false);
-          });
+  const toggleChangePhoto = useCallback(() => {
+    choosePhotoModal.current?.toggle('Select a Photo', ' ');
+  }, [choosePhotoModal]);
+
+  const cropImage = useCallback((path: string) => {
+    ImagePicker.openCropper({
+      path,
+      width: 300,
+      height: 300,
+      mediaType: 'photo'
+    })
+      .then(async image => {
+        loadingRef.current?.toggleLoading(false);
+        if (image) {
+          setImage(image.path);
+          const croppedImg = {
+            fileName: image.path,
+            type: image.mime,
+            uri: image.path
+          };
+          setCroppedImage(croppedImg);
+        }
+      })
+      .catch(error => {
+        loadingRef.current?.toggleLoading(false);
+      });
+  }, []);
+
+  const takeAPhoto = useCallback(async () => {
+    choosePhotoModal.current?.toggle();
+    ImagePicker.openCamera({ mediaType: 'photo' }).then(res => {
+      if (res.path) {
+        cropImage(res.path);
       } else {
         customAlert.current?.toggle(
           'Something went wrong',
-          response.errorMessage || ''
+          'Please try again.'
         );
         loadingRef.current?.toggleLoading(false);
       }
     });
-  }, [image, loadingRef.current, customAlert.current]);
+  }, [loadingRef, customAlert, choosePhotoModal]);
+
+  const chooseFromLibrary = useCallback(async () => {
+    // if (!this.context.isConnected) {
+    //   return this.context.showNoConnectionAlert();
+    // }
+    choosePhotoModal.current?.toggle();
+
+    loadingRef.current?.toggleLoading(true);
+    ImagePicker.openPicker({ mediaType: 'photo' }).then(res => {
+      if (res) {
+        cropImage(res.path);
+      } else {
+        customAlert.current?.toggle(
+          'Something went wrong',
+          'Please try again.'
+        );
+        loadingRef.current?.toggleLoading(false);
+      }
+    });
+  }, [loadingRef, customAlert, choosePhotoModal]);
 
   return (
     <Modal
@@ -155,7 +172,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
           <Image source={{ uri: image }} style={styles.profilePic} />
           <TouchableOpacity
             style={styles.changePhotoBtn}
-            onPress={handleChoosePhoto}
+            onPress={toggleChangePhoto}
           >
             <Text style={styles.changePhotoBtnText}>CHANGE PHOTO</Text>
           </TouchableOpacity>
@@ -174,9 +191,28 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       </TouchableOpacity>
       <ActionModal
         ref={customAlert}
-        onCancel={() => customAlert.current?.toggle('', '')}
+        onCancel={() => customAlert.current?.toggle()}
       />
       <Loading ref={loadingRef} />
+      <ActionModal
+        ref={choosePhotoModal}
+        onCancel={() => choosePhotoModal.current?.toggle()}
+      >
+        <TouchableOpacity style={styles.coloredBtn} onPress={takeAPhoto}>
+          {camera({
+            icon: { height: 20, width: 20, fill: '#FFFFFF' },
+            container: { marginHorizontal: 5 }
+          })}
+          <Text style={styles.coloredBtnText}>TAKE A PHOTO</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.coloredBtn} onPress={chooseFromLibrary}>
+          {library({
+            icon: { height: 20, width: 20, fill: '#FFFFFF' },
+            container: { marginHorizontal: 5 }
+          })}
+          <Text style={styles.coloredBtnText}>CHOOSE FROM LIBRARY</Text>
+        </TouchableOpacity>
+      </ActionModal>
     </Modal>
   );
 };
@@ -251,5 +287,27 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       color: current.contrastTextColor,
       textAlign: 'center',
       marginTop: 10
+    },
+    animatedView: {
+      padding: 10,
+      paddingHorizontal: 20,
+      borderRadius: 10,
+      margin: 5,
+      backgroundColor: current.background
+    },
+    coloredBtn: {
+      borderRadius: 25,
+      minHeight: 50,
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: utils.color,
+      marginVertical: 5
+    },
+    coloredBtnText: {
+      textAlign: 'center',
+      fontFamily: 'RobotoCondensed-Bold',
+      fontSize: 15,
+      color: '#FFFFFF'
     }
   });

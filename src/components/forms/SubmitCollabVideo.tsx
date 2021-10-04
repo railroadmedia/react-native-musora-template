@@ -197,7 +197,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
           </SafeAreaView>
         </View>
       </KeyboardAvoidingView>
-      <ActionModal ref={alert} onCancel={() => alert.current?.toggle('', '')} />
+      <ActionModal ref={alert} onCancel={() => alert.current?.toggle()} />
       <Loading ref={loadingRef} />
     </SafeAreaView>
   );

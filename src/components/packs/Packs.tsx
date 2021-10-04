@@ -260,7 +260,7 @@ export const Packs: React.FC<Props> = () => {
 
   const resetProgress = useCallback(() => {
     if (topHeaderPack) {
-      resetModalRef.current?.toggle('', '');
+      resetModalRef.current?.toggle();
       userService.resetProgress(topHeaderPack.id);
       refresh();
     }
@@ -304,7 +304,7 @@ export const Packs: React.FC<Props> = () => {
         ref={resetModalRef}
         primaryBtnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+        onCancel={() => resetModalRef.current?.toggle()}
       />
     </>
   );

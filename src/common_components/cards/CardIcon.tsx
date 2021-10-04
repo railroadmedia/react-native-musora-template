@@ -53,8 +53,8 @@ export const CardIcon: React.FC<Props> = ({
       endDate
     };
     AddCalendarEvent.presentEventCreatingDialog(eventConfig)
-      .then(() => calendarModalRef.current?.toggle('', ''))
-      .catch(() => calendarModalRef.current?.toggle('', ''));
+      .then(() => calendarModalRef.current?.toggle())
+      .catch(() => calendarModalRef.current?.toggle());
   }, [
     live_event_start_time,
     live_event_end_time,
@@ -69,14 +69,14 @@ export const CardIcon: React.FC<Props> = ({
   }, [setIsAddedToPrimaryList, id]);
 
   const removeFromMyList = useCallback(() => {
-    removeModalRef.current?.toggle('', '');
+    removeModalRef.current?.toggle();
     setIsAddedToPrimaryList(false);
     userService.removeFromMyList(id);
     onRemoveFromMyList?.(id);
   }, [setIsAddedToPrimaryList, id, removeModalRef]);
 
   const resetProgress = useCallback(() => {
-    resetModalRef.current?.toggle('', '');
+    resetModalRef.current?.toggle();
     userService.resetProgress(id);
     onResetProgress?.(id);
   }, [id, resetModalRef]);
@@ -127,13 +127,13 @@ export const CardIcon: React.FC<Props> = ({
         ref={removeModalRef}
         primaryBtnText='REMOVE'
         onAction={removeFromMyList}
-        onCancel={() => removeModalRef.current?.toggle('', '')}
+        onCancel={() => removeModalRef.current?.toggle()}
       />
       <ActionModal
         ref={resetModalRef}
         primaryBtnText='RESET'
         onAction={resetProgress}
-        onCancel={() => resetModalRef.current?.toggle('', '')}
+        onCancel={() => resetModalRef.current?.toggle()}
       />
 
       <ActionModal
@@ -142,7 +142,7 @@ export const CardIcon: React.FC<Props> = ({
         })}
         primaryBtnText='ADD TO CALENDAR'
         onAction={addLessonToCalendar}
-        onCancel={() => calendarModalRef.current?.toggle('', '')}
+        onCancel={() => calendarModalRef.current?.toggle()}
       />
     </View>
   );

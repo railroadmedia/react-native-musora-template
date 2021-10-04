@@ -18,7 +18,7 @@ export interface User {
 }
 
 export interface UserAvatar {
-  fileName: string;
+  fileName?: string;
   type: string;
   uri: string;
 }

@@ -412,10 +412,7 @@ export const StudentReview: React.FC<Props> = () => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
-        <ActionModal
-          ref={alert}
-          onCancel={() => alert.current?.toggle('', '')}
-        />
+        <ActionModal ref={alert} onCancel={() => alert.current?.toggle()} />
       </SafeAreaView>
       <Loading ref={loadingRef} />
     </>

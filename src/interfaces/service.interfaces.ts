@@ -78,7 +78,7 @@ export interface Call {
     url: string;
     method?: string;
     signal?: AbortSignal;
-    body?: {};
+    body?: {} | FormData;
   }): Promise<Response>;
 }
 

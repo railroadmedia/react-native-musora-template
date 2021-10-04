@@ -188,7 +188,6 @@ dependencies {
     implementation project(':react-native-svg')
     implementation project(':react-native-device-info')
     implementation project(':react-native-add-calendar-event')
-    implementation project(':react-native-image-picker')
     implementation project(':react-native-image-crop-picker')
     implementation project(':react-native-reanimated')
     implementation project(':react-native-screens')

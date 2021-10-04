@@ -110,11 +110,11 @@ export const CommentCard = forwardRef(
     }, [alert]);
 
     const closeDeleteModal = useCallback(() => {
-      alert.current?.toggle('', '');
+      alert.current?.toggle();
     }, [alert]);
 
     const deleteComment = useCallback(() => {
-      alert.current?.toggle('', '');
+      alert.current?.toggle();
       if (onDeleteComment) onDeleteComment(comment.id);
     }, [onDeleteComment, comment.id]);
 
@@ -290,14 +290,12 @@ export const CommentCard = forwardRef(
           </View>
         </View>
 
-        <ActionModal ref={alert} onCancel={() => alert.current?.toggle('', '')}>
-          <TouchableOpacity onPress={deleteComment} style={styles.btn}>
-            <Text style={styles.deleteBtnText}>DELETE</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={closeDeleteModal}>
-            <Text style={styles.cancelBtnText}>CANCEL</Text>
-          </TouchableOpacity>
-        </ActionModal>
+        <ActionModal
+          ref={alert}
+          onCancel={closeDeleteModal}
+          onAction={deleteComment}
+          primaryBtnText='DELETE'
+        />
       </View>
     );
   }

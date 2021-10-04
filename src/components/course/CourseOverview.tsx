@@ -161,7 +161,7 @@ export const CourseOverview: React.FC<Props> = ({
 
     userService.removeFromMyList(course.id);
     setCourse({ ...course, is_added_to_primary_playlist: false });
-    removeModalRef.current?.toggle('', '');
+    removeModalRef.current?.toggle();
   }, [course, removeModalRef]);
 
   const refresh = (): void => {
@@ -180,7 +180,7 @@ export const CourseOverview: React.FC<Props> = ({
       completed: false,
       progress_percent: 0
     });
-    resetModalRef.current?.toggle('', '');
+    resetModalRef.current?.toggle();
   }, [course, resetModalRef]);
 
   const onMainBtnPress = (): void => {};
@@ -415,14 +415,14 @@ export const CourseOverview: React.FC<Props> = ({
           ref={removeModalRef}
           primaryBtnText='REMOVE'
           onAction={addToMyList}
-          onCancel={() => removeModalRef.current?.toggle('', '')}
+          onCancel={() => removeModalRef.current?.toggle()}
         />
 
         <ActionModal
           ref={resetModalRef}
           primaryBtnText='RESET'
           onAction={resetProgress}
-          onCancel={() => resetModalRef.current?.toggle('', '')}
+          onCancel={() => resetModalRef.current?.toggle()}
         />
       </View>
     </SafeAreaView>
