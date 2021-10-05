@@ -267,7 +267,7 @@ export const Packs: React.FC<Props> = () => {
   }, [topHeaderPack]);
 
   return (
-    <>
+    <View style={styles.container}>
       {topHeaderPack?.id ? (
         <FlatList
           windowSize={10}
@@ -306,7 +306,7 @@ export const Packs: React.FC<Props> = () => {
         onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle()}
       />
-    </>
+    </View>
   );
 };
 

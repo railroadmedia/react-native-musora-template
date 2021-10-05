@@ -78,7 +78,8 @@ const Stack = createStackNavigator<{
     show: Show;
   };
   courseOverview: {
-    mobile_app_url: string;
+    mobile_app_url?: string;
+    id: number;
     isMethod: boolean;
   };
   lessonPart: {

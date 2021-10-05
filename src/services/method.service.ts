@@ -3,7 +3,7 @@ import { utils } from '../utils';
 import { call } from './auth.service';
 
 export const methodService: MethodService = {
-  getMethod: function (signal) {
+  getMethod: function (signal: AbortSignal) {
     return call({
       url: `/musora-api/learning-paths/${utils.brand}-method`,
       signal
@@ -12,13 +12,24 @@ export const methodService: MethodService = {
   getLevel: function (url, signal) {
     return call({ url, signal });
   },
-  getMethodCourse: function (url, signal, forDownload) {
+  getCourse: function (
+    signal: AbortSignal,
+    forDownload: boolean,
+    url?: string,
+    id?: number
+  ) {
     return call({
-      url: forDownload ? url + '?download=true' : url,
+      url: id
+        ? `/musora-api/content/${id}${forDownload ? '?download=true' : ''}`
+        : `${url}${forDownload ? '?download=true' : ''}`,
       signal
     });
   },
-  getContent: function (url, signal, forDownload) {
+  getContent: function (
+    url: string,
+    signal: AbortSignal,
+    forDownload: boolean
+  ) {
     return call({
       url: forDownload ? url + '?download=true' : url,
       signal

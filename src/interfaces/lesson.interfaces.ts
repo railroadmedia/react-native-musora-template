@@ -1,5 +1,5 @@
 import type { Card } from './card.interfaces';
-import type { Level, MethodCourse } from './method.interfaces';
+import type { Level, Course } from './method.interfaces';
 import type { PackBundle } from './packs.interfaces';
 import type { ErrorResponse } from './service.interfaces';
 
@@ -43,8 +43,8 @@ export interface Lesson {
   level_position: number;
   current_level: Level;
   next_level: Level;
-  current_course: MethodCourse;
-  next_course: MethodCourse;
+  current_course: Course;
+  next_course: Course;
   is_last_incomplete_course_from_level: boolean;
   is_last_incomplete_lesson_from_course: boolean;
   next_lesson: Card;

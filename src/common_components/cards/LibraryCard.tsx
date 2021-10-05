@@ -12,14 +12,14 @@ import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { CardImage } from './CardImage';
 import { CardIcon } from './CardIcon';
-import type { MethodCourse } from '../../interfaces/method.interfaces';
+import type { Course } from '../../interfaces/method.interfaces';
 import type { PackLessonBundle } from 'src/interfaces/packs.interfaces';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
 
 interface Props {
-  item: MethodCourse | PackLessonBundle;
+  item: Course | PackLessonBundle;
   subtitle: string;
   onBtnPress: (url: string) => void;
   isLocked?: boolean;

@@ -2,9 +2,10 @@ import type { Card } from './card.interfaces';
 
 export interface Level {
   id: number;
+  xp: number;
   total_xp: number;
   started: boolean;
-  courses: MethodCourse[];
+  courses: Course[];
   title: string;
   mobile_app_url: string;
   level_number: number;
@@ -60,7 +61,7 @@ export interface MethodContext {
   updateMethod: (method?: Method) => void;
 }
 
-export interface MethodCourse {
+export interface Course {
   id: number;
   type: string;
   is_added_to_primary_playlist: boolean;
@@ -73,7 +74,8 @@ export interface MethodCourse {
   progress_percent: number;
   published_on: string;
   xp: number;
-  total_xp: number;
+  total_xp?: number;
+  xp_bonus?: number;
   instructors: { name: string }[];
   next_lesson: Card;
   next_lesson_url: string;
