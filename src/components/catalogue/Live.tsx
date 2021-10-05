@@ -19,11 +19,13 @@ import { utils } from '../..';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { CountDown } from '../../common_components/CountDown';
 import { Gradient } from '../../common_components/Gradient';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 const { watchersListener } = require('MusoraChat');
 
 export const Live: React.FC = () => {
   const { theme } = useContext(ThemeContext);
+  const { isLandscape } = useContext(OrientationContext);
   const styles = useMemo(() => setStyle(theme), [theme]);
 
   const [watchModalVisible, setWatchModalVisible] = useState(false);
@@ -32,6 +34,7 @@ export const Live: React.FC = () => {
     {
       id,
       isLive,
+      instructor_head_shot_picture_url,
       thumbnail_url: thumb,
       title,
       instructors,
@@ -52,9 +55,6 @@ export const Live: React.FC = () => {
     isMounted.current = true;
     abortC.current = new AbortController();
     liveService.getLive(abortC.current.signal).then(liveRes => {
-      console.log('lres', liveRes);
-      liveRes.isLive = false;
-      liveRes.live_event_start_time = '2021/10/01 14:20:55';
       setLive(liveRes);
       if (liveRes?.id) {
         watchersListener(
@@ -106,7 +106,6 @@ export const Live: React.FC = () => {
           }}
           style={styles.thumbnail}
         />
-
         {!isLive && (
           <View style={styles.countDownContainer}>
             <View style={styles.upcommingTxtContainer}>
@@ -166,25 +165,54 @@ export const Live: React.FC = () => {
       </View>
       <Modal
         transparent={true}
-        visible={true}
+        visible={watchModalVisible}
         onRequestClose={() => setWatchModalVisible(false)}
         animationType={'fade'}
+        supportedOrientations={['landscape', 'portrait']}
       >
         <TouchableOpacity
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          style={styles.modalBackground}
           activeOpacity={0.95}
           onPress={() => setWatchModalVisible(false)}
         >
-          <View style={styles.watchModalContainer}>
-            <Text style={{ textAlign: 'center' }}>
-              {instructors?.join()} just went like.{`\n`}Would you like to join?
-              {`\n`}Join {instructors?.join()} and {viewersNo} members
+          <View
+            style={{
+              ...styles.watchModalContainer,
+              width: isLandscape ? '50%' : '100%'
+            }}
+          >
+            <Image
+              source={{
+                uri: `https://cdn.musora.com/image/fetch/ar_16:9,fl_lossy,q_auto:good,c_fill,g_face/${
+                  instructor_head_shot_picture_url || utils.fallbackAvatar
+                }`
+              }}
+              style={{ width: '30%', aspectRatio: 1, borderRadius: 500 }}
+            />
+            <Text
+              style={{ textAlign: 'center', paddingTop: 15, color: 'white' }}
+            >
+              <Text style={{ fontWeight: '700' }}>{instructors?.join()}</Text>{' '}
+              just went like.{`\n`}Would you like to join?
+              {`\n`}
+              {`\n`}Join{' '}
+              <Text style={{ fontWeight: '700' }}>{instructors?.join()}</Text>{' '}
+              and{' '}
+              <Text style={{ fontWeight: '700' }}>
+                {viewersNo} members{`\n`}
+              </Text>
             </Text>
+            <TouchableOpacity
+              style={[
+                styles.watchModalTOpacity,
+                { backgroundColor: utils.color, borderWidth: 0 }
+              ]}
+            >
+              <Text style={styles.watchModalTOpacityTxt}>WATCH</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.watchModalTOpacity}>
+              <Text style={styles.watchModalTOpacityTxt}>CANCEL</Text>
+            </TouchableOpacity>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -274,7 +302,31 @@ const setStyle = (theme: string, current = themeStyles[theme]) =>
       fontWeight: '700',
       color: 'white'
     },
+    modalBackground: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 15
+    },
     watchModalContainer: {
-      backgroundColor: 'white'
+      backgroundColor: '#151A1E',
+      color: 'white',
+      alignItems: 'center',
+      padding: 15,
+      borderRadius: 5
+    },
+    watchModalTOpacity: {
+      padding: 10,
+      paddingHorizontal: 50,
+      borderRadius: 500,
+      borderWidth: 1,
+      borderColor: current.borderColor,
+      marginVertical: 5
+    },
+    watchModalTOpacityTxt: {
+      color: 'white',
+      fontFamily: 'RobotoCondensed-Regular',
+      fontWeight: '700'
     }
   });

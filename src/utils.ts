@@ -75,6 +75,19 @@ class Utils implements UtilsInterface {
     }
   }
 
+  get loginBrandMsg() {
+    switch (this.brand) {
+      case 'pianote':
+        return 'The Ultimate Online Piano Lessons Experience';
+      case 'quitareo':
+        return 'The Ultimate Online Guitar Lessons Experience';
+      case 'singeo':
+        return 'The Ultimate Online Voice Lessons Experience';
+      default:
+        return 'The Ultimate Online Drum Lessons Experience';
+    }
+  }
+
   filterLabels() {
     switch (this.brand) {
       case 'pianote':

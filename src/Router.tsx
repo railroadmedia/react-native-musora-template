@@ -43,6 +43,7 @@ import type {
   LessonResponse
 } from './interfaces/lesson.interfaces';
 import { LessonPart } from './common_components/lesson/LessonPart';
+import { Login } from './components/auth/Login';
 
 type Scenes =
   | 'home'
@@ -112,6 +113,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
 
   const hideHeader = useCallback((title: string) => {
     const titleExceptions: string[] = [
+      'login',
       'level',
       'showoverview',
       'courseoverview',
@@ -163,6 +165,11 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
                     {props => <Catalogue {...props} />}
                   </Stack.Screen>
                 ))}
+                <Stack.Screen
+                  name='login'
+                  component={Login}
+                  options={{ title: 'login' }}
+                />
                 <Stack.Screen name='search' options={{ title: 'Search' }}>
                   {props => <Search {...props} />}
                 </Stack.Screen>
