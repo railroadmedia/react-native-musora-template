@@ -63,14 +63,22 @@ export interface CommentSection {
   meta: { totalCommentsAndReplies: number };
 }
 
+export interface AuthenticateResponse {
+  token?: string;
+  userId?: number;
+  isEdge?: boolean;
+  title?: string;
+  message?: string;
+  isEdgeExpired?: boolean;
+  isPackOlyOwner?: boolean;
+}
+
 export interface Authenticate {
-  (email?: string, password?: string, purchases?: []): Promise<{
-    token?: string;
-    userId?: number;
-    isEdge?: boolean;
-    title?: string;
-    message?: string;
-  }>;
+  (
+    email?: string,
+    password?: string,
+    purchases?: []
+  ): Promise<AuthenticateResponse>;
 }
 
 export interface Call {

@@ -3,14 +3,8 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
-import type { Method } from '../interfaces/method.interfaces';
 
-import type {
-  Authenticate,
-  Call,
-  CatalogueSection
-} from '../interfaces/service.interfaces';
-import type { User } from '../interfaces/user.interfaces';
+import type { Authenticate, Call } from '../interfaces/service.interfaces';
 
 import { utils } from '../utils';
 
@@ -23,7 +17,7 @@ const authenticate: Authenticate = async function (email, password, purchases) {
       if (cred) {
         email = cred.username;
         password = cred.password;
-      } else throw new Error();
+      } else throw new Error('login needed');
     }
     let res = await (
       await fetch(`${utils.rootUrl}/musora-api/login`, {
@@ -41,9 +35,9 @@ const authenticate: Authenticate = async function (email, password, purchases) {
       await setGenericPassword(email, password);
     } else await resetGenericPassword().catch(() => {});
     return res;
-  } catch (error) {
+  } catch (error: any) {
     await resetGenericPassword().catch(() => {});
-    throw new Error();
+    throw new Error(error.message);
   }
 };
 
