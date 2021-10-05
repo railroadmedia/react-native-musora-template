@@ -6,7 +6,7 @@ import type {
   Likes
 } from './lesson.interfaces';
 import type { Live } from './live.interfaces';
-import type { Level, Method, MethodCourse } from './method.interfaces';
+import type { Level, Method, Course } from './method.interfaces';
 import type { Notification } from './notification.interfaces';
 import type {
   BannerPack,
@@ -194,11 +194,12 @@ export interface UserService {
 export interface MethodService {
   getMethod: (signal: AbortSignal) => Promise<Method>;
   getLevel: (url: string, signal: AbortSignal) => Promise<Level>;
-  getMethodCourse: (
-    url: string,
+  getCourse: (
     signal: AbortSignal,
-    forDownload: boolean
-  ) => Promise<MethodCourse>;
+    forDownload: boolean,
+    url?: string,
+    id?: number
+  ) => Promise<Course>;
   getContent: (
     url: string,
     signal: AbortSignal,

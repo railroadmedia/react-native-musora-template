@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useNavigation } from '@react-navigation/native';
 import { RowCard } from '../../common_components/cards/RowCard';
 import { search } from '../../images/svgs';
 import {
@@ -40,6 +40,7 @@ import { searchService } from '../../services/search.service';
 interface Props {}
 
 export const Search: React.FC<Props> = ({}) => {
+  const { goBack } = useNavigation();
   const recetnSearchDefaultValue: string[] = [];
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
@@ -69,6 +70,8 @@ export const Search: React.FC<Props> = ({}) => {
         searchResult: [],
         refreshing: false
       });
+    } else {
+      goBack();
     }
     return true;
   }, []);

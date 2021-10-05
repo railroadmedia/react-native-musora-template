@@ -18,6 +18,8 @@ import {
   RefreshControl,
   BackHandler
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import { utils } from '../../utils';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
@@ -45,6 +47,8 @@ interface Props {}
 type TitleTypes = 'My List' | 'In Progress' | 'Completed';
 
 export const MyList: React.FC<Props> = ({}) => {
+  const { goBack } = useNavigation();
+
   const [pageTitle, setPageTitle] = useState<TitleTypes>('My List');
   const { theme } = useContext(ThemeContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
@@ -63,7 +67,11 @@ export const MyList: React.FC<Props> = ({}) => {
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const backButtonHandler = useCallback(() => {
-    setPageTitle('My List');
+    if (pageTitle !== 'My List') {
+      setPageTitle('My List');
+    } else {
+      goBack();
+    }
     return true;
   }, []);
 

@@ -59,7 +59,7 @@ export const LevelBanner: React.FC<Props> = ({
       >
         <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
           {back({
-            icon: { fill: themeStyles[theme].background, height: 15, width: 15 }
+            icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
           })}
         </TouchableOpacity>
 
@@ -172,7 +172,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       marginBottom: 10
     },
     levelTitle: {
-      color: current.background,
+      color: current.textColor,
       fontSize: utils.figmaFontSizeScaler(45),
       fontFamily: 'OpenSans-Bold',
       textAlign: 'center'

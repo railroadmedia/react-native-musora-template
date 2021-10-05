@@ -18,7 +18,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Download_V2 } from 'RNDownload';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -43,26 +43,30 @@ import { methodService } from '../../services/method.service';
 import { userService } from '../../services/user.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';
-import type { MethodCourse } from '../../interfaces/method.interfaces';
-import { contentService } from '../../services/content.service';
+import type { Course } from '../../interfaces/method.interfaces';
 
 interface Props {
   route: RouteProp<ParamListBase, 'courseOverview'> & {
     params: {
-      mobile_app_url: string;
+      mobile_app_url?: string;
       isMethod: boolean;
+      id: number;
     };
   };
 }
 
 export const CourseOverview: React.FC<Props> = ({
   route: {
-    params: { isMethod, mobile_app_url }
+    params: { isMethod, mobile_app_url, id }
   }
 }) => {
-  const { goBack } = useNavigation();
+  const { navigate, goBack } = useNavigation<
+    NavigationProp<ReactNavigation.RootParamList> & {
+      navigate: (scene: string, props?: {}) => void;
+    }
+  >();
 
-  const [course, setCourse] = useState<MethodCourse>();
+  const [course, setCourse] = useState<Course>();
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
@@ -76,6 +80,21 @@ export const CourseOverview: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
+  const downloadContent = useMemo(() => {
+    return new Promise<{}>(async res =>
+      course
+        ? res(
+            await methodService.getCourse(
+              abortC.current.signal,
+              true,
+              course.mobile_app_url,
+              course.id
+            )
+          )
+        : res({})
+    );
+  }, [course?.id]);
+
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
@@ -86,10 +105,11 @@ export const CourseOverview: React.FC<Props> = ({
     };
   }, []);
 
-  const getCourse = () =>
+  const getCourse = () => {
     methodService
-      .getMethodCourse(mobile_app_url, abortC.current.signal, false)
+      .getCourse(abortC.current.signal, false, mobile_app_url, id)
       .then(courseRes => {
+        console.log(courseRes);
         if (isMounted.current) {
           if (courseRes.next_lesson) addCards([courseRes.next_lesson]);
           addCards(courseRes.lessons);
@@ -97,11 +117,12 @@ export const CourseOverview: React.FC<Props> = ({
           setRefreshing(false);
         }
       });
+  };
 
   const renderTagsDependingOnContentType = useMemo(() => {
     const instructorTag = course?.instructors
       ? `${course?.instructors
-          .map(i => i.name)
+          .map(i => i.name || i)
           .join(', ')
           .toUpperCase()} | `
       : '';
@@ -121,8 +142,6 @@ export const CourseOverview: React.FC<Props> = ({
     course?.course_position,
     course?.xp
   ]);
-
-  const handleBackPress = (): void => {};
 
   const likeOrDislikeContent = useCallback(() => {
     if (!course) return;
@@ -183,7 +202,21 @@ export const CourseOverview: React.FC<Props> = ({
     resetModalRef.current?.toggle();
   }, [course, resetModalRef]);
 
-  const onMainBtnPress = (): void => {};
+  const onMainBtnPress = useCallback(() => {
+    if (course?.completed) {
+      resetModalRef.current?.toggle(
+        'Restart this course?',
+        'Take this course again as a refresher, or just to make sure you’ve got the concepts nailed! This will reset your progress on the course and remove any XP you’ve earned from it.'
+      );
+    } else {
+      if (course?.next_lesson) {
+        navigate('lessonPart', {
+          id: course?.next_lesson.id,
+          contentType: isMethod ? 'learning-path-lesson' : 'course-part'
+        });
+      }
+    }
+  }, [resetModalRef, course?.completed, course?.id, course?.next_lesson]);
 
   const flRefreshControl = (
     <RefreshControl
@@ -207,7 +240,7 @@ export const CourseOverview: React.FC<Props> = ({
             <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
               {back({
                 icon: {
-                  fill: themeStyles[theme].background,
+                  fill: themeStyles[theme].textColor,
                   height: 15,
                   width: 15
                 }
@@ -284,13 +317,13 @@ export const CourseOverview: React.FC<Props> = ({
                     </View>
                     <View style={styles.underCompleteTOpacities}>
                       <Text style={styles.detailText}>
-                        {isMethod ? course.total_length_in_seconds : 'TBD'}
+                        {Math.floor(course.total_length_in_seconds / 60)}
                       </Text>
                       <Text style={styles.underDetailText}>MINS</Text>
                     </View>
                     <View style={styles.underCompleteTOpacities}>
                       <Text style={styles.detailText}>
-                        {isMethod ? course.total_xp : 'TBD'}
+                        {course.total_xp || course.xp_bonus}
                       </Text>
                       <Text style={styles.underDetailText}>XP</Text>
                     </View>
@@ -316,23 +349,7 @@ export const CourseOverview: React.FC<Props> = ({
                     <Download_V2
                       entity={{
                         id: course.id,
-                        content: new Promise(async res =>
-                          isMethod
-                            ? res(
-                                await methodService.getMethodCourse(
-                                  course.mobile_app_url,
-                                  abortC.current.signal,
-                                  true
-                                )
-                              )
-                            : res(
-                                await contentService.getContentById(
-                                  course.id,
-                                  true,
-                                  abortC.current.signal
-                                )
-                              )
-                        )
+                        content: downloadContent
                       }}
                       styles={{
                         touchable: { flex: 1 },

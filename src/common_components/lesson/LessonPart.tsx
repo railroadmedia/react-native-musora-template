@@ -10,7 +10,6 @@ import {
   View,
   Text,
   Alert,
-  Platform,
   StatusBar,
   ScrollView,
   BackHandler,
@@ -144,11 +143,29 @@ export const LessonPart: React.FC<Props> = ({
 
   const overviewCompleteText = useMemo(() => {
     let type = '';
-    if (contentType === 'coach-stream') type = 'Lesson';
-    else if (lesson?.parent?.next_bundle) type = 'Pack bundle';
-    else type = capitalizeFirstLetter(contentType);
+    if (contentType === 'coach-stream') {
+      type = 'Lesson';
+    } else if (
+      contentType === 'method' &&
+      lesson?.is_last_incomplete_course_from_level
+    ) {
+      type = 'Level';
+    } else if (
+      contentType === 'method' &&
+      !lesson?.is_last_incomplete_course_from_level
+    ) {
+      type = 'Course';
+    } else if (lesson?.parent?.next_bundle) {
+      type = 'Pack bundle';
+    } else {
+      type = capitalizeFirstLetter(contentType);
+    }
     return type + ' complete';
-  }, [contentType, lesson?.parent]);
+  }, [
+    contentType,
+    lesson?.parent,
+    lesson?.is_last_incomplete_course_from_level
+  ]);
 
   const coloredIcon = useMemo(
     () => ({ width: 25, height: 25, fill: utils.color }),
@@ -163,6 +180,20 @@ export const LessonPart: React.FC<Props> = ({
     }),
     [theme]
   );
+
+  const downloadContent = useMemo(() => {
+    return new Promise<{}>(async res =>
+      lesson
+        ? res(
+            contentService.getContentById(
+              lesson?.id,
+              true,
+              abortC.current.signal
+            )
+          )
+        : res({})
+    );
+  }, [lesson?.id]);
 
   useEffect(() => {
     isMounted.current = true;
@@ -217,6 +248,7 @@ export const LessonPart: React.FC<Props> = ({
         if (content.title && content.message) {
           return alert.current?.toggle(content.title, content.message);
         }
+        console.log(content);
         setLesson(content);
         setProgress(getProgress(content.user_progress));
         setIncompleteLessonId(
@@ -252,6 +284,20 @@ export const LessonPart: React.FC<Props> = ({
     else goBack();
     return true;
   }, [assignmentFSStyle, selectedAssignment, fullscreen, goBack]);
+
+  const onNoVideoBack = useCallback(() => {
+    if (!utils.isTablet) Orientation.lockToPortrait();
+    StatusBar.setHidden(false);
+    goBack();
+  }, []);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', onAndroidBack);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', onAndroidBack);
+    };
+  }, [onAndroidBack]);
 
   const toggleResourcesModal = useCallback(() => {
     setShowResourcesModal(!showResourcesModal);
@@ -307,7 +353,9 @@ export const LessonPart: React.FC<Props> = ({
       difficulty,
       instructor,
       parent,
-      published_on
+      published_on,
+      level_position,
+      course_position
     } = lesson || {};
     const parentTitleTag = parent?.title
       ? `${parent.title.toUpperCase()} | `
@@ -324,6 +372,7 @@ export const LessonPart: React.FC<Props> = ({
     const artistTag = artist ? `${artist.toUpperCase()} | ` : '';
     const typeTag = type ? `${type.toUpperCase()} | ` : '';
     const xpTag = `${xp || 0} XP`;
+    const levelTag = 'LEVEL ' + level_position + '.' + course_position + ' | ';
     switch (contentType) {
       case 'song':
         return artistTag + xpTag;
@@ -339,6 +388,8 @@ export const LessonPart: React.FC<Props> = ({
         return instructorTag + artistTag + xpTag;
       case 'pack':
         return releaseDateTag + xpTag;
+      case 'method':
+        return instructorTag + levelTag + xpTag;
     }
     return '';
   }, [lesson, contentType]);
@@ -425,13 +476,22 @@ export const LessonPart: React.FC<Props> = ({
     if (!lesson) return;
 
     completeOverviewPage.current?.toggle();
-
     setRefreshing(true);
+
     if (contentType === 'pack') {
       if (lesson.parent?.next_bundle?.id) {
         navigate('packOverview', { id: lesson.parent?.next_bundle?.id });
       } else {
         navigate('packs');
+      }
+    } else if (contentType === 'method') {
+      if (!lesson.is_last_incomplete_course_from_level) {
+        navigate('courseOverview', {
+          mobile_app_url: lesson.next_course.mobile_app_url,
+          isMethod: true
+        });
+      } else if (lesson.is_last_incomplete_course_from_level) {
+        navigate('level', { mobile_app_url: lesson.next_level.mobile_app_url });
       }
     } else {
       let route: string = contentType.replace(' ', '');
@@ -518,16 +578,35 @@ export const LessonPart: React.FC<Props> = ({
           setSelectedAssignment({ ...selectedAssignment, progress: 100 });
         }
       } else {
-        if (incompleteLessonId) {
-          completeLessonPage.current?.toggle(
-            'Lesson complete',
-            `You earned ${lesson.xp} XP!`
-          );
+        if (contentType === 'method') {
+          if (!lesson.is_last_incomplete_lesson_from_course) {
+            completeLessonPage.current?.toggle(
+              'Lesson complete',
+              `You earned ${lesson.xp} XP!`
+            );
+          } else if (!lesson.is_last_incomplete_course_from_level) {
+            completeOverviewPage.current?.toggle(
+              overviewCompleteText,
+              `You earned ${lesson.current_course.xp} XP!`
+            );
+          } else if (lesson.is_last_incomplete_course_from_level) {
+            completeOverviewPage.current?.toggle(
+              overviewCompleteText,
+              `You earned ${lesson.current_level.xp} XP!`
+            );
+          }
         } else {
-          completeOverviewPage.current?.toggle(
-            overviewCompleteText,
-            `You earned ${lesson.xp} XP!`
-          );
+          if (incompleteLessonId) {
+            completeLessonPage.current?.toggle(
+              'Lesson complete',
+              `You earned ${lesson.xp} XP!`
+            );
+          } else {
+            completeOverviewPage.current?.toggle(
+              overviewCompleteText,
+              `You earned ${lesson.xp} XP!`
+            );
+          }
         }
         setProgress(100);
         setLesson({
@@ -548,6 +627,7 @@ export const LessonPart: React.FC<Props> = ({
       }
     },
     [
+      contentType,
       incompleteLessonId,
       lesson,
       overviewCompleteText,
@@ -840,11 +920,7 @@ export const LessonPart: React.FC<Props> = ({
         <SafeAreaView>
           <View style={styles.videoReplacer}>
             <TouchableOpacity
-              onPress={() => {
-                if (!utils.isTablet) Orientation.lockToPortrait();
-                StatusBar.setHidden(false);
-                goBack();
-              }}
+              onPress={onNoVideoBack}
               style={styles.backBtnContainer}
             >
               {back({
@@ -1000,15 +1076,7 @@ export const LessonPart: React.FC<Props> = ({
                         entity={{
                           id: lesson.id,
                           comments: lesson.comments,
-                          content: new Promise(async res =>
-                            res(
-                              contentService.getContentById(
-                                lesson.id,
-                                true,
-                                abortC.current.signal
-                              )
-                            )
-                          )
+                          content: downloadContent
                         }}
                         styles={{
                           touchable: { flex: 1 },
