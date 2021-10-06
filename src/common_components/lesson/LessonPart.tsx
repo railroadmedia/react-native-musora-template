@@ -21,7 +21,11 @@ import {
   Dimensions,
   StyleSheet,
   ViewStyle,
-  Modal
+  Modal,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
+  NativeScrollSize,
+  NativeScrollPoint
 } from 'react-native';
 import Orientation from 'react-native-orientation-locker';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -138,6 +142,8 @@ export const LessonPart: React.FC<Props> = ({
   const completeLessonPage = useRef<React.ElementRef<typeof ActionModal>>(null);
   const completeOverviewPage =
     useRef<React.ElementRef<typeof ActionModal>>(null);
+  const commentSectionRef =
+    useRef<React.ElementRef<typeof CommentSection>>(null);
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -194,6 +200,19 @@ export const LessonPart: React.FC<Props> = ({
         : res({})
     );
   }, [lesson?.id]);
+
+  const isCloseToBottom = useCallback(
+    ({
+      layoutMeasurement,
+      contentOffset,
+      contentSize
+    }: {
+      layoutMeasurement: NativeScrollSize;
+      contentOffset: NativeScrollPoint;
+      contentSize: NativeScrollSize;
+    }) => layoutMeasurement.height + contentOffset.y >= contentSize.height - 40,
+    []
+  );
 
   useEffect(() => {
     isMounted.current = true;
@@ -551,7 +570,8 @@ export const LessonPart: React.FC<Props> = ({
       if (assignmentId) {
         incompleteAssignments = lesson.assignments.filter(
           (a: Assignment) =>
-            a.user_progress[0].progress_percent !== 100 && a.id !== assignmentId
+            a.user_progress[0]?.progress_percent !== 100 &&
+            a.id !== assignmentId
         ).length;
         if (!incompleteAssignments) {
           if (incompleteLessonId)
@@ -791,6 +811,14 @@ export const LessonPart: React.FC<Props> = ({
     );
   }, []);
 
+  const loadMoreComments = useCallback(
+    ({ nativeEvent }: { nativeEvent: NativeScrollEvent }) => {
+      if (isCloseToBottom(nativeEvent))
+        commentSectionRef?.current?.loadMoreComments();
+    },
+    [isCloseToBottom, commentSectionRef]
+  );
+
   const flRefreshControl = (
     <RefreshControl
       colors={['white']}
@@ -1018,23 +1046,14 @@ export const LessonPart: React.FC<Props> = ({
         style={[styles.container, { ...assignmentFSStyle }]}
         behavior={utils.isiOS ? 'padding' : undefined}
       >
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
           {!refreshing ? (
             <>
               <ScrollView
-                style={{ flex: 1 }}
+                style={styles.container}
                 scrollEventThrottle={16}
                 keyboardShouldPersistTaps='handled'
-                onScroll={({ nativeEvent }) => {
-                  // if (!isiOS && this.isCloseToBottom(nativeEvent))
-                  //   if (this.commentSection)
-                  //     this.commentSection.loadMoreComments();
-                }}
-                onMomentumScrollEnd={({ nativeEvent }) => {
-                  // if (isiOS && this.isCloseToBottom(nativeEvent))
-                  //   if (this.commentSection)
-                  //     this.commentSection.loadMoreComments();
-                }}
+                onMomentumScrollEnd={loadMoreComments}
                 refreshControl={flRefreshControl}
               >
                 <View style={styles.container}>
@@ -1177,6 +1196,7 @@ export const LessonPart: React.FC<Props> = ({
                     commentsArray={lesson.comments}
                     nrOfComments={lesson.total_comments}
                     lessonId={lesson.id}
+                    ref={commentSectionRef}
                   />
                 )}
               </ScrollView>
