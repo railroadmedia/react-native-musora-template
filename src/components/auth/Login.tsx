@@ -6,7 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  ActivityIndicator
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authenticate } from '../../services/auth.service';
@@ -40,8 +42,6 @@ export const Login: React.FC = () => {
   const login = () =>
     authenticate(creds.current.u, creds.current.p)
       .then(auth => {
-        console.log(auth);
-
         if (auth?.token) {
           if (canNavigateHome(auth)) navigate('home');
           else if (canNavigatePacks(auth)) navigate('packs');
@@ -81,11 +81,14 @@ export const Login: React.FC = () => {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: utils.color }}>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: utils.color }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    >
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps={'always'}
+        keyboardShouldPersistTaps={'handled'}
       >
         {utils.svgBrand({ icon: { width: '80%', fill: 'white' } })}
         <Text style={styles.loginBrandMsgTxt}>{utils.loginBrandMsg}</Text>
@@ -126,7 +129,7 @@ export const Login: React.FC = () => {
         ref={warningRef}
         onAction={() => warningRef.current?.toggle()}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 const styles = StyleSheet.create({

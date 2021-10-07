@@ -82,7 +82,7 @@ export const Settings: React.FC<Props> = () => {
         route: 'privacyPolicy'
       },
       { title: 'Restore Purchases', icon: creditCard({ icon: iconStyle }) }, // tbd
-      { title: 'Log out', icon: turnOff({ icon: iconStyle }) }
+      { title: 'Log out', icon: turnOff({ icon: iconStyle }), route: 'login' }
     ];
   }, []);
 
@@ -90,11 +90,7 @@ export const Settings: React.FC<Props> = () => {
     if (title === 'Manage Subscription') manageSubscription();
     else if (title === 'Restore Purchases') restorePurchases();
     else if (title === 'Profile Settings') setShowProfileSettings(true);
-    else if (title === 'Log out') {
-      // TODO
-    } else if (route) {
-      navigate(route, {});
-    }
+    else if (route) navigate(route, {});
   }, []);
 
   const manageSubscription = useCallback(() => {

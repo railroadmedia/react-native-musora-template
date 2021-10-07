@@ -42,6 +42,7 @@ import type {
 } from './interfaces/lesson.interfaces';
 import { LessonPart } from './common_components/lesson/LessonPart';
 import { Login } from './components/auth/Login';
+import { LaunchScreen } from './components/auth/LaunchScreen';
 
 type Scenes =
   | 'home'
@@ -102,6 +103,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
   const hideHeader = useCallback((title: string) => {
     const titleExceptions: string[] = [
       'login',
+      'launch',
       'level',
       'showoverview',
       'courseoverview',
@@ -144,6 +146,11 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               }
             }}
           >
+            <Stack.Screen
+              name='launch'
+              component={LaunchScreen}
+              options={{ title: 'launch' }}
+            />
             <Stack.Screen
               name='login'
               component={Login}

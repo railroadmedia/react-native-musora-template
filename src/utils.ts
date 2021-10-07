@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
 import * as svgs from './images/svgs';
 
@@ -6,6 +6,8 @@ interface UtilsInterface {
   rootUrl: string;
   brand: string;
   color: string;
+  WIDTH: number;
+  HEIGHT: number;
   getColorWithAlpha: (alpha: number) => string;
   isiOS: boolean;
   isTablet: boolean;
@@ -43,6 +45,14 @@ class Utils implements UtilsInterface {
   }
   getColorWithAlpha(alpha: number) {
     return this._color[this.brand]?.replace('1)', `${alpha})`) || '';
+  }
+
+  get WIDTH() {
+    return Dimensions.get('screen').width;
+  }
+
+  get HEIGHT() {
+    return Dimensions.get('screen').height;
   }
 
   private serverDownMsg =
