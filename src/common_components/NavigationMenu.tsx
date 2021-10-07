@@ -27,6 +27,7 @@ const titles = [
   { title: 'Packs', route: 'packs' },
   { title: 'Courses', route: 'courses' },
   { title: 'Show Overview Test', route: 'showOverview' },
+  { title: 'Coach Overview Test', route: 'coachOverview' },
   { title: 'Shows', route: 'shows' },
   { title: 'Songs', route: 'songs' },
   { title: 'Play-Alongs', route: 'playAlongs' },
@@ -80,6 +81,8 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
               ]
             }
           });
+        } else if (route === 'coachOverview') {
+          navigate(route, { id: 281906 });
         } else {
           navigate(route);
         }

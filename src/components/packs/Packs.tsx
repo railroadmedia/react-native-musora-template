@@ -14,11 +14,11 @@ import {
   RefreshControl,
   Text,
   TouchableOpacity,
-  Dimensions,
   ImageBackground,
   FlatList,
   ActivityIndicator,
-  ViewStyle
+  ViewStyle,
+  Dimensions
 } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
@@ -35,10 +35,10 @@ import type { PacksSection } from '../../interfaces/service.interfaces';
 import { lock } from '../../images/svgs';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 interface Props {}
 
-const greaterWDim = Dimensions.get('screen').width;
 export const Packs: React.FC<Props> = () => {
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
@@ -46,6 +46,7 @@ export const Packs: React.FC<Props> = () => {
     }
   >();
   const { theme } = useContext(ThemeContext);
+  const { isLandscape } = useContext(OrientationContext);
 
   const [refreshing, setRefreshing] = useState(false);
   const [topHeaderPack, setTopHeaderPack] = useState<BannerPack>();
@@ -60,6 +61,11 @@ export const Packs: React.FC<Props> = () => {
     if (utils.isTablet) return 6;
     return 3;
   }, []);
+
+  const greaterWDim = useMemo(() => {
+    const window = Dimensions.get('window');
+    return window.width < window.height ? window.width : window.height;
+  }, [isLandscape]);
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 

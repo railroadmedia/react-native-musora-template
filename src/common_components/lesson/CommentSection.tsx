@@ -1,6 +1,8 @@
 import React, {
+  forwardRef,
   useCallback,
   useContext,
+  useImperativeHandle,
   useMemo,
   useRef,
   useState
@@ -42,11 +44,10 @@ interface Props {
   lessonId: number;
 }
 
-export const CommentSection: React.FC<Props> = ({
-  commentsArray,
-  nrOfComments,
-  lessonId
-}) => {
+export const CommentSection = forwardRef<
+  { loadMoreComments: () => void },
+  Props
+>(({ commentsArray, nrOfComments, lessonId }, ref) => {
   const [comments, setComments] = useState(commentsArray);
   const [commentText, setCommentText] = useState('');
   const [sortByComments, setSortByComments] = useState('latest');
@@ -113,27 +114,29 @@ export const CommentSection: React.FC<Props> = ({
     [comments]
   );
 
-  const loadMoreComments = useCallback(async () => {
-    if (!allowScroll.current) {
-      return;
-    }
+  useImperativeHandle(ref, () => ({
+    async loadMoreComments() {
+      if (!allowScroll.current) {
+        return;
+      }
 
-    if (page.current * 10 < nrOfComments) {
-      setAnimate(true);
+      if (page.current * 10 < nrOfComments) {
+        setAnimate(true);
 
-      page.current += 1;
-      allowScroll.current = false;
-      const c = await commentService.getComments(
-        lessonId,
-        sortByComments,
-        page.current
-      );
-      allCommentsNum.current = c.meta.totalCommentsAndReplies;
-      setComments(page.current === 1 ? c.data : comments.concat(c.data));
-      setAnimate(false);
-      allowScroll.current = true;
+        page.current += 1;
+        allowScroll.current = false;
+        const c = await commentService.getComments(
+          lessonId,
+          sortByComments,
+          page.current
+        );
+        allCommentsNum.current = c.meta.totalCommentsAndReplies;
+        setComments(page.current === 1 ? c.data : comments.concat(c.data));
+        setAnimate(false);
+        allowScroll.current = true;
+      }
     }
-  }, [lessonId, nrOfComments, sortByComments]);
+  }));
 
   const onAddOrRemoveReply = useCallback(async () => {
     const c = await commentService.getComments(
@@ -285,7 +288,7 @@ export const CommentSection: React.FC<Props> = ({
       </CommentInputModal>
     </View>
   );
-};
+});
 
 const setStyles = (theme: string, current = themeStyles[theme]) =>
   StyleSheet.create({

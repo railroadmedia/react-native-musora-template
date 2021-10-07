@@ -1,4 +1,5 @@
 import type { Card } from './card.interfaces';
+import type { Coach } from './coach.interface';
 import type {
   Comment,
   Lesson,
@@ -266,4 +267,9 @@ export interface CommentService {
 }
 export interface LiveService {
   getLive: (signal: AbortSignal) => Promise<Live>;
+}
+
+export interface CoachesService {
+  getAll: ServiceFunction<CatalogueSection>;
+  getContent: (id: number, signal: AbortSignal) => Promise<Coach>;
 }
