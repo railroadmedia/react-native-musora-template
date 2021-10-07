@@ -49,8 +49,13 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const { thumbnail_url, started, completed, description, next_lesson } =
-    method;
+  const {
+    banner_background_image,
+    started,
+    completed,
+    description,
+    next_lesson
+  } = method;
   return (
     <>
       <ImageBackground
@@ -59,7 +64,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
           expandableInfo ? { aspectRatio: 16 / 9 } : {}
         ]}
         source={{
-          uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco/${thumbnail_url}`
+          uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco/${banner_background_image}`
         }}
       >
         <View style={styles.gradientContainer}>

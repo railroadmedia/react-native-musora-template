@@ -42,6 +42,7 @@ import type {
 } from './interfaces/lesson.interfaces';
 import { LessonPart } from './common_components/lesson/LessonPart';
 import { Login } from './components/auth/Login';
+import { CoachOverview } from './components/coach/CoachOverview';
 
 type Scenes =
   | 'home'
@@ -52,7 +53,8 @@ type Scenes =
   | 'shows'
   | 'search'
   | 'forum'
-  | 'seeAll';
+  | 'seeAll'
+  | 'coachOverview';
 interface Props {
   bottomNavVisibleOn: Scenes[];
   catalogues: Scenes[];
@@ -96,6 +98,9 @@ const Stack = createStackNavigator<{
     likeOrDislikeComment: () => void;
     onAddOrRemoveReply: (num: number) => void;
   };
+  coachOverview: {
+    id: number;
+  };
 }>();
 
 export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
@@ -105,6 +110,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'level',
       'showoverview',
       'courseoverview',
+      'coachoverview',
       'packoverview',
       'studentreview',
       'askquestion',
@@ -193,6 +199,12 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               options={{ title: 'PackOverview' }}
             >
               {props => <PackOverview {...props} />}
+            </Stack.Screen>
+            <Stack.Screen
+              name='coachOverview'
+              options={{ title: 'CoachOverview' }}
+            >
+              {props => <CoachOverview {...props} />}
             </Stack.Screen>
             <Stack.Screen
               name='showOverview'
