@@ -146,6 +146,146 @@ class Utils implements UtilsInterface {
   figmaFontSizeScaler(fontSize: number) {
     return fontSize * 1.2;
   }
+
+  get launchScreens() {
+    [];
+    switch (this.brand) {
+      case 'pianote':
+        return [
+          {
+            jpg: require('./images/launchP1.jpg'),
+            png: require('./images/launchP1.png'),
+            bold: 'Pianote Lessons, Songs & Support',
+            normal: 'Everywhere you go.'
+          },
+          {
+            jpg: require('./images/launchP2.jpg'),
+            png: require('./images/launchP2.png'),
+            bold: ' Always Know Exactly What To Practice.',
+            normal: `Unlike "video game" learning where you only learn what keys to hit, you'll actually play music with step-by-step lessons that will build your piano playing foundations!`
+          },
+          {
+            jpg: require('./images/launchP3.jpg'),
+            png: require('./images/launchP3.png'),
+            bold: 'Play Your Favorite Songs',
+            normal: `Nothing is better than playing to real music! So you'll get custom play-alongs to help you apply specific-skills PLUS breakdowns of popular music so you can play your favorite tunes!`
+          },
+          {
+            jpg: require('./images/launchP4.jpg'),
+            png: require('./images/launchP4.png'),
+            bold: 'Personalized Lessons & Support',
+            normal: `Get direct access to real teachers any time you have a question, access weekly live-streaming video lessons, and connect with teachers and students in the community forums!`
+          },
+          {
+            bold: 'Not A Member?',
+            normal: `Try it for free for 7-days when you click the sign up button below to set up your Pianote account.`
+          }
+        ];
+      // case 'guitareo':
+      //   return [
+      //     {
+      //       jpg: require('./images/launchG1.jpg'),
+      //       png: require('./images/launchG1.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchG2.jpg'),
+      //       png: require('./images/launchG2.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchG3.jpg'),
+      //       png: require('./images/launchG3.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchG4.jpg'),
+      //       png: require('./images/launchG4.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     }
+      //   ];
+      // case 'singeo':
+      //   return [
+      //     {
+      //       jpg: require('./images/launchS1.jpg'),
+      //       png: require('./images/launchS1.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchS2.jpg'),
+      //       png: require('./images/launchS2.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchS3.jpg'),
+      //       png: require('./images/launchS3.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       jpg: require('./images/launchS4.jpg'),
+      //       png: require('./images/launchS4.png'),
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     },
+      //     {
+      //       bold: 'Not A Member?',
+      //       normal:
+      //         'Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.'
+      //     }
+      //   ];
+      default:
+        return [
+          {
+            jpg: require('./images/launchD1.jpg'),
+            png: require('./images/launchD1.png'),
+            bold: 'Drum Lessons, Songs & Shows',
+            normal: 'Everywhere you go.'
+          },
+          {
+            jpg: require('./images/launchD2.jpg'),
+            png: require('./images/launchD2.png'),
+            bold: 'Learn From The Legends',
+            normal: `Improve your drumming with step-by-step video courses featuring the best drummers in the world.`
+          },
+          {
+            jpg: require('./images/launchD3.jpg'),
+            png: require('./images/launchD3.png'),
+            bold: 'Play Your Favorite Songs',
+            normal: `Apply your skills to real music with detailed song breakdowns for the tunes you know and love.`
+          },
+          {
+            jpg: require('./images/launchD4.jpg'),
+            png: require('./images/launchD4.png'),
+            bold: 'TV For Drummers',
+            normal: `Drumming isn’t limited to the practice room. Enjoy exclusive documentaries and shows for drummers.`
+          },
+          {
+            bold: 'Not A Member?',
+            normal: `Try it for free for 7-days when you click the sign up button below to set up your Drumeo Edge account.`
+          }
+        ];
+    }
+  }
 }
 
 export let utils = new Utils();

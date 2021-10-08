@@ -25,14 +25,10 @@ export const Login: React.FC = () => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [visiblePswd, setVisiblePswd] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const creds = useRef({ u: '', p: '' });
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
-
-  useEffect(() => {
-    login();
-  }, []);
 
   const onLogin = () => {
     setLoading(true);
@@ -50,10 +46,7 @@ export const Login: React.FC = () => {
         } else warningRef.current?.toggle(auth.title, auth.message);
         setLoading(false);
       })
-      .catch(e => {
-        setLoading(false);
-        if (e.message !== 'login needed') warningRef.current?.toggle();
-      });
+      .catch(e => setLoading(false));
 
   const renderTInput = (secured: boolean) => (
     <View style={styles.textInputContainer}>
@@ -91,7 +84,10 @@ export const Login: React.FC = () => {
         keyboardShouldPersistTaps={'handled'}
       >
         {utils.svgBrand({ icon: { width: '80%', fill: 'white' } })}
-        <Text style={styles.loginBrandMsgTxt}>{utils.loginBrandMsg}</Text>
+        <View>
+          {/* View needed for a fluid animation when the keyboard shows (at least on iOS) */}
+          <Text style={styles.loginBrandMsgTxt}>{utils.loginBrandMsg}</Text>
+        </View>
         {!loading && (
           <>
             {renderTInput(false)}
