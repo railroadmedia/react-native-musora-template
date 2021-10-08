@@ -150,7 +150,7 @@ export const LaunchScreen: React.FC = () => {
               <Text style={styles.tOpacityTxt}>LOG IN</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              //   onPress={() => navigate('signup')}
+              onPress={() => navigate('signup')}
               style={[
                 styles.tOpacity,
                 { backgroundColor: 'white', marginRight: bottom }

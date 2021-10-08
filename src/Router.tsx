@@ -44,6 +44,7 @@ import { LessonPart } from './common_components/lesson/LessonPart';
 import { Login } from './components/auth/Login';
 import { LaunchScreen } from './components/auth/LaunchScreen';
 import { CoachOverview } from './components/coach/CoachOverview';
+import { SignUp } from './components/auth/SignUp';
 
 type Scenes =
   | 'home'
@@ -105,9 +106,10 @@ const Stack = createStackNavigator<{
 }>();
 
 export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
-  const hideHeader = useCallback((title: string) => {
+  const hideHeader = useCallback((route: string) => {
     const titleExceptions: string[] = [
       'login',
+      'signup',
       'launch',
       'level',
       'showoverview',
@@ -117,9 +119,9 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'studentreview',
       'askquestion',
       'submitcollabvideo',
-      'lesson'
+      'lessonPart'
     ];
-    return titleExceptions.includes(title?.toLowerCase());
+    return titleExceptions.includes(route?.toLowerCase());
   }, []);
 
   return (
@@ -128,8 +130,11 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{
-              header: ({ options: { title } }: StackHeaderProps) => {
-                if (title && hideHeader(title)) return null;
+              header: ({
+                options: { title },
+                route: { name }
+              }: StackHeaderProps) => {
+                if (hideHeader(name)) return null;
                 return (
                   <Header
                     title={title}
@@ -152,115 +157,84 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               }
             }}
           >
-            <Stack.Screen
-              name='launch'
-              component={LaunchScreen}
-              options={{ title: 'launch' }}
-            />
-            <Stack.Screen
-              name='login'
-              component={Login}
-              options={{ title: 'login' }}
-            />
+            <Stack.Screen name='launch' component={LaunchScreen} />
+            <Stack.Screen name='signup' component={SignUp} />
+            <Stack.Screen name='login' component={Login} />
             {catalogues.map(c => (
-              <Stack.Screen name={c} key={c}>
-                {props => <Catalogue {...props} />}
-              </Stack.Screen>
+              <Stack.Screen name={c} key={c} component={Catalogue} />
             ))}
-            <Stack.Screen name='search' options={{ title: 'Search' }}>
-              {props => <Search {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='myList' options={{ title: 'My List' }}>
-              {props => <MyList {...props} />}
-            </Stack.Screen>
+            <Stack.Screen
+              name='search'
+              options={{ title: 'Search' }}
+              component={Search}
+            />
+            <Stack.Screen
+              name='myList'
+              options={{ title: 'My List' }}
+              component={MyList}
+            />
             <Stack.Screen name='downloads' options={{ title: 'Downloads' }}>
               {props => <Downloads {...props} whatever='whatever' />}
             </Stack.Screen>
-            <Stack.Screen name='profile' options={{ title: 'Profile' }}>
-              {props => <Profile />}
-            </Stack.Screen>
+            <Stack.Screen
+              name='profile'
+              options={{ title: 'Profile' }}
+              component={Profile}
+            />
             <Stack.Screen
               name='seeAll'
               options={props => ({ title: props.route.params.title })}
-            >
-              {props => <SeeAll {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='method'>{props => <Method />}</Stack.Screen>
-            <Stack.Screen name='level' options={{ title: 'Level' }}>
-              {props => <Level {...props} />}
-            </Stack.Screen>
+              component={SeeAll}
+            />
+            <Stack.Screen name='method' component={Method} />
+            <Stack.Screen name='level' component={Level} />
+            <Stack.Screen name='courseOverview' component={CourseOverview} />
+            <Stack.Screen name='lessonPart' component={LessonPart} />
+            <Stack.Screen name='packs' component={Packs} />
+            <Stack.Screen name='packOverview' component={PackOverview} />
+            <Stack.Screen name='coachOverview' component={CoachOverview} />
+            <Stack.Screen name='showOverview' component={ShowOverview} />
             <Stack.Screen
-              name='courseOverview'
-              options={{ title: 'CourseOverview' }}
-            >
-              {props => <CourseOverview {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='lessonPart' options={{ title: 'Lesson' }}>
-              {props => <LessonPart {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='packs'>
-              {props => <Packs {...props} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name='packOverview'
-              options={{ title: 'PackOverview' }}
-            >
-              {props => <PackOverview {...props} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name='coachOverview'
-              options={{ title: 'CoachOverview' }}
-            >
-              {props => <CoachOverview {...props} />}
-            </Stack.Screen>
-            <Stack.Screen
-              name='showOverview'
-              options={{ title: 'ShowOverview' }}
-            >
-              {props => <ShowOverview {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='settings' options={{ title: 'Settings' }}>
-              {props => <Settings {...props} />}
-            </Stack.Screen>
+              name='settings'
+              options={{ title: 'Settings' }}
+              component={Settings}
+            />
             <Stack.Screen
               name='notificationSettings'
               options={{ title: 'Notification Settings' }}
-            >
-              {props => <NotificationSettings {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='support' options={{ title: 'Support' }}>
-              {props => <Support />}
-            </Stack.Screen>
-            <Stack.Screen name='terms' options={{ title: 'Terms Of Use' }}>
-              {props => <TermsOfUse />}
-            </Stack.Screen>
+              component={NotificationSettings}
+            />
+            <Stack.Screen
+              name='support'
+              options={{ title: 'Support' }}
+              component={Support}
+            />
+            <Stack.Screen
+              name='terms'
+              options={{ title: 'Terms Of Use' }}
+              component={TermsOfUse}
+            />
             <Stack.Screen
               name='privacyPolicy'
               options={{ title: 'Privacy Policy' }}
-            >
-              {props => <PrivacyPolicy />}
-            </Stack.Screen>
-            <Stack.Screen
-              name='studentReview'
-              options={{ title: 'StudentReview' }}
-            >
-              {props => <StudentReview {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='askQuestion' options={{ title: 'AskQuestion' }}>
-              {props => <AskQuestion {...props} />}
-            </Stack.Screen>
+              component={PrivacyPolicy}
+            />
+            <Stack.Screen name='studentReview' component={StudentReview} />
+            <Stack.Screen name='askQuestion' component={AskQuestion} />
             <Stack.Screen
               name='submitCollabVideo'
-              options={{ title: 'SubmitCollabVideo' }}
-            >
-              {props => <SubmitCollabVideo {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='likeList' options={{ title: 'Likes' }}>
-              {props => <LikeList {...props} />}
-            </Stack.Screen>
-            <Stack.Screen name='replies' options={{ title: 'Replies' }}>
-              {props => <Replies {...props} />}
-            </Stack.Screen>
+              component={SubmitCollabVideo}
+            />
+            <Stack.Screen
+              name='likeList'
+              options={{ title: 'Likes' }}
+              component={LikeList}
+            />
+            <Stack.Screen
+              name='replies'
+              options={{ title: 'Replies' }}
+              component={Replies}
+            />
           </Stack.Navigator>
           <BottomNav visibleOn={bottomNavVisibleOn} />
         </NavigationContainer>
