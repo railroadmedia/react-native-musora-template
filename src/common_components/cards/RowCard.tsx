@@ -61,7 +61,7 @@ export const RowCard: React.FC<Props> = props => {
       contentType,
       url: item.mobile_app_url
     });
-  }, []);
+  }, [isConnected]);
 
   const renderImage = () => {
     if (route?.match(/^(live|schedule)$/)) {
