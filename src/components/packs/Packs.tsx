@@ -36,6 +36,7 @@ import { lock } from '../../images/svgs';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import { OrientationContext } from '../../state/orientation/OrientationContext';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {}
 
@@ -46,6 +47,8 @@ export const Packs: React.FC<Props> = () => {
     }
   >();
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { isLandscape } = useContext(OrientationContext);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -79,7 +82,9 @@ export const Packs: React.FC<Props> = () => {
     };
   }, []);
 
-  const getPacks = (): Promise<void> =>
+  const getPacks = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     packsService
       .allPacks(abortC.current.signal)
       .then((packRes: PacksSection) => {
@@ -88,13 +93,16 @@ export const Packs: React.FC<Props> = () => {
         setMyPacks(packRes.myPacks);
         setRefreshing(false);
       });
+  };
 
   const refresh = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
     getPacks();
-  }, []);
+  }, [isConnected]);
 
   const renderFLRefreshControl = (): ReactElement => (
     <RefreshControl
@@ -246,31 +254,45 @@ export const Packs: React.FC<Props> = () => {
   }, [allPacks, myPacks]);
 
   const onSeeMore = useCallback(() => {
-    navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
-  }, [topHeaderPack?.mobile_app_url]);
+    if (!isConnected) return showNoConnectionAlert();
 
-  const goToPack = useCallback((mobile_app_url: string) => {
-    navigate('packOverview', { mobile_app_url });
-  }, []);
+    navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
+  }, [topHeaderPack?.mobile_app_url, isConnected]);
+
+  const goToPack = useCallback(
+    (mobile_app_url: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      navigate('packOverview', { mobile_app_url });
+    },
+    [isConnected]
+  );
 
   const onMainBtnClick = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (topHeaderPack?.completed) {
       resetModalRef.current?.toggle(
         'Hold your horses...',
         `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
       );
     } else {
-      // TODO: add navigation to topHeaderPack?.next_lesson_url
+      navigate('lessonPart', {
+        id: topHeaderPack?.next_lesson.id,
+        contentType: 'pack'
+      });
     }
-  }, [topHeaderPack, resetModalRef]);
+  }, [topHeaderPack, resetModalRef, isConnected]);
 
   const resetProgress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (topHeaderPack) {
       resetModalRef.current?.toggle();
       userService.resetProgress(topHeaderPack.id);
       refresh();
     }
-  }, [topHeaderPack]);
+  }, [topHeaderPack, isConnected]);
 
   return (
     <View style={styles.container}>

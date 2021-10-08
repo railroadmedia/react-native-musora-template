@@ -41,6 +41,7 @@ import {
 } from '../../state/myList/MyListReducer';
 import { myListService } from '../../services/myList.service';
 import { RowCard } from '../../common_components/cards/RowCard';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {}
 
@@ -51,6 +52,8 @@ export const MyList: React.FC<Props> = ({}) => {
 
   const [pageTitle, setPageTitle] = useState<TitleTypes>('My List');
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -83,7 +86,9 @@ export const MyList: React.FC<Props> = ({}) => {
     };
   }, [backButtonHandler]);
 
-  const setMyList = () =>
+  const setMyList = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     myListService
       .myList({ page: myListPage.current, signal: abortC.current.signal })
       .then(myListRes => {
@@ -96,6 +101,7 @@ export const MyList: React.FC<Props> = ({}) => {
           });
         }
       });
+  };
 
   useEffect(() => {
     isMounted.current = true;
@@ -112,7 +118,9 @@ export const MyList: React.FC<Props> = ({}) => {
     };
   }, []);
 
-  const setInProgress = () =>
+  const setInProgress = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     myListService
       .inProgress({
         page: inProgressPage.current,
@@ -126,8 +134,11 @@ export const MyList: React.FC<Props> = ({}) => {
           refreshing: false
         });
       });
+  };
 
-  const setCompleted = () =>
+  const setCompleted = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     myListService
       .completed({ page: completedPage.current, signal: abortC.current.signal })
       .then(completedRes => {
@@ -138,6 +149,7 @@ export const MyList: React.FC<Props> = ({}) => {
           refreshing: false
         });
       });
+  };
 
   const renderFLEmpty = (): ReactElement => (
     <Text style={styles.emptyListText}>
@@ -169,6 +181,8 @@ export const MyList: React.FC<Props> = ({}) => {
   );
 
   const refresh = (): void => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     myListPage.current = 1;
@@ -183,6 +197,8 @@ export const MyList: React.FC<Props> = ({}) => {
   };
 
   const loadMore = (): void => {
+    if (!isConnected) return showNoConnectionAlert();
+
     dispatch({ type: UPDATE_MY_LIST_LOADERS, loadingMore: true });
     if (pageTitle === 'In Progress') {
       myListService
@@ -229,36 +245,51 @@ export const MyList: React.FC<Props> = ({}) => {
     }
   };
 
-  const removeItemFromList = useCallback((id: number) => {
-    dispatch({
-      type: REMOVE_MY_LIST,
-      id
-    });
-  }, []);
+  const removeItemFromList = useCallback(
+    (id: number) => {
+      if (!isConnected) return showNoConnectionAlert();
 
-  const removeItemFromProgess = useCallback((id: number, title: string) => {
-    if (title === 'In Progress') {
       dispatch({
-        type: REMOVE_IN_PROGRESS,
+        type: REMOVE_MY_LIST,
         id
       });
-    } else {
-      dispatch({
-        type: REMOVE_COMPLETED,
-        id
-      });
-    }
-  }, []);
+    },
+    [isConnected]
+  );
 
-  const onNavigate = useCallback(title => {
-    setPageTitle(title);
-    dispatch({
-      type: UPDATE_MY_LIST_LOADERS,
-      loadingMore: false,
-      refreshing: true
-    });
-    decideCall(title);
-  }, []);
+  const removeItemFromProgess = useCallback(
+    (id: number, title: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      if (title === 'In Progress') {
+        dispatch({
+          type: REMOVE_IN_PROGRESS,
+          id
+        });
+      } else {
+        dispatch({
+          type: REMOVE_COMPLETED,
+          id
+        });
+      }
+    },
+    [isConnected]
+  );
+
+  const onNavigate = useCallback(
+    title => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      setPageTitle(title);
+      dispatch({
+        type: UPDATE_MY_LIST_LOADERS,
+        loadingMore: false,
+        refreshing: true
+      });
+      decideCall(title);
+    },
+    [isConnected]
+  );
 
   const decideCall = useCallback(title => {
     if (title === 'In Progress') {

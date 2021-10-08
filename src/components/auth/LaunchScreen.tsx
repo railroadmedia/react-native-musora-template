@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/core';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Image,
   ImageBackground,
@@ -19,8 +19,10 @@ import { utils } from '../../utils';
 import { authenticate } from '../../services/auth.service';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const LaunchScreen: React.FC = () => {
+  const { isConnected } = useContext(ConnectionContext);
   const [loading, setLoading] = useState(true);
 
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -47,7 +49,8 @@ export const LaunchScreen: React.FC = () => {
         setLoading(false);
       })
       .catch(e => {
-        if (e.message !== 'login needed') warningRef.current?.toggle();
+        if (!isConnected) navigate('downloads');
+        else if (e.message !== 'login needed') warningRef.current?.toggle();
         setLoading(false);
       });
 

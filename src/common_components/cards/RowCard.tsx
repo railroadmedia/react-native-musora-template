@@ -11,6 +11,7 @@ import { utils } from '../../utils';
 import { decideSubtitle, getContentType } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   id: number;
@@ -22,6 +23,8 @@ interface Props {
 }
 
 export const RowCard: React.FC<Props> = props => {
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { navigate } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string, props: {}) => void;
@@ -43,6 +46,8 @@ export const RowCard: React.FC<Props> = props => {
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (onNavigate) return onNavigate?.();
     let { route, contentType } = getContentType(
       item.type,

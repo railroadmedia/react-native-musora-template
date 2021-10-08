@@ -1,4 +1,10 @@
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import {
   ImageBackground,
   StyleSheet,
@@ -28,6 +34,7 @@ import {
 } from '../images/svgs';
 
 import { MethodContext } from '../state/method/MethodContext';
+import { ConnectionContext } from '../state/connection/ConnectionContext';
 
 interface Props {
   expandableInfo?: boolean;
@@ -47,6 +54,8 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
 
   const { method, updateMethod } = useContext(MethodContext);
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const {
@@ -56,6 +65,34 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
     description,
     next_lesson
   } = method;
+
+  const onMainBtnPress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
+    if (!completed) navigate('lessonPart', { id: next_lesson?.id });
+    else
+      resetModalRef.current?.toggle(
+        'Hold your horses...',
+        `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
+      );
+  }, [completed, next_lesson?.id, resetModalRef, isConnected]);
+
+  const goToMethod = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+    navigate('method');
+  }, [isConnected]);
+
+  const resetProgress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
+    updateMethod({
+      ...method,
+      completed: false,
+      started: false,
+      levels: method.levels?.map(l => ({ ...l, progress_percent: 0 }))
+    });
+  }, [method, isConnected]);
+
   return (
     <>
       <ImageBackground
@@ -85,17 +122,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
         })}
         <View style={styles.btnsContainer}>
           {expandableInfo && <View style={styles.placeHolder} />}
-          <TouchableOpacity
-            onPress={() => {
-              if (!completed) navigate('lessonPart', { id: next_lesson?.id });
-              else
-                resetModalRef.current?.toggle(
-                  'Hold your horses...',
-                  `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
-                );
-            }}
-            style={styles.btnTOpacity}
-          >
+          <TouchableOpacity onPress={onMainBtnPress} style={styles.btnTOpacity}>
             {(completed ? reset : play)(svgStyle)}
             <Text style={styles.btnText}>
               {completed ? 'RESET' : started ? 'CONTINUE' : 'START'}
@@ -103,7 +130,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
           </TouchableOpacity>
           {!expandableInfo ? (
             <TouchableOpacity
-              onPress={() => navigate('method')}
+              onPress={goToMethod}
               style={[styles.btnTOpacity, styles.btnTOpacityMoreInfo]}
             >
               {arrowRight(svgStyle)}
@@ -124,14 +151,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
       <ActionModal
         ref={resetModalRef}
         primaryBtnText='RESET'
-        onAction={() => {
-          updateMethod({
-            ...method,
-            completed: false,
-            started: false,
-            levels: method.levels?.map(l => ({ ...l, progress_percent: 0 }))
-          });
-        }}
+        onAction={resetProgress}
         onCancel={() => resetModalRef.current?.toggle()}
       />
     </>

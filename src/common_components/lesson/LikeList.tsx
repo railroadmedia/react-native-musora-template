@@ -23,6 +23,7 @@ import { commentService } from '../../services/comment.service';
 import type { Likes } from '../../interfaces/lesson.interfaces';
 import { parseXpValue } from './helpers';
 import { utils } from '../../utils';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'likeList'> & {
@@ -39,6 +40,8 @@ export const LikeList: React.FC<Props> = ({
 }) => {
   const { goBack } = useNavigation();
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const [likes, setLikes] = useState<Likes[]>([]);
 
   const styles = useMemo(() => setStyles(theme), [theme]);
@@ -51,8 +54,10 @@ export const LikeList: React.FC<Props> = ({
   }, [commentId]);
 
   useEffect(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     getLikeList();
-  }, [getLikeList]);
+  }, [getLikeList, isConnected]);
 
   return (
     <SafeAreaView style={styles.container}>

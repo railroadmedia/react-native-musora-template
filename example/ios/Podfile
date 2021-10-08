@@ -20,6 +20,7 @@ target 'MusoraTemplatesExample' do
   pod 'RNScreens', :path => '../../node_modules/react-native-screens'
   pod 'RNDeviceInfo', :path => '../../node_modules/react-native-device-info'
   pod 'react-native-background-downloader', :path => '../../node_modules/react-native-background-downloader'
+  pod 'react-native-netinfo', :path => '../../node_modules/@react-native-community/netinfo/react-native-netinfo.podspec'
 
   # Enables Flipper.
   #

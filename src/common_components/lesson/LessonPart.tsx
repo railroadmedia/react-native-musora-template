@@ -86,6 +86,7 @@ import type {
   CompletedResponse,
   ResetProgressResponse
 } from '../../interfaces/user.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'lessonPart'> & {
@@ -129,6 +130,7 @@ export const LessonPart: React.FC<Props> = ({
   const [resourcesArr, setResourcesArr] = useState<ResourceWithExtension[]>([]);
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
   const { addCards } = useContext(CardsContext);
 
@@ -255,6 +257,8 @@ export const LessonPart: React.FC<Props> = ({
 
   const getLesson = useCallback(
     async (lessonId: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       let content: LessonResponse;
       if (item) {
         content = item;
@@ -267,7 +271,6 @@ export const LessonPart: React.FC<Props> = ({
         if (content.title && content.message) {
           return alert.current?.toggle(content.title, content.message);
         }
-        console.log(content);
         setLesson(content);
         setProgress(getProgress(content.user_progress));
         setIncompleteLessonId(
@@ -293,7 +296,7 @@ export const LessonPart: React.FC<Props> = ({
         }
       }
     },
-    [alert, contentType, createResourcesArr, item, addCards]
+    [alert, contentType, createResourcesArr, item, addCards, isConnected]
   );
 
   const onAndroidBack = useCallback(() => {
@@ -357,11 +360,13 @@ export const LessonPart: React.FC<Props> = ({
   };
 
   const refresh = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
 
     setRefreshing(true);
     getLesson(lesson.id);
-  }, [lesson?.id, getLesson]);
+  }, [lesson?.id, getLesson, isConnected]);
 
   const renderTagsDependingOnContentType = useCallback(() => {
     const {
@@ -414,6 +419,8 @@ export const LessonPart: React.FC<Props> = ({
   }, [lesson, contentType]);
 
   const toggleLike = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
     const { is_liked_by_current_user, id, like_count } = lesson;
 
@@ -427,9 +434,11 @@ export const LessonPart: React.FC<Props> = ({
       like_count: is_liked_by_current_user ? like_count - 1 : like_count + 1,
       is_liked_by_current_user: !is_liked_by_current_user
     });
-  }, [lesson]);
+  }, [lesson, isConnected]);
 
   const toggleMyList = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
 
     if (lesson.is_added_to_primary_playlist) {
@@ -442,7 +451,7 @@ export const LessonPart: React.FC<Props> = ({
       ...lesson,
       is_added_to_primary_playlist: !lesson.is_added_to_primary_playlist
     });
-  }, [lesson, removeModalRef]);
+  }, [lesson, removeModalRef, isConnected]);
 
   const toggleVideoAudio = useCallback(() => {
     setVideoType(videoType === 'audio' ? 'video' : 'audio');
@@ -450,6 +459,8 @@ export const LessonPart: React.FC<Props> = ({
 
   const selectAssignment = useCallback(
     async (assignment: Assignment, index: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       setSelectedAssignment({
         ...assignment,
         index,
@@ -459,7 +470,7 @@ export const LessonPart: React.FC<Props> = ({
           : undefined
       });
     },
-    []
+    [isConnected]
   );
 
   const goToSoundSlice = useCallback(() => {
@@ -483,15 +494,19 @@ export const LessonPart: React.FC<Props> = ({
 
   const switchLesson = useCallback(
     (lessonId: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       setSelectedAssignment(null);
       setShowInfo(false);
       setRefreshing(true);
       getLesson(lessonId);
     },
-    [getLesson]
+    [getLesson, isConnected]
   );
 
   const goToLessons = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
 
     completeOverviewPage.current?.toggle();
@@ -520,18 +535,22 @@ export const LessonPart: React.FC<Props> = ({
 
       navigate(route);
     }
-  }, [completeOverviewPage, lesson, contentType]);
+  }, [completeOverviewPage, lesson, contentType, isConnected]);
 
   const goToNextLesson = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
 
     completeLessonPage.current?.toggle();
     if (incompleteLessonId) {
       getLesson(incompleteLessonId);
     }
-  }, [completeLessonPage, lesson, incompleteLessonId, getLesson]);
+  }, [completeLessonPage, lesson, incompleteLessonId, getLesson, isConnected]);
 
   const goToMarket = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     Rate.rate(
       {
         preferInApp: true,
@@ -542,7 +561,7 @@ export const LessonPart: React.FC<Props> = ({
       },
       () => {}
     );
-  }, []);
+  }, [isConnected]);
 
   const showRatingModal = () =>
     Alert.alert(
@@ -562,6 +581,8 @@ export const LessonPart: React.FC<Props> = ({
 
   const onComplete = useCallback(
     async (assignmentId?: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       if (!lesson) return;
       const res: CompletedResponse = await userService.markAsComplete(
         assignmentId || lesson.id
@@ -653,11 +674,14 @@ export const LessonPart: React.FC<Props> = ({
       overviewCompleteText,
       progress,
       selectedAssignment,
-      showRatingModal
+      showRatingModal,
+      isConnected
     ]
   );
 
   const onCompleteAssignment = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (selectedAssignment) {
       if (selectedAssignment.progress !== 100) {
         onComplete(selectedAssignment.id);
@@ -668,9 +692,11 @@ export const LessonPart: React.FC<Props> = ({
         );
       }
     }
-  }, [selectedAssignment, resetModalRef, onComplete]);
+  }, [selectedAssignment, resetModalRef, onComplete, isConnected]);
 
   const onLessonProgressBtnPress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (progress === 100) {
       resetModalRef.current?.toggle(
         'Hold your horses...',
@@ -679,9 +705,11 @@ export const LessonPart: React.FC<Props> = ({
     } else {
       onComplete();
     }
-  }, [progress, resetModalRef, onComplete]);
+  }, [progress, resetModalRef, onComplete, isConnected]);
 
   const resetProgress = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!lesson) return;
 
     const resetId = selectedAssignment ? selectedAssignment.id : lesson.id;
@@ -710,7 +738,7 @@ export const LessonPart: React.FC<Props> = ({
               : a
           )
     });
-  }, [lesson, selectedAssignment]);
+  }, [lesson, selectedAssignment, isConnected]);
 
   const onSeek = useCallback(
     (timeCode: number | string) => {
@@ -755,6 +783,8 @@ export const LessonPart: React.FC<Props> = ({
       currentTime: number,
       mediaCategory: string
     ) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       userService.updateUsersVideoProgress(
         (
           await userService.getMediaSessionId(
@@ -771,7 +801,7 @@ export const LessonPart: React.FC<Props> = ({
         'video'
       );
     },
-    []
+    [isConnected]
   );
 
   const onFullscreen = useCallback(

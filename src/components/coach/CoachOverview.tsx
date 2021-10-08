@@ -36,6 +36,7 @@ import type { Coach } from '../../interfaces/coach.interface';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { CommentSection } from '../../common_components/lesson/CommentSection';
 import { Carousel } from '../catalogue/Carousel';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 const iconStyle = { width: 30, height: 30, fill: 'white' };
 
@@ -57,7 +58,7 @@ export const CoachOverview: React.FC<Props> = ({
       navigate: (scene: string, props?: {}) => void;
     }
   >();
-
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
   const { isLandscape } = useContext(OrientationContext);
   const { addCards } = useContext(CardsContext);
@@ -97,10 +98,10 @@ export const CoachOverview: React.FC<Props> = ({
   }, []);
 
   const getCoach = () => {
+    if (!isConnected) return showNoConnectionAlert();
     coachesService
       .getContent(id, abortC.current.signal)
       .then((coachRes: Coach) => {
-        console.log(coachRes);
         if (isMounted.current) {
           addCards(coachRes.lessons);
           setCoach(coachRes);
@@ -111,9 +112,11 @@ export const CoachOverview: React.FC<Props> = ({
   };
 
   const refresh = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     setRefreshing(true);
     getCoach();
-  }, [getCoach]);
+  }, [getCoach, isConnected]);
 
   const toggleShowInfo = useCallback(() => {
     setShowInfo(!showInfo);
@@ -195,18 +198,23 @@ export const CoachOverview: React.FC<Props> = ({
 
   const loadMoreComments = useCallback(
     ({ nativeEvent }: { nativeEvent: NativeScrollEvent }) => {
-      if (isCloseToBottom(nativeEvent))
+      if (isConnected && isCloseToBottom(nativeEvent))
         commentSectionRef?.current?.loadMoreComments();
     },
     [isCloseToBottom, commentSectionRef]
   );
 
-  const goToSeeAll = useCallback((title: string, seeAllFetcher: string) => {
-    navigate('seeAll', {
-      title,
-      fetcher: { scene: 'coaches', fetcherName: seeAllFetcher }
-    });
-  }, []);
+  const goToSeeAll = useCallback(
+    (title: string, seeAllFetcher: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      navigate('seeAll', {
+        title,
+        fetcher: { scene: 'coaches', fetcherName: seeAllFetcher }
+      });
+    },
+    [isConnected]
+  );
 
   const renderCarousel = (items: number[] | undefined, title: string) => {
     let seeAllFetcher = '';

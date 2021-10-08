@@ -7,11 +7,14 @@ import { themeStyles } from '../../themeStyles';
 import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
 import { CustomSwitch } from '../../common_components/CustomSwitch';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {}
 
 export const NotificationSettings: React.FC<Props> = () => {
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { user, updateUser } = useContext(UserContext);
   const {
     notify_weekly_update,
@@ -24,34 +27,37 @@ export const NotificationSettings: React.FC<Props> = () => {
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const changeNotificationStatus = useCallback(data => {
-    // if (!this.context.isConnected) return this.context.showNoConnectionAlert();
-    const {
-      notify_weekly_update,
-      notify_on_lesson_comment_reply,
-      notify_on_lesson_comment_like,
-      notify_on_forum_post_like,
-      notify_on_forum_post_reply,
-      notifications_summary_frequency_minutes
-    } = data;
-    updateUser({
-      ...user,
-      notify_weekly_update,
-      notify_on_lesson_comment_reply,
-      notify_on_lesson_comment_like,
-      notify_on_forum_post_like,
-      notify_on_forum_post_reply,
-      notifications_summary_frequency_minutes
-    });
+  const changeNotificationStatus = useCallback(
+    data => {
+      if (!isConnected) return showNoConnectionAlert();
+      const {
+        notify_weekly_update,
+        notify_on_lesson_comment_reply,
+        notify_on_lesson_comment_like,
+        notify_on_forum_post_like,
+        notify_on_forum_post_reply,
+        notifications_summary_frequency_minutes
+      } = data;
+      updateUser({
+        ...user,
+        notify_weekly_update,
+        notify_on_lesson_comment_reply,
+        notify_on_lesson_comment_like,
+        notify_on_forum_post_like,
+        notify_on_forum_post_reply,
+        notifications_summary_frequency_minutes
+      });
 
-    const body = {
-      data: {
-        type: 'user',
-        attributes: data
-      }
-    };
-    userService.changeNotificationSettings(body);
-  }, []);
+      const body = {
+        data: {
+          type: 'user',
+          attributes: data
+        }
+      };
+      userService.changeNotificationSettings(body);
+    },
+    [isConnected]
+  );
 
   return (
     <SafeAreaView style={styles.container}>

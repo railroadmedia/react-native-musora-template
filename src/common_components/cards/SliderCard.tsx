@@ -16,6 +16,7 @@ import { utils } from '../../utils';
 import { decideSubtitle, getContentType } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -33,12 +34,16 @@ export const SliderCard: React.FC<Props> = props => {
 
   const { id, route } = props;
   const { cards } = useContext(CardsContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const item: Card = cards[id];
 
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     let { route, contentType } = getContentType(
       item.type,
       item.bundle_count,

@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -17,12 +23,15 @@ import { UserContext } from '../../state/user/UserContext';
 import { userService } from '../../services/user.service';
 import { useNavigation } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const MainHeader: React.FC = () => {
   const { top, left, right } = useSafeAreaInsets();
   const { navigate } = useNavigation<{ navigate: (scene: string) => void }>();
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { user, updateUserAndCache } = useContext(UserContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -30,6 +39,7 @@ export const MainHeader: React.FC = () => {
 
   useEffect(() => {
     abortC.current = new AbortController();
+    if (!isConnected) return showNoConnectionAlert();
     userService.getUserDetails({ signal: abortC.current.signal }).then(ud => {
       updateUserAndCache(ud);
     });
@@ -37,6 +47,14 @@ export const MainHeader: React.FC = () => {
       abortC.current.abort();
     };
   }, []);
+
+  const onNavigate = useCallback(
+    (route: string) => {
+      if (route !== 'downloads' && !isConnected) return showNoConnectionAlert();
+      navigate(route);
+    },
+    [isConnected]
+  );
 
   return (
     <View
@@ -52,22 +70,22 @@ export const MainHeader: React.FC = () => {
       <View style={{ flex: 1 }}>
         {utils.svgBrand({
           icon: { height: 30, fill: utils.color },
-          onPress: () => navigate('home')
+          onPress: () => onNavigate('home')
         })}
       </View>
       {downloads({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
-        onPress: () => navigate('downloads')
+        onPress: () => onNavigate('downloads')
       })}
       {myList({
         icon: { height: 20, fill: themeStyles[theme].contrastTextColor },
         container: { paddingHorizontal: 10 },
-        onPress: () => navigate('myList')
+        onPress: () => onNavigate('myList')
       })}
       <TouchableOpacity
         style={{ paddingLeft: 10 }}
-        onPress={() => navigate('profile')}
+        onPress={() => onNavigate('profile')}
       >
         <Image
           source={{ uri: user.avatarUrl || utils.fallbackAvatar }}

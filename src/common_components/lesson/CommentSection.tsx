@@ -30,6 +30,7 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { CommentCard, CommentCardRefObj } from './CommentCard';
 import { commentService } from '../../services/comment.service';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 const filterOptions = [
   { label: 'Popular', value: 'popular' },
@@ -63,10 +64,13 @@ export const CommentSection = forwardRef<
 
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const addComment = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     actionModalCommentInput.current?.toggle();
     if (commentText.length > 0) {
       page.current = 1;
@@ -83,7 +87,7 @@ export const CommentSection = forwardRef<
       setCommentText('');
       setComments(c?.data);
     }
-  }, [commentText, lessonId, sortByComments]);
+  }, [commentText, lessonId, sortByComments, isConnected]);
 
   const showAddComment = useCallback(() => {
     actionModalCommentInput.current?.toggle();
@@ -95,6 +99,8 @@ export const CommentSection = forwardRef<
 
   const selectFilter = useCallback(
     async (sort: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       page.current = 1;
       toggleFilterModal();
       const c = await commentService.getComments(lessonId, sort, page.current);
@@ -102,20 +108,24 @@ export const CommentSection = forwardRef<
       setComments(c.data);
       setSortByComments(sort);
     },
-    [lessonId, sortByComments, toggleFilterModal]
+    [lessonId, sortByComments, toggleFilterModal, isConnected]
   );
 
   const onDeleteComment = useCallback(
     (id: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       allCommentsNum.current -= 1;
       setComments(comments.filter(c => c.id !== id));
       commentService.deleteComment(id);
     },
-    [comments]
+    [comments, isConnected]
   );
 
   useImperativeHandle(ref, () => ({
     async loadMoreComments() {
+      if (!isConnected) return showNoConnectionAlert();
+
       if (!allowScroll.current) {
         return;
       }
@@ -139,6 +149,8 @@ export const CommentSection = forwardRef<
   }));
 
   const onAddOrRemoveReply = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     const c = await commentService.getComments(
       lessonId,
       sortByComments,
@@ -146,7 +158,7 @@ export const CommentSection = forwardRef<
     );
     allCommentsNum.current = c.meta.totalCommentsAndReplies;
     setComments(page.current === 1 ? c.data : comments.concat(c.data));
-  }, [lessonId, sortByComments]);
+  }, [lessonId, sortByComments, isConnected]);
 
   return (
     <View style={styles.container}>

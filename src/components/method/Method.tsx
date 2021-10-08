@@ -32,6 +32,7 @@ import { methodService } from '../../services/method.service';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { completedCircle, inProgressCircle } from '../../images/svgs';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 const window = Dimensions.get('window');
 let windowW = window.width < window.height ? window.width : window.height;
@@ -40,6 +41,8 @@ export const Method: React.FC = () => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { addCards } = useContext(CardsContext);
   const { user } = useContext(UserContext);
   const { method, updateMethod } = useContext(MethodContext);
@@ -60,7 +63,10 @@ export const Method: React.FC = () => {
       abortC.current.abort();
     };
   }, []);
-  const setMethod = () =>
+
+  const setMethod = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     methodService.getMethod(abortC.current.signal).then(methodRes => {
       if (isMounted.current) {
         if (methodRes.next_lesson) addCards([methodRes.next_lesson]);
@@ -68,8 +74,11 @@ export const Method: React.FC = () => {
         updateMethod(methodRes);
       }
     });
+  };
 
   const refresh = (): void => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
@@ -77,6 +86,8 @@ export const Method: React.FC = () => {
   };
 
   const onLevelPress = (mobile_app_url: string, published_on: string): void => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (new Date() > new Date(published_on)) {
       navigate('level', { mobile_app_url });
     }

@@ -26,6 +26,7 @@ import { utils } from '../../utils';
 import { parseXpValue } from './helpers';
 import { commentService } from '../../services/comment.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   comment: Comment;
@@ -82,12 +83,16 @@ export const CommentCard = forwardRef(
     const [containerWidth, setContainerWidth] = useState(windowWidth);
 
     const { theme } = useContext(ThemeContext);
+    const { isConnected, showNoConnectionAlert } =
+      useContext(ConnectionContext);
     const { user } = useContext(UserContext);
     const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
 
     const styles = useMemo(() => setStyles(theme), [theme]);
 
     const goToReplies = useCallback(() => {
+      if (!isConnected) return showNoConnectionAlert();
+
       if (lessonId) {
         navigate('replies', {
           parentComment: comment,
@@ -96,11 +101,13 @@ export const CommentCard = forwardRef(
           onAddOrRemoveReply: onAddOrRemoveReplyParent
         });
       }
-    }, [comment, lessonId]);
+    }, [comment, lessonId, isConnected]);
 
     const goToLikeList = useCallback(() => {
+      if (!isConnected) return showNoConnectionAlert();
+
       navigate('likeList', { commentId: comment.id });
-    }, []);
+    }, [isConnected]);
 
     const showDeleteAlert = useCallback(() => {
       alert.current?.toggle(
@@ -114,9 +121,11 @@ export const CommentCard = forwardRef(
     }, [alert]);
 
     const deleteComment = useCallback(() => {
+      if (!isConnected) return showNoConnectionAlert();
+
       alert.current?.toggle();
       if (onDeleteComment) onDeleteComment(comment.id);
-    }, [onDeleteComment, comment.id]);
+    }, [onDeleteComment, comment.id, isConnected]);
 
     const onAddOrRemoveReplyParent = useCallback(
       num => {
@@ -127,6 +136,8 @@ export const CommentCard = forwardRef(
 
     const likeOrDislikeComment = useCallback(
       (id: number) => {
+        if (!isConnected) return showNoConnectionAlert();
+
         if (comment.user_id !== user.id) {
           if (onLikeOrDislike) {
             onLikeOrDislike(id);
@@ -162,7 +173,8 @@ export const CommentCard = forwardRef(
         user.id,
         onLikeOrDislike,
         isLiked,
-        likeCount
+        likeCount,
+        isConnected
       ]
     );
 

@@ -35,6 +35,7 @@ import { themeStyles } from '../../themeStyles';
 import { methodTag } from '../../images/svgs';
 
 import type { Level as I_Level } from '../../interfaces/method.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'level'> & {
@@ -52,6 +53,8 @@ export const Level: React.FC<Props> = ({
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { addCards } = useContext(CardsContext);
 
   const [level, setLevel] = useState<I_Level>();
@@ -72,7 +75,9 @@ export const Level: React.FC<Props> = ({
     };
   }, []);
 
-  const getLevel = (): Promise<void> =>
+  const getLevel = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     methodService
       .getLevel(mobile_app_url, abortC.current.signal)
       .then(levelRes => {
@@ -83,8 +88,11 @@ export const Level: React.FC<Props> = ({
           setRefreshing(false);
         }
       });
+  };
 
   const refresh = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
@@ -92,12 +100,21 @@ export const Level: React.FC<Props> = ({
   };
 
   const onMainBtnPress = useCallback(() => {
-    // TODO navigate to next lesson
-  }, []);
+    if (!isConnected) return showNoConnectionAlert();
+    navigate('lessonPart', {
+      id: level?.next_lesson.id,
+      contentType: 'method'
+    });
+  }, [level?.next_lesson.id, isConnected]);
 
-  const goToMethodCourse = useCallback((mobile_app_url: string) => {
-    navigate('courseOverview', { mobile_app_url, isMethod: true });
-  }, []);
+  const goToMethodCourse = useCallback(
+    (mobile_app_url: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      navigate('courseOverview', { mobile_app_url, isMethod: true });
+    },
+    [isConnected]
+  );
 
   return (
     <View style={styles.container}>

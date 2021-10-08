@@ -30,6 +30,7 @@ import {
 } from '../modals/CommentInputModal';
 import { CommentCard } from './CommentCard';
 import { commentService } from '../../services/comment.service';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'replies'> & {
@@ -54,6 +55,7 @@ export const Replies: React.FC<Props> = ({
 }) => {
   const { theme } = useContext(ThemeContext);
   const { user } = useContext(UserContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
   const [replyText, setReplyText] = useState('');
   const [comment, setComment] = useState<Comment>(parentComment);
@@ -62,6 +64,8 @@ export const Replies: React.FC<Props> = ({
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const addReply = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     actionModalCommentInput.current?.toggle();
     if (replyText && replyText.length > 0) {
       const encodedReply = encodeURIComponent(replyText);
@@ -78,10 +82,12 @@ export const Replies: React.FC<Props> = ({
       setComment(c);
       setReplyText('');
     }
-  }, [comment, onAddOrRemoveReply, replyText]);
+  }, [comment, onAddOrRemoveReply, replyText, isConnected]);
 
   const onDeleteReply = useCallback(
     async (id: number) => {
+      if (!isConnected) return showNoConnectionAlert();
+
       setComment({
         ...comment,
         replies: comment.replies.filter(r => r.id !== id)
@@ -91,7 +97,7 @@ export const Replies: React.FC<Props> = ({
         onAddOrRemoveReply(-1);
       }
     },
-    [comment, onAddOrRemoveReply]
+    [comment, onAddOrRemoveReply, isConnected]
   );
 
   return (

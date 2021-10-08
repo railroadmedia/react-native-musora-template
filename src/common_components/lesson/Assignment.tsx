@@ -26,6 +26,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { DoubleTapArea } from '../../common_components/lesson/DoubleTapArea';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   assignment: SelectedAssignment;
@@ -44,6 +45,8 @@ export const Assignment: React.FC<Props> = ({
   const [width, setWidth] = useState(Dimensions.get('screen').width);
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const dimChange = useCallback(e => {
@@ -193,12 +196,12 @@ export const Assignment: React.FC<Props> = ({
                           aspectRatio: 1 / Math.sqrt(2),
                           backgroundColor: 'transparent',
                           marginHorizontal: 10,
-                          width: true ? width - 20 : width // TBD: replace true with this.context.isConnected
+                          width: isConnected ? width - 20 : width
                         }}
                       >
                         <View style={styles.container} />
                         <PDFView
-                          resourceType={true ? 'url' : 'file'} // TBD: replace true with this.context.isConnected
+                          resourceType={isConnected ? 'url' : 'file'}
                           resource={sheet.value}
                           fadeInDuration={250.0}
                           style={styles.pdf}
