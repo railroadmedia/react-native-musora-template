@@ -20,6 +20,7 @@ import { x } from '../images/svgs';
 import { ThemeContext } from '../state/theme/ThemeContext';
 import { themeStyles } from '../themeStyles';
 import { utils } from '../utils';
+import { ConnectionContext } from '../state/connection/ConnectionContext';
 
 const titles = [
   { title: 'Home', route: 'home' },
@@ -46,6 +47,9 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
       }
     >();
     const { theme } = useContext(ThemeContext);
+    const { isConnected, showNoConnectionAlert } =
+      useContext(ConnectionContext);
+
     const styles = useMemo(() => setStyles(theme), [theme]);
 
     const [visible, setVisible] = useState(false);
@@ -62,6 +66,8 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
 
     const onNavigate = useCallback(
       (route: string) => {
+        if (!isConnected) return showNoConnectionAlert();
+
         toggleModal();
         if (route === 'showOverview') {
           navigate(route, {
@@ -87,7 +93,7 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
           navigate(route);
         }
       },
-      [toggleModal]
+      [toggleModal, isConnected]
     );
 
     const decideColor = useCallback(

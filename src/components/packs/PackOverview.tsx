@@ -44,6 +44,7 @@ import {
   decideExtension,
   getExtensionByType
 } from '../../common_components/lesson/helpers';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'packOverview'> & {
@@ -58,13 +59,16 @@ export const PackOverview: React.FC<Props> = ({
     params: { mobile_app_url }
   }
 }) => {
-  const { push } = useNavigation<
+  const { navigate, push } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       push: (scene: string, props: {}) => void;
+      navigate: (scene: string, props: {}) => void;
     }
   >();
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { addCards } = useContext(CardsContext);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -88,7 +92,9 @@ export const PackOverview: React.FC<Props> = ({
     };
   }, []);
 
-  const getPack = (): Promise<void> =>
+  const getPack = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     packsService
       .getPack(mobile_app_url, abortC.current.signal)
       .then((packRes: I_PackBundle | I_PackLessonBundle) => {
@@ -102,11 +108,14 @@ export const PackOverview: React.FC<Props> = ({
         if (packRes.resources) createResourcesArr(packRes.resources);
         setRefreshing(false);
       });
+  };
 
   const refresh = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     setRefreshing(true);
     getPack();
-  }, []);
+  }, [isConnected]);
 
   const createResourcesArr = useCallback((lessonResources: Resource[]) => {
     const extensions = ['mp3', 'pdf', 'zip'];
@@ -138,27 +147,36 @@ export const PackOverview: React.FC<Props> = ({
   }, []);
 
   const onMainBtnClick = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (pack?.completed) {
       resetModalRef.current?.toggle(
         'Hold your horses...',
         `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
       );
     } else {
-      // TODO: add navigation to pack?.next_lesson
+      navigate('lessonPart', { id: pack?.next_lesson.id, contentType: 'pack' });
     }
-  }, [pack, resetModalRef]);
+  }, [pack, resetModalRef, isConnected]);
 
   const resetProgress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (pack) {
       resetModalRef.current?.toggle();
       userService.resetProgress(pack.id);
       refresh();
     }
-  }, [pack]);
+  }, [pack, isConnected]);
 
-  const onBundlePress = useCallback((mobile_app_url: string) => {
-    push('packOverview', { mobile_app_url });
-  }, []);
+  const onBundlePress = useCallback(
+    (mobile_app_url: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+
+      push('packOverview', { mobile_app_url });
+    },
+    [isConnected]
+  );
 
   const toggleResourcesModal = useCallback(() => {
     setShowResourcesModal(!showResourcesModal);

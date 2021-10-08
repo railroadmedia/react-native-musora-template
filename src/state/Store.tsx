@@ -1,5 +1,6 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Orientation, { OrientationType } from 'react-native-orientation-locker';
@@ -27,9 +28,11 @@ import type { Card } from '../interfaces/card.interfaces';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Method } from '../interfaces/method.interfaces';
 import { MethodContext } from './method/MethodContext';
+import { ConnectionContext } from '../state/connection/ConnectionContext';
 
 export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
+  const [isConnected, setIsConnected] = useState(true);
   const [orientation, setOrientation] = useState(
     Orientation.getInitialOrientation()
   );
@@ -51,6 +54,19 @@ export const Store: React.FC = props => {
       Orientation.removeOrientationListener(updateOrientation);
     };
   }, []);
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      console.log('netinfo', state);
+      setIsConnected(
+        ['none', 'unknown'].includes(state.type) || !state.isConnected
+          ? false
+          : true
+      );
+    });
+
+    return () => unsubscribe();
+  }, [setIsConnected]);
 
   const addCards = (cards?: Card[]) => {
     dispatchCards({ type: ADD_CARDS, cards });
@@ -81,6 +97,15 @@ export const Store: React.FC = props => {
 
   const updateOrientation = (o: OrientationType) => setOrientation(o);
 
+  const showNoConnectionAlert = () => {
+    return Alert.alert(
+      'No internet or data connection.',
+      `You can still access the lessons you have downloaded in your 'Downloads' area`,
+      [{ text: 'OK' }],
+      { cancelable: false }
+    );
+  };
+
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: themeStyles[theme]?.background }}
@@ -93,17 +118,21 @@ export const Store: React.FC = props => {
           <UserContext.Provider
             value={{ user, updateUser, updateUserAndCache }}
           >
-            <ThemeContext.Provider value={{ theme, toggleTheme }}>
-              <OrientationContext.Provider
-                value={{
-                  isLandscape: orientation.toLowerCase().includes('land'),
-                  orientation,
-                  updateOrientation
-                }}
-              >
-                {!!theme && props.children}
-              </OrientationContext.Provider>
-            </ThemeContext.Provider>
+            <ConnectionContext.Provider
+              value={{ isConnected, setIsConnected, showNoConnectionAlert }}
+            >
+              <ThemeContext.Provider value={{ theme, toggleTheme }}>
+                <OrientationContext.Provider
+                  value={{
+                    isLandscape: orientation.toLowerCase().includes('land'),
+                    orientation,
+                    updateOrientation
+                  }}
+                >
+                  {!!theme && props.children}
+                </OrientationContext.Provider>
+              </ThemeContext.Provider>
+            </ConnectionContext.Provider>
           </UserContext.Provider>
         </CardsContext.Provider>
       </MethodContext.Provider>

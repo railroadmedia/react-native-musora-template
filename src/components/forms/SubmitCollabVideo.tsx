@@ -27,6 +27,7 @@ import { back } from '../../images/svgs';
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 const windowWidth = Dimensions.get('screen').width;
 
@@ -39,6 +40,8 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const loadingRef = useRef<LoadingRefObject>(null);
   const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const scrollView = useRef<ScrollView>(null);
@@ -117,6 +120,8 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
     if (activeIndex) {
       goBack();
     } else {
+      if (!isConnected) return showNoConnectionAlert();
+
       loadingRef.current?.toggleLoading(true);
       let ssrResp = await studentFocuService.submitCollabVideo({
         video: videoUrl.current
@@ -133,7 +138,7 @@ export const SubmitCollabVideo: React.FC<Props> = () => {
         );
       }
     }
-  }, [loadingRef, alert, goBack, activeIndex]);
+  }, [loadingRef, alert, goBack, activeIndex, isConnected]);
 
   const onScrollViewLayout = useCallback(
     nativeEvent => {

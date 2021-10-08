@@ -20,8 +20,11 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const Login: React.FC = () => {
+  const { isConnected } = useContext(ConnectionContext);
+
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [visiblePswd, setVisiblePswd] = useState(false);
@@ -52,7 +55,8 @@ export const Login: React.FC = () => {
       })
       .catch(e => {
         setLoading(false);
-        if (e.message !== 'login needed') warningRef.current?.toggle();
+        if (!isConnected) navigate('downloads');
+        else if (e.message !== 'login needed') warningRef.current?.toggle();
       });
 
   const renderTInput = (secured: boolean) => (

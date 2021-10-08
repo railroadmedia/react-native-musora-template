@@ -29,6 +29,7 @@ import type {
 } from '../../interfaces/user.interfaces';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { camera, library } from '../../images/svgs';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   closeModal: () => void;
@@ -40,6 +41,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   const textInput = useRef<TextInput>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { user, updateUser } = useContext(UserContext);
   const [name, setName] = useState(user.display_name);
   const [image, setImage] = useState(user.avatarUrl);
@@ -48,6 +50,8 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onSave = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     textInput.current?.blur();
     if (name && name !== user.display_name) {
       let response: { unique: boolean } = await userService.isNameUnique(name);
@@ -78,7 +82,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         );
       }
     }
-  }, [name, croppedImage, customAlert.current]);
+  }, [name, croppedImage, customAlert.current, isConnected]);
 
   const toggleChangePhoto = useCallback(() => {
     choosePhotoModal.current?.toggle('Select a Photo', ' ');
@@ -109,6 +113,8 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
   }, []);
 
   const takeAPhoto = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     choosePhotoModal.current?.toggle();
     ImagePicker.openCamera({ mediaType: 'photo' }).then(res => {
       if (res.path) {
@@ -121,12 +127,11 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         loadingRef.current?.toggleLoading(false);
       }
     });
-  }, [loadingRef, customAlert, choosePhotoModal]);
+  }, [loadingRef, customAlert, choosePhotoModal, isConnected]);
 
   const chooseFromLibrary = useCallback(async () => {
-    // if (!this.context.isConnected) {
-    //   return this.context.showNoConnectionAlert();
-    // }
+    if (!isConnected) return showNoConnectionAlert();
+
     choosePhotoModal.current?.toggle();
 
     loadingRef.current?.toggleLoading(true);
@@ -141,7 +146,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         loadingRef.current?.toggleLoading(false);
       }
     });
-  }, [loadingRef, customAlert, choosePhotoModal]);
+  }, [loadingRef, customAlert, choosePhotoModal, isConnected]);
 
   return (
     <Modal

@@ -36,6 +36,7 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { CardsContext } from '../../state/cards/CardsContext';
 import { searchService } from '../../services/search.service';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {}
 
@@ -43,6 +44,7 @@ export const Search: React.FC<Props> = ({}) => {
   const { goBack } = useNavigation();
   const recetnSearchDefaultValue: string[] = [];
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { addCards } = useContext(CardsContext);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showResultsFound, setShowResultsFound] = useState(false);
@@ -97,6 +99,8 @@ export const Search: React.FC<Props> = ({}) => {
   }, [backButtonHandler, getRecentSearches]);
 
   const onSearch = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (searchedText !== '') {
       setShowSearchResults(true);
       setShowResultsFound(false);
@@ -131,7 +135,7 @@ export const Search: React.FC<Props> = ({}) => {
           } catch (e) {}
         });
     }
-  }, [searchedText, recentSearches, addCards]);
+  }, [searchedText, recentSearches, addCards, isConnected]);
 
   const clearRecentlySearched = useCallback(async () => {
     try {
@@ -190,6 +194,8 @@ export const Search: React.FC<Props> = ({}) => {
   };
 
   const refresh = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     page.current = 1;
@@ -201,6 +207,8 @@ export const Search: React.FC<Props> = ({}) => {
   };
 
   const loadMore = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     dispatch({ type: UPDATE_SEARCH_LOADERS, loadingMore: true });
     searchService
       ?.search(searchedText, {

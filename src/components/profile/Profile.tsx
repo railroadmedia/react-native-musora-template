@@ -39,6 +39,7 @@ import {
 } from '../../state/profile/ProfileReducer';
 import type { Notification as I_Notification } from '../../interfaces/notification.interfaces';
 import { ProfileSettings } from './ProfileSettings';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const Profile: React.FC = () => {
   const isMounted = useRef(true);
@@ -52,6 +53,7 @@ export const Profile: React.FC = () => {
 
   const { user, updateUserAndCache } = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
   const [{ notifications, loadingMore, refreshing }, dispatchProfile] =
     useReducer(profileReducer, {
@@ -74,6 +76,8 @@ export const Profile: React.FC = () => {
   }, []);
 
   const getProfile = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     Promise.all([
       userService.getUserDetails({}),
       userService.getNotifications({
@@ -93,7 +97,9 @@ export const Profile: React.FC = () => {
     });
   };
 
-  const getNotifications = () =>
+  const getNotifications = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     userService
       .getNotifications({ signal: abortC.current.signal, page: page.current++ })
       .then(({ data }) => {
@@ -105,6 +111,7 @@ export const Profile: React.FC = () => {
             notifications: data || []
           });
       });
+  };
 
   const showEditProfile = useCallback(() => {
     setShowProfileSettings(!showProfileSettings);
@@ -239,12 +246,16 @@ export const Profile: React.FC = () => {
   );
 
   const refresh = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     page.current = 1;
     dispatchProfile({ type: UPDATE_PROFILE, refreshing: true });
     getProfile();
   };
 
   const loadMore = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     dispatchProfile({ type: UPDATE_PROFILE, loadingMore: true });
     getNotifications();
   };

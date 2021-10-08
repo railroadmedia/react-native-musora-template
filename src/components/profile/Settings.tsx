@@ -35,6 +35,7 @@ import { UserContext } from '../../state/user/UserContext';
 import { ProfileSettings } from './ProfileSettings';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {}
 
@@ -48,6 +49,7 @@ export const Settings: React.FC<Props> = () => {
   const [alertBtnText, setAlertBtnText] = useState('');
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const { theme, toggleTheme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { user: cachedUser } = useContext(UserContext);
 
   const loadingRef = useRef<LoadingRefObject>(null);
@@ -94,6 +96,8 @@ export const Settings: React.FC<Props> = () => {
   }, []);
 
   const manageSubscription = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     let { isAppleAppSubscriber, isGoogleAppSubscriber } = cachedUser || {};
     if (utils.isiOS) {
       if (isAppleAppSubscriber) {
@@ -128,9 +132,11 @@ export const Settings: React.FC<Props> = () => {
         );
       }
     }
-  }, []);
+  }, [isConnected]);
 
-  const restorePurchases = useCallback(async () => {}, []);
+  const restorePurchases = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+  }, [isConnected]);
 
   const onContactSupport = useCallback(() => {
     alertBtn.current = '';
@@ -139,13 +145,15 @@ export const Settings: React.FC<Props> = () => {
   }, []);
 
   const onViewSubscription = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (alertBtn.current === 'viewiOS')
       Linking.openURL('itms-apps://apps.apple.com/account/subscriptions');
     else if (alertBtn.current === 'viewAndroid')
       Linking.openURL('https://play.google.com/store/account/subscriptions');
     animatedAlert.current?.toggle();
     alertBtn.current = '';
-  }, []);
+  }, [isConnected]);
 
   return (
     <View style={styles.container}>

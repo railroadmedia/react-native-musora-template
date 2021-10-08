@@ -43,6 +43,7 @@ import { provider } from '../../services/catalogueSceneProvider.service';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { Live } from './Live';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase>;
@@ -60,6 +61,7 @@ export const Catalogue: React.FC<Props> = ({
   const { user } = useContext(UserContext);
   const { addCardsAndCache, addCards } = useContext(CardsContext);
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const [
@@ -90,8 +92,9 @@ export const Catalogue: React.FC<Props> = ({
     };
   }, []);
 
-  const setCatalogue = () =>
-    (refreshPromise.current = provider[scene]
+  const setCatalogue = () => {
+    if (!isConnected) return showNoConnectionAlert();
+    refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([aRes, ncRes, ipRes, rvRes, mRes]) => {
         if (isMounted.current) {
@@ -113,7 +116,8 @@ export const Catalogue: React.FC<Props> = ({
             refreshing: false
           });
         }
-      }));
+      });
+  };
 
   const renderCarousel = (items: number[] | undefined, title: string) => {
     let seeAllFetcher = 'getInProgress';
@@ -280,6 +284,8 @@ export const Catalogue: React.FC<Props> = ({
   );
 
   const refresh = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     page.current = 1;
     abortC.current.abort();
     abortC.current = new AbortController();
@@ -290,6 +296,8 @@ export const Catalogue: React.FC<Props> = ({
   };
 
   const loadMore = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     dispatch({ loadingMore: true });
     refreshPromise.current?.then(() => {
       provider[scene]

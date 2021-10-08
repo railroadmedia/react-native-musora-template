@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useContext, useRef, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
@@ -7,6 +7,7 @@ import { addToCalendar, x, plus, reset, play } from '../../images/svgs';
 import { ActionModal } from '../modals/ActionModal';
 import { userService } from '../../services/user.service';
 import type { Card } from '../../interfaces/card.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   item: Card;
@@ -34,6 +35,8 @@ export const CardIcon: React.FC<Props> = ({
   onResetProgress,
   onRemoveFromMyList
 }) => {
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
     is_added_to_primary_playlist
   );
@@ -42,6 +45,8 @@ export const CardIcon: React.FC<Props> = ({
   const calendarModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   const addLessonToCalendar = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     const startDate = new Date(
       live_event_start_time || published_on
     ).toISOString();
@@ -60,26 +65,33 @@ export const CardIcon: React.FC<Props> = ({
     live_event_end_time,
     title,
     published_on,
-    calendarModalRef
+    calendarModalRef,
+    isConnected
   ]);
 
   const addToMyList = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     setIsAddedToPrimaryList(true);
     userService.addToMyList(id);
-  }, [setIsAddedToPrimaryList, id]);
+  }, [setIsAddedToPrimaryList, id, isConnected]);
 
   const removeFromMyList = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     removeModalRef.current?.toggle();
     setIsAddedToPrimaryList(false);
     userService.removeFromMyList(id);
     onRemoveFromMyList?.(id);
-  }, [setIsAddedToPrimaryList, id, removeModalRef]);
+  }, [setIsAddedToPrimaryList, id, removeModalRef, isConnected]);
 
   const resetProgress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     resetModalRef.current?.toggle();
     userService.resetProgress(id);
     onResetProgress?.(id);
-  }, [id, resetModalRef]);
+  }, [id, resetModalRef, isConnected]);
 
   return (
     <View>

@@ -44,6 +44,7 @@ import { userService } from '../../services/user.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { Card } from '../../interfaces/card.interfaces';
 import type { Course } from '../../interfaces/method.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'courseOverview'> & {
@@ -70,6 +71,7 @@ export const CourseOverview: React.FC<Props> = ({
   const [refreshing, setRefreshing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
 
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
@@ -106,6 +108,8 @@ export const CourseOverview: React.FC<Props> = ({
   }, []);
 
   const getCourse = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     methodService
       .getCourse(abortC.current.signal, false, mobile_app_url, id)
       .then(courseRes => {
@@ -144,6 +148,8 @@ export const CourseOverview: React.FC<Props> = ({
   ]);
 
   const likeOrDislikeContent = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!course) return;
     if (course.is_liked_by_current_user) {
       userService.dislikeContent(course.id);
@@ -160,9 +166,11 @@ export const CourseOverview: React.FC<Props> = ({
         like_count: course.like_count + 1
       });
     }
-  }, [course]);
+  }, [course, isConnected]);
 
   const toggleMyList = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!course) return;
     if (course.is_added_to_primary_playlist) {
       removeModalRef.current?.toggle(
@@ -173,17 +181,21 @@ export const CourseOverview: React.FC<Props> = ({
       userService.addToMyList(course.id);
       setCourse({ ...course, is_added_to_primary_playlist: true });
     }
-  }, [course, removeModalRef]);
+  }, [course, removeModalRef, isConnected]);
 
   const addToMyList = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!course) return;
 
     userService.removeFromMyList(course.id);
     setCourse({ ...course, is_added_to_primary_playlist: false });
     removeModalRef.current?.toggle();
-  }, [course, removeModalRef]);
+  }, [course, removeModalRef, isConnected]);
 
   const refresh = (): void => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
@@ -191,6 +203,8 @@ export const CourseOverview: React.FC<Props> = ({
   };
 
   const resetProgress = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (!course) return;
     userService.resetProgress(course.id);
     setCourse({
@@ -200,9 +214,11 @@ export const CourseOverview: React.FC<Props> = ({
       progress_percent: 0
     });
     resetModalRef.current?.toggle();
-  }, [course, resetModalRef]);
+  }, [course, resetModalRef, isConnected]);
 
   const onMainBtnPress = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     if (course?.completed) {
       resetModalRef.current?.toggle(
         'Restart this course?',
@@ -216,7 +232,13 @@ export const CourseOverview: React.FC<Props> = ({
         });
       }
     }
-  }, [resetModalRef, course?.completed, course?.id, course?.next_lesson]);
+  }, [
+    resetModalRef,
+    course?.completed,
+    course?.id,
+    course?.next_lesson,
+    isConnected
+  ]);
 
   const flRefreshControl = (
     <RefreshControl

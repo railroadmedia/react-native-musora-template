@@ -1,6 +1,12 @@
 import { useNavigation } from '@react-navigation/native';
 import type { NavigationProp } from '@react-navigation/native';
-import React, { useContext, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { useEffect } from 'react';
 import { Animated, LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,6 +20,7 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { NavigationMenu } from '../../common_components/NavigationMenu';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   visibleOn: string[];
@@ -39,6 +46,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const [activeScene, setActiveScene] = useState('home');
 
   const { theme } = useContext(ThemeContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const styles = useMemo(() => setStyle(theme), [theme]);
 
   const homeIndexCorespondent: { [key: string]: number } = {
@@ -99,6 +107,15 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
     });
   };
 
+  const onIconPress = useCallback(
+    (icon: string) => {
+      if (!isConnected) return showNoConnectionAlert();
+      changeActiveBtn?.(icon);
+      navigate(icon);
+    },
+    [isConnected]
+  );
+
   return (
     <Animated.View
       style={[
@@ -135,10 +152,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
                 : themeStyles[theme].contrastTextColor
           },
           container: { padding: 20 },
-          onPress: () => {
-            changeActiveBtn?.('home');
-            navigate('home');
-          }
+          onPress: () => onIconPress('home')
         })}
       </View>
       <View onLayout={e => onLayout(e, 'search')}>
@@ -151,10 +165,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
                 : themeStyles[theme].contrastTextColor
           },
           container: { padding: 20 },
-          onPress: () => {
-            changeActiveBtn?.('search');
-            navigate('search');
-          }
+          onPress: () => onIconPress('search')
         })}
       </View>
       <View onLayout={e => onLayout(e, 'forum')}>
@@ -167,10 +178,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
                 : themeStyles[theme].contrastTextColor
           },
           container: { padding: 20 },
-          onPress: () => {
-            changeActiveBtn?.('forum');
-            navigate('forum');
-          }
+          onPress: () => onIconPress('forum')
         })}
       </View>
       <View onLayout={e => onLayout(e, 'menu')}>

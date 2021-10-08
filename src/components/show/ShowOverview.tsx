@@ -38,6 +38,7 @@ import { RowCard } from '../../common_components/cards/RowCard';
 import { showService } from '../../services/show.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import type { Card } from '../../interfaces/card.interfaces';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface Props {
   route: RouteProp<ParamListBase, 'showOverview'> & {
@@ -57,7 +58,7 @@ export const ShowOverview: React.FC<Props> = ({
       navigate: (scene: string, props: {}) => void;
     }
   >();
-
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
   const { addCards } = useContext(CardsContext);
 
@@ -80,7 +81,9 @@ export const ShowOverview: React.FC<Props> = ({
     };
   }, []);
 
-  const getShow = (): Promise<void> =>
+  const getShow = () => {
+    if (!isConnected) return showNoConnectionAlert();
+
     showService
       .getLessons(
         show.type,
@@ -97,8 +100,11 @@ export const ShowOverview: React.FC<Props> = ({
           setAnimateLessons(false);
         }
       });
+  };
 
   const loadMore = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     setAnimateLessons(true);
     showService
       .getLessons(
@@ -116,15 +122,17 @@ export const ShowOverview: React.FC<Props> = ({
           setAnimateLessons(false);
         }
       });
-  }, [showLessons]);
+  }, [showLessons, isConnected]);
 
   const refresh = useCallback(() => {
+    if (!isConnected) return showNoConnectionAlert();
+
     abortC.current.abort();
     abortC.current = new AbortController();
     page.current = 1;
     setRefreshing(true);
     getShow();
-  }, []);
+  }, [isConnected]);
 
   const renderFListHeader = (): ReactElement => (
     <>

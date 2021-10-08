@@ -32,6 +32,7 @@ import {
 import { Loading, LoadingRefObject } from '../../common_components/Loading';
 import { studentFocuService } from '../../services/studentFocus.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 interface SectionType {
   q: string;
@@ -64,8 +65,9 @@ export const StudentReview: React.FC<Props> = () => {
       navigate: (scene: string) => void;
     }
   >();
-
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
+
   const scrollView = useRef<ScrollView>(null);
   const expSkill = useRef<ExpandableViewRefObject>(null);
   const loadingRef = useRef<LoadingRefObject>(null);
@@ -98,6 +100,7 @@ export const StudentReview: React.FC<Props> = () => {
   }, [dimChange]);
 
   const onNext = useCallback(async () => {
+    if (!isConnected) return showNoConnectionAlert();
     Keyboard.dismiss();
     let disabled = false;
     if (activeCarouselIndicator === 5) {
@@ -157,7 +160,15 @@ export const StudentReview: React.FC<Props> = () => {
     setNextDisabled(disabled);
     prevScrollTo.current = nextScrollTo.current;
     nextScrollTo.current += width;
-  }, [activeCarouselIndicator, alert, loadingRef, scrollView, navigate, width]);
+  }, [
+    activeCarouselIndicator,
+    alert,
+    loadingRef,
+    scrollView,
+    navigate,
+    width,
+    isConnected
+  ]);
 
   const onBack = useCallback(() => {
     Keyboard.dismiss();
