@@ -56,7 +56,7 @@ export const SliderCard: React.FC<Props> = props => {
       contentType,
       url: item.mobile_app_url
     });
-  }, []);
+  }, [isConnected]);
 
   return (
     <TouchableOpacity

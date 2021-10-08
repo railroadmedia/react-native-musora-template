@@ -32,7 +32,7 @@ import { ConnectionContext } from '../state/connection/ConnectionContext';
 
 export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
-  const [isConnected, setIsConnected] = useState(true);
+  const [isConnected, setIsConnected] = useState<boolean | null>(null);
   const [orientation, setOrientation] = useState(
     Orientation.getInitialOrientation()
   );
@@ -42,6 +42,13 @@ export const Store: React.FC = props => {
 
   useEffect(() => {
     Orientation.addOrientationListener(updateOrientation);
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsConnected(
+        ['none', 'unknown'].includes(state.type) || !state.isConnected
+          ? false
+          : true
+      );
+    });
     AsyncStorage.multiGet(['@theme', '@cards', '@user']).then(
       ([[_, theme], [__, cards], [___, user]]) => {
         if (cards) addCards(Object.values(JSON.parse(cards)));
@@ -52,20 +59,9 @@ export const Store: React.FC = props => {
     );
     return () => {
       Orientation.removeOrientationListener(updateOrientation);
+      unsubscribe();
     };
   }, []);
-
-  useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(
-        ['none', 'unknown'].includes(state.type) || !state.isConnected
-          ? false
-          : true
-      );
-    });
-
-    return () => unsubscribe();
-  }, [setIsConnected]);
 
   const addCards = (cards?: Card[]) => {
     dispatchCards({ type: ADD_CARDS, cards });
@@ -128,7 +124,7 @@ export const Store: React.FC = props => {
                     updateOrientation
                   }}
                 >
-                  {!!theme && props.children}
+                  {!!theme && isConnected !== null && props.children}
                 </OrientationContext.Provider>
               </ThemeContext.Provider>
             </ConnectionContext.Provider>
