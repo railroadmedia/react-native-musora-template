@@ -271,7 +271,6 @@ export const LessonPart: React.FC<Props> = ({
         if (content.title && content.message) {
           return alert.current?.toggle(content.title, content.message);
         }
-        console.log(content);
         setLesson(content);
         setProgress(getProgress(content.user_progress));
         setIncompleteLessonId(

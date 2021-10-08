@@ -57,7 +57,6 @@ export const Store: React.FC = props => {
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
-      console.log('netinfo', state);
       setIsConnected(
         ['none', 'unknown'].includes(state.type) || !state.isConnected
           ? false

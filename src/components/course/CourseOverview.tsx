@@ -113,7 +113,6 @@ export const CourseOverview: React.FC<Props> = ({
     methodService
       .getCourse(abortC.current.signal, false, mobile_app_url, id)
       .then(courseRes => {
-        console.log(courseRes);
         if (isMounted.current) {
           if (courseRes.next_lesson) addCards([courseRes.next_lesson]);
           addCards(courseRes.lessons);

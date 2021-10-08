@@ -102,7 +102,6 @@ export const CoachOverview: React.FC<Props> = ({
     coachesService
       .getContent(id, abortC.current.signal)
       .then((coachRes: Coach) => {
-        console.log(coachRes);
         if (isMounted.current) {
           addCards(coachRes.lessons);
           setCoach(coachRes);
