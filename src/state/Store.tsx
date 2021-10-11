@@ -29,6 +29,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { Method } from '../interfaces/method.interfaces';
 import { MethodContext } from './method/MethodContext';
 import { ConnectionContext } from '../state/connection/ConnectionContext';
+import { Download_V2 } from 'RNDownload';
 
 export const Store: React.FC = props => {
   const [theme, setTheme] = useState('');
@@ -41,26 +42,29 @@ export const Store: React.FC = props => {
   const [method, dispatchMethod] = useReducer(methodReducer, {});
 
   useEffect(() => {
-    Orientation.addOrientationListener(updateOrientation);
-    const unsubscribe = NetInfo.addEventListener(state => {
-      setIsConnected(
-        ['none', 'unknown'].includes(state.type) || !state.isConnected
-          ? false
-          : true
+    Download_V2.resumeAll().then(() => {
+      Orientation.addOrientationListener(updateOrientation);
+      const unsubscribe = NetInfo.addEventListener(state => {
+        setIsConnected(
+          ['none', 'unknown'].includes(state.type) || !state.isConnected
+            ? false
+            : true
+        );
+      });
+      AsyncStorage.multiGet(['@theme', '@cards', '@user']).then(
+        ([[_, theme], [__, cards], [___, user]]) => {
+          if (cards) addCards(Object.values(JSON.parse(cards)));
+          if (user) updateUser(JSON.parse(user));
+          if (theme !== null) setTheme(theme);
+          else setTheme(LIGHT);
+        }
       );
+
+      return () => {
+        Orientation.removeOrientationListener(updateOrientation);
+        unsubscribe();
+      };
     });
-    AsyncStorage.multiGet(['@theme', '@cards', '@user']).then(
-      ([[_, theme], [__, cards], [___, user]]) => {
-        if (cards) addCards(Object.values(JSON.parse(cards)));
-        if (user) updateUser(JSON.parse(user));
-        if (theme !== null) setTheme(theme);
-        else setTheme(LIGHT);
-      }
-    );
-    return () => {
-      Orientation.removeOrientationListener(updateOrientation);
-      unsubscribe();
-    };
   }, []);
 
   const addCards = (cards?: Card[]) => {

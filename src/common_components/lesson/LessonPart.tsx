@@ -33,7 +33,7 @@ import type { ParamListBase, RouteProp } from '@react-navigation/native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import Rate, { AndroidMarket } from 'react-native-rate';
 import Video from 'RNVideoEnhanced';
-import { Download_V2, DownloadResources } from 'RNDownload';
+import { Download_V2, DownloadResources, offlineContent } from 'RNDownload';
 
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import {
@@ -103,7 +103,7 @@ const windowWidth = Dimensions.get('screen').width;
 
 export const LessonPart: React.FC<Props> = ({
   route: {
-    params: { id, contentType, item }
+    params: { id, parentId, contentType, item }
   }
 }) => {
   const { navigate, goBack } = useNavigation<
@@ -137,6 +137,7 @@ export const LessonPart: React.FC<Props> = ({
   const abortC = useRef(new AbortController());
   const isMounted = useRef(true);
   const video = useRef<any>(null);
+  const currentId = useRef<number>();
   const soundsliceRef = useRef<SoundsliceRefObj>(null);
   const alert = useRef<React.ElementRef<typeof ActionModal>>(null);
   const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
@@ -257,11 +258,16 @@ export const LessonPart: React.FC<Props> = ({
 
   const getLesson = useCallback(
     async (lessonId: number) => {
-      if (!isConnected) return showNoConnectionAlert();
-
       let content: LessonResponse;
-      if (item) {
-        content = item;
+      if (isConnected) {
+        content = offlineContent[id].lesson;
+        if (!content) {
+          content = offlineContent[parentId].overview?.lessons.find(
+            l => l.id === id
+          );
+        }
+        handleNeighbourLesson(content, 'next_lesson');
+        handleNeighbourLesson(content, 'previous_lesson');
       } else {
         content = await contentService.getContentById(
           lessonId,
@@ -271,33 +277,69 @@ export const LessonPart: React.FC<Props> = ({
         if (content.title && content.message) {
           return alert.current?.toggle(content.title, content.message);
         }
-        setLesson(content);
-        setProgress(getProgress(content.user_progress));
-        setIncompleteLessonId(
-          content.type === 'course-part'
-            ? content.next_lesson.id
-            : content.parent?.next_lesson?.id
+      }
+      setLesson(content);
+      setProgress(getProgress(content.user_progress));
+      setIncompleteLessonId(
+        content.type === 'course-part'
+          ? content.next_lesson?.id
+          : content.parent?.next_lesson?.id
+      );
+      addCards(content.related_lessons);
+      setRefreshing(false);
+      if (contentType === 'Play Along') {
+        setVideoType('audio');
+      }
+      if (content.resources) createResourcesArr(content.resources);
+      if (
+        contentType !== 'song' &&
+        !content.video_playback_endpoints &&
+        !content?.youtube_video_id
+      ) {
+        alert.current?.toggle(
+          `We're sorry, there was an issue loading this video, try reloading the lesson.`,
+          `If the problem persists please contact support.`
         );
-        addCards(content.related_lessons);
-        setRefreshing(false);
-        if (contentType === 'Play Along') {
-          setVideoType('audio');
-        }
-        if (content.resources) createResourcesArr(content.resources);
-        if (
-          contentType !== 'song' &&
-          !content.video_playback_endpoints &&
-          !content?.youtube_video_id
-        ) {
-          alert.current?.toggle(
-            `We're sorry, there was an issue loading this video, try reloading the lesson.`,
-            `If the problem persists please contact support.`
-          );
-        }
       }
     },
     [alert, contentType, createResourcesArr, item, addCards, isConnected]
   );
+
+  const handleNeighbourLesson = (
+    content: {
+      id: number;
+      next_lesson?: { id: number };
+      previous_lesson?: { id: number };
+      parent_id?: number;
+    },
+    side: 'next_lesson' | 'previous_lesson'
+  ) => {
+    let id = content[side]?.id;
+    delete content[side];
+    if (id) {
+      if (offlineContent[id]) {
+        content[side] = { id };
+      }
+    } else if (content.parent_id && offlineContent[content.parent_id]) {
+      let contentIndex = 0;
+      offlineContent[content.parent_id]?.overview?.lessons.find((l, i) => {
+        contentIndex = i;
+        return l.id === content.id;
+      });
+      if (offlineContent[content.parent_id].overview?.lessons[contentIndex - 1])
+        content.previous_lesson = {
+          id: offlineContent[content.parent_id].overview?.lessons[
+            contentIndex - 1
+          ].id
+        };
+      if (offlineContent[content.parent_id].overview?.lessons[contentIndex + 1])
+        content.next_lesson = {
+          id: offlineContent[content.parent_id].overview?.lessons[
+            contentIndex + 1
+          ].id
+        };
+    }
+  };
 
   const onAndroidBack = useCallback(() => {
     if (assignmentFSStyle) setAssignmentFSStyle(null);

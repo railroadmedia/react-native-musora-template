@@ -52,6 +52,7 @@ export interface Lesson {
   related_lessons: Card[];
   is_added_to_primary_playlist: boolean;
   parent: Parent;
+  parent_id: number;
   video_playback_endpoints: Video[];
   last_watch_position_in_seconds: number;
   apiKey?: string;

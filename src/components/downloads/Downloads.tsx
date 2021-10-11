@@ -3,7 +3,6 @@ import React, {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState
 } from 'react';
 import {
@@ -22,9 +21,15 @@ import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { RowCard } from '../../common_components/cards/RowCard';
-import { Download_V2, offlineContent, IOfflineContent } from 'RNDownload';
+import {
+  Download_V2,
+  offlineContent,
+  IOfflineContent,
+  IDownloading
+} from 'RNDownload';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { CardsContext } from '../../state/cards/CardsContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {}
 
@@ -51,7 +56,7 @@ export const Downloads: React.FC<Props> = ({}) => {
       BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
       dldEventListener?.remove?.();
     };
-  }, []);
+  }, [downloads]);
 
   const handleBackPress = useCallback(() => {
     if (!isConnected) {
@@ -77,13 +82,20 @@ export const Downloads: React.FC<Props> = ({}) => {
   const renderFListItem = ({
     item
   }: {
-    item: { lesson: { id: number }; sizeInBytes: number };
+    item: {
+      lesson: { id: number };
+      sizeInBytes: number;
+      dlding: IDownloading[];
+    };
   }) => (
-    <RowCard
-      id={item.lesson.id}
-      route='downloads'
-      sizeInBytes={item.sizeInBytes}
-    />
+    <View pointerEvents={item.dlding ? 'none' : 'auto'}>
+      <RowCard
+        id={item.lesson.id} //TODO: make navigation work if item is overview
+        iconType='downloads'
+        route='downloads'
+        sizeInBytes={item.sizeInBytes}
+      />
+    </View>
   );
 
   return (
