@@ -16,12 +16,14 @@ interface Props {
   title: string;
   transparent?: boolean;
   settingsVisible?: boolean;
+  textColor?: string;
   onBack?: () => void;
 }
 export const BackHeader: React.FC<Props> = ({
   title,
   transparent,
   settingsVisible,
+  textColor,
   onBack
 }) => {
   const { top, left, right } = useSafeAreaInsets();
@@ -44,9 +46,14 @@ export const BackHeader: React.FC<Props> = ({
         barStyle={theme === DARK ? 'light-content' : 'dark-content'}
       />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={[styles.title, textColor ? { color: textColor } : {}]}>
+          {title}
+        </Text>
         {back({
-          icon: { height: 20, fill: themeStyles[theme].headerNavColor },
+          icon: {
+            height: 20,
+            fill: textColor ? textColor : themeStyles[theme].headerNavColor
+          },
           container: {
             paddingVertical: 7.5,
             paddingRight: 20
@@ -55,7 +62,10 @@ export const BackHeader: React.FC<Props> = ({
         })}
         {!!settingsVisible &&
           settings({
-            icon: { height: 20, fill: themeStyles[theme].headerNavColor },
+            icon: {
+              height: 20,
+              fill: textColor ? textColor : themeStyles[theme].headerNavColor
+            },
             container: { paddingVertical: 7.5, paddingLeft: 20 },
             onPress: () => navigate('settings')
           })}

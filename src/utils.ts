@@ -286,6 +286,43 @@ class Utils implements UtilsInterface {
         ];
     }
   }
+
+  get signUpPlanBenefits() {
+    switch (this.brand) {
+      case 'pianote':
+        return [
+          'Pay nothing for 7 days.',
+          'Award-winning piano lessons & more.',
+          'Access to the Pianote Experience app.',
+          'Access to the Pianote Experience website.',
+          'Cancel anytime through the App Store.'
+        ];
+      case 'guitareo':
+        return [
+          'Pay nothing for 7 days.',
+          'Award-winning piano lessons & more.',
+          'Access to the Pianote Experience app.',
+          'Access to the Pianote Experience website.',
+          'Cancel anytime through the App Store.'
+        ];
+      case 'singeo':
+        return [
+          'Pay nothing for 7 days.',
+          'Award-winning piano lessons & more.',
+          'Access to the Pianote Experience app.',
+          'Access to the Pianote Experience website.',
+          'Cancel anytime through the App Store.'
+        ];
+      default:
+        return [
+          'Pay nothing for 7 days.',
+          'Award-winning drum lessons & more.',
+          'Access the Drumeo Edge app.',
+          'Access the Drumeo Edge website.',
+          'Cancel anytime through App Store.'
+        ];
+    }
+  }
 }
 
 export let utils = new Utils();

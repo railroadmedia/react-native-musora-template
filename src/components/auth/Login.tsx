@@ -8,7 +8,8 @@ import {
   View,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { authenticate } from '../../services/auth.service';
@@ -20,6 +21,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
+import { BackHeader } from '../../components/header/BackHeader';
 
 export const Login: React.FC = () => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -78,26 +80,30 @@ export const Login: React.FC = () => {
       style={{ flex: 1, backgroundColor: utils.color }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={styles.container}
-        keyboardShouldPersistTaps={'handled'}
-      >
-        {utils.svgBrand({ icon: { width: '80%', fill: 'white' } })}
-        <View>
-          {/* View needed for a fluid animation when the keyboard shows (at least on iOS) */}
-          <Text style={styles.loginBrandMsgTxt}>{utils.loginBrandMsg}</Text>
-        </View>
-        {!loading && (
-          <>
-            {renderTInput(false)}
-            {renderTInput(true)}
-            <TouchableOpacity style={styles.loginTOpacity} onPress={onLogin}>
-              <Text style={styles.loginTxt}>LOG IN</Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </ScrollView>
+      <StatusBar backgroundColor={utils.color} barStyle={'light-content'} />
+      <BackHeader title={''} transparent={true} textColor={'white'} />
+      <View style={{ maxWidth: 700, alignSelf: 'center', flex: 1 }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps={'handled'}
+        >
+          {utils.svgBrand({ icon: { width: '80%', fill: 'white' } })}
+          <View>
+            {/* View needed for a fluid animation when the keyboard shows (at least on iOS) */}
+            <Text style={styles.loginBrandMsgTxt}>{utils.loginBrandMsg}</Text>
+          </View>
+          {!loading && (
+            <>
+              {renderTInput(false)}
+              {renderTInput(true)}
+              <TouchableOpacity style={styles.loginTOpacity} onPress={onLogin}>
+                <Text style={styles.loginTxt}>LOG IN</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </ScrollView>
+      </View>
       {!loading && (
         <SafeAreaView edges={['bottom', 'left', 'right']}>
           <TouchableOpacity style={styles.bottomLinkTOpacity}>
@@ -130,7 +136,7 @@ export const Login: React.FC = () => {
 };
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center'
   },

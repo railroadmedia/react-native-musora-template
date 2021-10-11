@@ -984,13 +984,12 @@ export const check = (props: Props) =>
     ...props,
     children: (
       <Svg
+        viewBox='0 0 8 6'
         style={{
           width: props.icon.width,
           height: props.icon.height,
-          aspectRatio: 1
+          aspectRatio: 8 / 6
         }}
-        viewBox='0 0 8 6'
-        fill='none'
       >
         <Path
           d='M7 1L3 5L1 3'

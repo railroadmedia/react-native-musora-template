@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   View,
   Animated,
-  ActivityIndicator
+  ActivityIndicator,
+  StatusBar
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gradient } from '../../common_components/Gradient';
@@ -20,9 +21,11 @@ import { authenticate } from '../../services/auth.service';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 export const LaunchScreen: React.FC = () => {
   const { isConnected } = useContext(ConnectionContext);
+  const { isLandscape } = useContext(OrientationContext);
   const [loading, setLoading] = useState(true);
 
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -32,10 +35,15 @@ export const LaunchScreen: React.FC = () => {
   const leftAnim = useRef(new Animated.Value(0)).current;
 
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const scrollview = useRef<ScrollView>(null);
 
   useEffect(() => {
     login();
   }, []);
+
+  useEffect(() => {
+    scrollview.current?.scrollTo({ x: 0 });
+  }, [isLandscape]);
 
   const login = () =>
     authenticate()
@@ -63,6 +71,7 @@ export const LaunchScreen: React.FC = () => {
 
   return (
     <View style={{ backgroundColor: utils.color, flex: 1 }}>
+      <StatusBar backgroundColor={utils.color} barStyle={'light-content'} />
       {loading ? (
         <View style={styles.loadingContainer}>
           {utils.svgBrand({ icon: { width: '80%', fill: 'white' } })}
@@ -77,6 +86,7 @@ export const LaunchScreen: React.FC = () => {
       ) : (
         <>
           <ScrollView
+            ref={scrollview}
             bounces={false}
             horizontal={true}
             pagingEnabled={true}
@@ -85,9 +95,7 @@ export const LaunchScreen: React.FC = () => {
               nativeEvent: {
                 contentOffset: { x }
               }
-            }) => {
-              animateIndicator((x / utils.WIDTH) * 20, 200);
-            }}
+            }) => animateIndicator((x / utils.WIDTH) * 20, 200)}
           >
             {utils.launchScreens.map(s => (
               <View key={s.bold} style={{ width: utils.WIDTH }}>
@@ -98,6 +106,7 @@ export const LaunchScreen: React.FC = () => {
                     style={{ flex: 1, justifyContent: 'flex-end' }}
                   >
                     <Gradient
+                      key={`${isLandscape}`}
                       colors={['transparent', utils.color]}
                       height={'50%'}
                       width={'100%'}
@@ -213,7 +222,9 @@ const styles = StyleSheet.create({
   },
   tOpacityContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-evenly',
+    maxWidth: 700,
+    alignSelf: 'center'
   },
   tOpacity: {
     borderWidth: 1,
