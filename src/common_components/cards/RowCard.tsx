@@ -20,6 +20,7 @@ interface Props {
   onResetProgress?: (id: number) => void;
   onRemoveFromMyList?: (id: number) => void;
   onNavigate?: () => void;
+  sizeInBytes?: number;
 }
 
 export const RowCard: React.FC<Props> = props => {
@@ -37,7 +38,8 @@ export const RowCard: React.FC<Props> = props => {
     onResetProgress,
     onRemoveFromMyList,
     onNavigate,
-    iconType
+    iconType,
+    sizeInBytes
   } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
@@ -100,7 +102,7 @@ export const RowCard: React.FC<Props> = props => {
             ellipsizeMode={'tail'}
             style={styles.subtitle}
           >
-            {decideSubtitle({ item, route })}
+            {decideSubtitle({ item, route, sizeInBytes })}
           </Text>
         </View>
         <CardIcon
