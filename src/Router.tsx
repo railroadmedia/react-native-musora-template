@@ -119,7 +119,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'studentreview',
       'askquestion',
       'submitcollabvideo',
-      'lessonPart'
+      'lessonpart'
     ];
     return titleExceptions.includes(route?.toLowerCase());
   }, []);
@@ -174,7 +174,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               component={MyList}
             />
             <Stack.Screen name='downloads' options={{ title: 'Downloads' }}>
-              {props => <Downloads {...props} whatever='whatever' />}
+              {props => <Downloads {...props} />}
             </Stack.Screen>
             <Stack.Screen
               name='profile'

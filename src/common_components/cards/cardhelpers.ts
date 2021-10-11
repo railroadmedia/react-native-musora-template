@@ -59,9 +59,11 @@ export const getImageUri = function (
 export const decideSubtitle = (props: {
   item: Card;
   route: string;
+  sizeInBytes?: number;
 }): string => {
   const {
     route,
+    sizeInBytes,
     item: {
       type,
       length_in_seconds,
@@ -70,8 +72,7 @@ export const decideSubtitle = (props: {
       instructors,
       level_number,
       artist,
-      style,
-      sizeInBytes
+      style
     }
   } = props;
   let subtitle: string = '';
@@ -83,7 +84,7 @@ export const decideSubtitle = (props: {
 
   if (sizeInBytes) {
     const size: number = sizeInBytes / 1024 / 1024;
-    return size + 'MB';
+    return Math.floor(size) + 'MB';
   }
 
   let st = new Date(`${live_event_start_time || published_on} UTC`);

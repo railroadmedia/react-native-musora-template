@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 
@@ -12,14 +12,16 @@ import { decideSubtitle, getContentType } from './cardhelpers';
 import { CardIcon } from './CardIcon';
 import { CardImage } from './CardImage';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { offlineContent } from 'RNDownload';
 
 interface Props {
   id: number;
   route: string;
-  iconType?: 'next-lesson' | 'progress' | null;
+  iconType?: 'next-lesson' | 'progress' | 'downloads';
   onResetProgress?: (id: number) => void;
   onRemoveFromMyList?: (id: number) => void;
   onNavigate?: () => void;
+  sizeInBytes?: number;
 }
 
 export const RowCard: React.FC<Props> = props => {
@@ -37,7 +39,8 @@ export const RowCard: React.FC<Props> = props => {
     onResetProgress,
     onRemoveFromMyList,
     onNavigate,
-    iconType
+    iconType,
+    sizeInBytes
   } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
@@ -46,7 +49,21 @@ export const RowCard: React.FC<Props> = props => {
   const styles = useMemo(() => setStyles(theme), [theme]);
 
   const onCardPress = useCallback(() => {
-    if (!isConnected) return showNoConnectionAlert();
+    if (!isConnected) {
+      let ocExists = !!offlineContent[id];
+      if (!ocExists) {
+        Object.values(offlineContent).map(ocv => {
+          if (ocv.overview?.lessons)
+            for (let i = 0; i < ocv.overview.lessons.length; i++) {
+              if (ocv.overview.lessons[i].id === id) {
+                ocExists = true;
+                break;
+              }
+            }
+        });
+      }
+      if (!ocExists) return showNoConnectionAlert();
+    }
 
     if (onNavigate) return onNavigate?.();
     let { route, contentType } = getContentType(
@@ -59,9 +76,10 @@ export const RowCard: React.FC<Props> = props => {
       id,
       parentId: item.parentId,
       contentType,
-      url: item.mobile_app_url
+      url: item.mobile_app_url,
+      item: !isConnected ? item : null
     });
-  }, [isConnected]);
+  }, [isConnected, offlineContent]);
 
   const renderImage = () => {
     if (route?.match(/^(live|schedule)$/)) {
@@ -100,7 +118,7 @@ export const RowCard: React.FC<Props> = props => {
             ellipsizeMode={'tail'}
             style={styles.subtitle}
           >
-            {decideSubtitle({ item, route })}
+            {decideSubtitle({ item, route, sizeInBytes })}
           </Text>
         </View>
         <CardIcon
