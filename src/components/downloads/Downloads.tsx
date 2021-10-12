@@ -50,6 +50,7 @@ export const Downloads: React.FC<Props> = ({}) => {
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
     downloads.map(d => {
       addCards([d.lesson]);
+      addCards([d.overview]);
     });
     setLoading(false);
     return () => {
@@ -84,13 +85,14 @@ export const Downloads: React.FC<Props> = ({}) => {
   }: {
     item: {
       lesson: { id: number };
+      overview?: { id: number };
       sizeInBytes: number;
       dlding: IDownloading[];
     };
   }) => (
     <View pointerEvents={item.dlding ? 'none' : 'auto'}>
       <RowCard
-        id={item.lesson.id} //TODO: make navigation work if item is overview
+        id={item.overview?.id || item.lesson.id}
         iconType='downloads'
         route='downloads'
         sizeInBytes={item.sizeInBytes}

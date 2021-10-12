@@ -237,9 +237,9 @@ export interface ShowService {
   getLessons: (
     type: string,
     page: number,
-    filters: string,
-    sort: string,
-    signal: AbortSignal
+    signal: AbortSignal,
+    filters?: string,
+    sort?: string
   ) => Promise<ShowLessons>;
 }
 

@@ -39,6 +39,7 @@ import { showService } from '../../services/show.service';
 import { CardsContext } from '../../state/cards/CardsContext';
 import type { Card } from '../../interfaces/card.interfaces';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { Filters } from '../catalogue/Filters';
 
 interface Props {
   route: RouteProp<ParamListBase, 'showOverview'> & {
@@ -55,7 +56,7 @@ export const ShowOverview: React.FC<Props> = ({
 }) => {
   const { navigate, goBack } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
-      navigate: (scene: string, props: {}) => void;
+      navigate: (scene: string, props?: {}) => void;
     }
   >();
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
@@ -68,6 +69,11 @@ export const ShowOverview: React.FC<Props> = ({
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
   const page = useRef(1);
+  const filters = useRef<{} | undefined>({ refreshing: true });
+  const selectedFilters = useRef<{ formattedQuery: string; apiQuery: string }>({
+    formattedQuery: '',
+    apiQuery: ''
+  });
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -88,12 +94,14 @@ export const ShowOverview: React.FC<Props> = ({
       .getLessons(
         show.type,
         page.current,
-        '',
-        '-published_on',
-        abortC.current.signal
+        abortC.current.signal,
+        selectedFilters.current.apiQuery,
+        '-published_on'
       )
       .then((showRes: ShowLessons) => {
         if (showRes) {
+          filters.current = showRes.meta?.filterOptions;
+
           addCards(showRes.data);
           setShowLessons(showRes.data);
           setRefreshing(false);
@@ -104,15 +112,15 @@ export const ShowOverview: React.FC<Props> = ({
 
   const loadMore = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
-
+    console.log(filters.current);
     setAnimateLessons(true);
     showService
       .getLessons(
         show.type,
         ++page.current,
-        '',
-        '-published_on',
-        abortC.current.signal
+        abortC.current.signal,
+        selectedFilters.current?.apiQuery,
+        '-published_on'
       )
       .then((showRes: ShowLessons) => {
         if (showRes) {
@@ -130,9 +138,22 @@ export const ShowOverview: React.FC<Props> = ({
     abortC.current.abort();
     abortC.current = new AbortController();
     page.current = 1;
+    filters.current = { refreshing: true, reset: true };
+    selectedFilters.current = { apiQuery: '', formattedQuery: '' };
     setRefreshing(true);
     getShow();
   }, [isConnected]);
+
+  const onApplyFilters = useCallback(({ apiQuery, formattedQuery }) => {
+    if (isMounted.current) {
+      page.current = 1;
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      filters.current = { refreshing: true };
+      selectedFilters.current = { apiQuery, formattedQuery };
+      getShow();
+    }
+  }, []);
 
   const renderFListHeader = (): ReactElement => (
     <>
@@ -155,9 +176,7 @@ export const ShowOverview: React.FC<Props> = ({
         {show.type === 'question-and-answer' && (
           <TouchableOpacity
             style={styles.extraBtn}
-            onPress={() => {
-              // navigate('askQuestion')
-            }}
+            onPress={() => navigate('askQuestion')}
           >
             <Text style={styles.buttonText}>ASK A QUESTION</Text>
           </TouchableOpacity>
@@ -165,9 +184,7 @@ export const ShowOverview: React.FC<Props> = ({
         {show.type === 'student-collaborations' && (
           <TouchableOpacity
             style={styles.extraBtn}
-            onPress={() => {
-              // navigate('submitCollabVideo')
-            }}
+            onPress={() => navigate('submitCollabVideo')}
           >
             <Text style={styles.buttonText}>SUBMIT YOUR VIDEO</Text>
           </TouchableOpacity>
@@ -179,8 +196,16 @@ export const ShowOverview: React.FC<Props> = ({
       </View>
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>ALL EPISODES</Text>
-        <View style={styles.center}>{/* TODO: add Sort and Filters */}</View>
+        <View style={styles.center}>
+          <Filters options={filters.current} onApply={onApplyFilters} />
+        </View>
       </View>
+      {selectedFilters.current.formattedQuery !== '' && (
+        <Text style={styles.appliedFilters}>
+          <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
+          {selectedFilters.current.formattedQuery}
+        </Text>
+      )}
     </>
   );
 
@@ -308,5 +333,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       width: '80%',
       borderRadius: 50,
       marginBottom: 20
+    },
+    appliedFilters: {
+      flex: 1,
+      padding: 15,
+      paddingVertical: 5,
+      textTransform: 'uppercase',
+      fontFamily: 'RobotoCondensed-Regular',
+      color: current.contrastTextColor
     }
   });

@@ -263,7 +263,7 @@ export const LessonPart: React.FC<Props> = ({
         content = offlineContent[id].lesson;
         if (!content) {
           content = offlineContent[parentId].overview?.lessons.find(
-            l => l.id === id
+            (l: { id: number }) => l.id === id
           );
         }
         handleNeighbourLesson(content, 'next_lesson');
@@ -322,10 +322,12 @@ export const LessonPart: React.FC<Props> = ({
       }
     } else if (content.parent_id && offlineContent[content.parent_id]) {
       let contentIndex = 0;
-      offlineContent[content.parent_id]?.overview?.lessons.find((l, i) => {
-        contentIndex = i;
-        return l.id === content.id;
-      });
+      offlineContent[content.parent_id]?.overview?.lessons.find(
+        (l: any, i: number) => {
+          contentIndex = i;
+          return l.id === content.id;
+        }
+      );
       if (offlineContent[content.parent_id].overview?.lessons[contentIndex - 1])
         content.previous_lesson = {
           id: offlineContent[content.parent_id].overview?.lessons[

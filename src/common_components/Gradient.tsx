@@ -35,7 +35,7 @@ export const Gradient: React.FC<Props> = ({
                 stopOpacity={
                   c === 'transparent'
                     ? 0
-                    : c.includes('rgba')
+                    : c?.includes('rgba')
                     ? parseInt(c.split(',').pop()?.replace(')', '') || '1')
                     : 1
                 }
