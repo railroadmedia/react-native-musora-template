@@ -29,7 +29,6 @@ import {
 } from 'RNDownload';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { CardsContext } from '../../state/cards/CardsContext';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {}
 
@@ -48,9 +47,11 @@ export const Downloads: React.FC<Props> = ({}) => {
   useEffect(() => {
     const dldEventListener = Download_V2.addEventListener?.(percentageListener);
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-    downloads.map(d => {
+    downloads?.map(d => {
       addCards([d.lesson]);
-      addCards([d.overview]);
+      if (d.overview) {
+        addCards([d.overview]);
+      }
     });
     setLoading(false);
     return () => {
@@ -84,13 +85,14 @@ export const Downloads: React.FC<Props> = ({}) => {
     item
   }: {
     item: {
+      id: number;
       lesson: { id: number };
       overview?: { id: number };
       sizeInBytes: number;
       dlding: IDownloading[];
     };
   }) => (
-    <View pointerEvents={item.dlding ? 'none' : 'auto'}>
+    <View pointerEvents={item.dlding.length > 0 ? 'none' : 'auto'}>
       <RowCard
         id={item.overview?.id || item.lesson.id}
         iconType='downloads'
@@ -112,7 +114,7 @@ export const Downloads: React.FC<Props> = ({}) => {
             style={styles.container}
             data={downloads}
             keyboardShouldPersistTaps='handled'
-            keyExtractor={item => item.lesson.id.toString()}
+            keyExtractor={item => item.id.toString()}
             ListEmptyComponent={renderFLEmpty}
             renderItem={renderFListItem}
           />

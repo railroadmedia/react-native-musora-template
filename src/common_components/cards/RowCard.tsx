@@ -16,6 +16,7 @@ import { offlineContent } from 'RNDownload';
 
 interface Props {
   id: number;
+  parentId?: number;
   route: string;
   iconType?: 'next-lesson' | 'progress' | 'downloads';
   onResetProgress?: (id: number) => void;
@@ -35,6 +36,7 @@ export const RowCard: React.FC<Props> = props => {
 
   const {
     id,
+    parentId,
     route,
     onResetProgress,
     onRemoveFromMyList,
@@ -74,7 +76,7 @@ export const RowCard: React.FC<Props> = props => {
 
     navigate(route, {
       id,
-      parentId: item.parentId,
+      parentId,
       contentType,
       url: item.mobile_app_url,
       item: !isConnected ? item : null

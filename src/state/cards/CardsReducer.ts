@@ -11,7 +11,9 @@ export const UPDATE_CARD = 'UPDATE_CARD';
 
 const addCards: AddCards = (state, cards, cache) => {
   const newCards: { [id: number]: {} } = {};
-  cards?.map(c => (newCards[c.id] = c));
+  cards?.map(c => {
+    if (c) newCards[c.id] = c;
+  });
   const newState = { ...state, ...newCards };
   if (cache) AsyncStorage.setItem('@cards', JSON.stringify(newState));
   return newState;

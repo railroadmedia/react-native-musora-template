@@ -335,7 +335,7 @@ export const MyList: React.FC<Props> = ({}) => {
       iconType={
         pageTitle === 'In Progress' || pageTitle === 'Completed'
           ? 'progress'
-          : null
+          : undefined
       }
       onRemoveFromMyList={removeItemFromList}
       onResetProgress={(id: number) => removeItemFromProgess(id, pageTitle)}
