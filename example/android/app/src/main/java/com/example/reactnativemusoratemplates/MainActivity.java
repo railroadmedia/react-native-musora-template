@@ -7,6 +7,9 @@ import android.content.res.Configuration;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
 import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+import android.os.Bundle;
+import androidx.annotation.Nullable;
+import com.google.android.gms.cast.framework.CastContext;
 
 public class MainActivity extends ReactActivity {
 
@@ -35,5 +38,13 @@ public class MainActivity extends ReactActivity {
        return new RNGestureHandlerEnabledRootView(MainActivity.this);
       }
     };
+  }
+
+  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    // lazy load Google Cast context
+    CastContext.getSharedInstance(this);
   }
 }

@@ -265,12 +265,11 @@ export const LessonPart: React.FC<Props> = ({
             (l: { id: number }) => l.id === lessonId
           );
         }
-
-        handleNeighbourLesson(
+        content = await handleNeighbourLesson(
           { ...content, parent_id: parentId },
           'next_lesson'
         );
-        handleNeighbourLesson(
+        content = await handleNeighbourLesson(
           { ...content, parent_id: parentId },
           'previous_lesson'
         );
@@ -319,34 +318,45 @@ export const LessonPart: React.FC<Props> = ({
       parent_id?: number;
     },
     side: 'next_lesson' | 'previous_lesson'
-  ) => {
-    let id = content[side]?.id;
-    delete content[side];
-
-    if (id) {
-      if (offlineContent[id]) {
-        content[side] = { id };
-      }
-    } else if (content.parent_id && offlineContent[content.parent_id]) {
-      let contentIndex = 0;
-      offlineContent[content.parent_id]?.overview?.lessons.find(
-        (l: any, i: number) => {
-          if (l.id === lesson?.id) contentIndex = i;
+  ): Promise<LessonResponse> => {
+    return new Promise(res => {
+      let id = content[side]?.id;
+      delete content[side];
+      if (id) {
+        if (offlineContent[id]) content[side] = { id };
+        else if (content.parent_id) {
+          let contentIndex = -1;
+          offlineContent[content.parent_id]?.overview?.lessons.find(
+            (l: any, i: number) => {
+              if (l.id === content?.id) {
+                contentIndex = i;
+              }
+            }
+          );
+          if (
+            offlineContent[content.parent_id].overview?.lessons[
+              contentIndex - 1
+            ]
+          )
+            content.previous_lesson = {
+              id: offlineContent[content.parent_id].overview?.lessons[
+                contentIndex - 1
+              ].id
+            };
+          if (
+            offlineContent[content.parent_id].overview?.lessons[
+              contentIndex + 1
+            ]
+          )
+            content.next_lesson = {
+              id: offlineContent[content.parent_id].overview?.lessons[
+                contentIndex + 1
+              ].id
+            };
         }
-      );
-      if (offlineContent[content.parent_id].overview?.lessons[contentIndex - 1])
-        content.previous_lesson = {
-          id: offlineContent[content.parent_id].overview?.lessons[
-            contentIndex - 1
-          ].id
-        };
-      if (offlineContent[content.parent_id].overview?.lessons[contentIndex + 1])
-        content.next_lesson = {
-          id: offlineContent[content.parent_id].overview?.lessons[
-            contentIndex + 1
-          ].id
-        };
-    }
+      }
+      res(content as LessonResponse);
+    });
   };
 
   const onAndroidBack = useCallback(() => {
