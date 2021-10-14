@@ -1,4 +1,5 @@
 import type { Card } from './card.interfaces';
+import type { Filters } from './service.interfaces';
 
 export interface Show {
   thumbnailUrl: string;
@@ -9,4 +10,5 @@ export interface Show {
 
 export interface ShowLessons {
   data: Card[];
+  meta?: { filterOptions: Filters };
 }

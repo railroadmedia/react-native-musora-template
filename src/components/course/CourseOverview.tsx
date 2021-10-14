@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { Download_V2 } from 'RNDownload';
+import { Download_V2, offlineContent } from 'RNDownload';
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
@@ -107,19 +107,24 @@ export const CourseOverview: React.FC<Props> = ({
     };
   }, []);
 
-  const getCourse = () => {
-    if (!isConnected) return showNoConnectionAlert();
-
-    methodService
-      .getCourse(abortC.current.signal, false, mobile_app_url, id)
-      .then(courseRes => {
-        if (isMounted.current) {
-          if (courseRes.next_lesson) addCards([courseRes.next_lesson]);
-          addCards(courseRes.lessons);
-          setCourse(courseRes);
-          setRefreshing(false);
-        }
-      });
+  const getCourse = async () => {
+    let courseOverview;
+    if (!isConnected) {
+      courseOverview = offlineContent[id].overview;
+    } else {
+      courseOverview = await methodService.getCourse(
+        abortC.current.signal,
+        false,
+        mobile_app_url,
+        id
+      );
+    }
+    if (isMounted.current) {
+      if (courseOverview.next_lesson) addCards([courseOverview.next_lesson]);
+      addCards(courseOverview.lessons);
+      setCourse(courseOverview);
+      setRefreshing(false);
+    }
   };
 
   const renderTagsDependingOnContentType = useMemo(() => {
@@ -414,7 +419,12 @@ export const CourseOverview: React.FC<Props> = ({
             <View style={styles.rowCardContainer}>
               {course.lessons?.length > 0 ? (
                 course.lessons.map((item: Card, index: number) => (
-                  <RowCard key={index} id={item.id} route='' />
+                  <RowCard
+                    key={index}
+                    id={item.id}
+                    route=''
+                    parentId={course.id}
+                  />
                 ))
               ) : (
                 <Text style={styles.emptyListText}>

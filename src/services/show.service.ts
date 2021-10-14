@@ -10,9 +10,9 @@ export const showService: ShowService = {
   getLessons: function (
     type,
     page,
+    signal,
     filters = '',
-    sort = '-published_on',
-    signal
+    sort = '-published_on'
   ) {
     return call({
       url: `/musora-api/all?included_types[]=${type}&statuses[]=published&statuses[]=scheduled&sort=${sort}&brand=drumeo&limit=10&page=${page}&future&${filters}`,
