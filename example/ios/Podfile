@@ -27,6 +27,7 @@ target 'MusoraTemplatesExample' do
   pod 'react-native-webview', :path => '../../node_modules/react-native-webview'
   pod 'react-native-google-cast', :path => '../../node_modules/react-native-google-cast/ios'
   pod 'react-native-video', :path => '../../node_modules/react-native-video'
+  pod 'RNIap', :path => '../../node_modules/react-native-iap'
 
   # Enables Flipper.
   #

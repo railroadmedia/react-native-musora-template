@@ -12,9 +12,11 @@ import {
   View,
   Animated,
   ActivityIndicator,
-  StatusBar
+  StatusBar,
+  Platform
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import RNIap from 'react-native-iap';
 import { Gradient } from '../../common_components/Gradient';
 import { utils } from '../../utils';
 import { authenticate } from '../../services/auth.service';
@@ -24,7 +26,7 @@ import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 export const LaunchScreen: React.FC = () => {
-  const { isConnected } = useContext(ConnectionContext);
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +40,17 @@ export const LaunchScreen: React.FC = () => {
   const scrollview = useRef<ScrollView>(null);
 
   useEffect(() => {
-    login();
+    new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
+      async () => {
+        if (Platform.OS === 'android')
+          await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+        else await RNIap.clearTransactionIOS();
+        login();
+      }
+    );
+    return () => {
+      RNIap.endConnection();
+    };
   }, []);
 
   useEffect(() => {
@@ -57,8 +69,10 @@ export const LaunchScreen: React.FC = () => {
         setLoading(false);
       })
       .catch(e => {
-        if (!isConnected) navigate('downloads');
-        else if (e.message !== 'login needed') warningRef.current?.toggle();
+        if (!isConnected) {
+          // TBD
+          navigate('downloads');
+        } else if (e.message !== 'login needed') warningRef.current?.toggle();
         setLoading(false);
       });
 
@@ -68,6 +82,24 @@ export const LaunchScreen: React.FC = () => {
       duration,
       useNativeDriver: true
     }).start();
+
+  const onLogin = () => {
+    if (!isConnected) return showNoConnectionAlert();
+    navigate('login');
+  };
+
+  const onSignup = async () => {
+    if (!isConnected) return showNoConnectionAlert();
+    setLoading(true);
+    let subsHistory = (await RNIap.getPurchaseHistory()).find(h =>
+      utils.subscriptions.includes(h.productId)
+    );
+    if (!subsHistory) navigate('signup');
+    else {
+      // TBD
+    }
+    setLoading(false);
+  };
 
   return (
     <View style={{ backgroundColor: utils.color, flex: 1 }}>
@@ -153,13 +185,13 @@ export const LaunchScreen: React.FC = () => {
           </View>
           <View style={[styles.tOpacityContainer, { paddingBottom: bottom }]}>
             <TouchableOpacity
-              onPress={() => navigate('login')}
+              onPress={onLogin}
               style={[styles.tOpacity, { marginHorizontal: bottom }]}
             >
               <Text style={styles.tOpacityTxt}>LOG IN</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => navigate('signup')}
+              onPress={onSignup}
               style={[
                 styles.tOpacity,
                 { backgroundColor: 'white', marginRight: bottom }
