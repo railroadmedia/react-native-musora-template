@@ -324,7 +324,7 @@ class Utils implements UtilsInterface {
     }
   }
 
-  get subscriptions() {
+  get subscriptionsSkus() {
     switch (this.brand) {
       case 'pianote':
         return this.isiOS

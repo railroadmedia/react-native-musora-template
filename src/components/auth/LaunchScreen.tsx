@@ -91,12 +91,16 @@ export const LaunchScreen: React.FC = () => {
   const onSignup = async () => {
     if (!isConnected) return showNoConnectionAlert();
     setLoading(true);
-    let subsHistory = (await RNIap.getPurchaseHistory()).find(h =>
-      utils.subscriptions.includes(h.productId)
-    );
-    if (!subsHistory) navigate('signup');
-    else {
-      // TBD
+    try {
+      let subsHistory = (await RNIap.getPurchaseHistory()).find(h =>
+        utils.subscriptionsSkus.includes(h.productId)
+      );
+      if (!subsHistory) navigate('signup');
+      else {
+        // TBD
+      }
+    } catch (e: any) {
+      warningRef.current?.toggle('', e.message);
     }
     setLoading(false);
   };

@@ -8,7 +8,6 @@ import RNIap from 'react-native-iap';
 import type { Authenticate, Call } from '../interfaces/service.interfaces';
 
 import { utils } from '../utils';
-import { Alert } from 'react-native';
 
 let token = '';
 
@@ -76,18 +75,7 @@ const call: Call = async function ({ url, method, signal, body }) {
   }
 };
 
-const initIAP = async () => {
-  try {
-    return await RNIap.initConnection();
-  } catch (e) {
-    return Alert.alert(
-      `Connection to ${utils.isiOS ? 'app store' : 'play store'} refused`,
-      'Please try again later.'
-    );
-  }
-};
-
-const validatePurchases = async function (
+const validatePurchases = (
   purchases: {
     purchase_token?: string;
     package_name?: string;
@@ -96,7 +84,7 @@ const validatePurchases = async function (
     productId?: string;
     purchaseToken?: string;
   }[]
-) {
+) => {
   return call({
     url: `/api/${utils.isiOS ? 'apple' : 'google'}/signup`,
     method: 'POST',
@@ -105,4 +93,12 @@ const validatePurchases = async function (
     )
   });
 };
-export { call, authenticate, initIAP, validatePurchases };
+
+const validateEmail: (
+  email: string
+) => Promise<{ exists?: boolean; message?: string; title?: string }> =
+  email => {
+    return call({ url: `/usora/api/is-email-unique?email=${email}` });
+  };
+
+export { call, authenticate, validatePurchases, validateEmail };
