@@ -3,7 +3,7 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
-import RNIap from 'react-native-iap';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import type { Authenticate, Call } from '../interfaces/service.interfaces';
 
@@ -31,9 +31,11 @@ const authenticate: Authenticate = async function (email, password, purchases) {
         })
       })
     ).json();
+
     if (res.token) {
       token = `Bearer ${res.token}`;
       await setGenericPassword(email, password);
+      handleLastAccessDate(res.edgeExpirationDate, res.isPackOlyOwner);
     } else await resetGenericPassword().catch(() => {});
     return res;
   } catch (error: any) {
@@ -75,30 +77,37 @@ const call: Call = async function ({ url, method, signal, body }) {
   }
 };
 
-const validatePurchases = (
-  purchases: {
-    purchase_token?: string;
-    package_name?: string;
-    product_id?: string;
-    transactionReceipt?: string;
-    productId?: string;
-    purchaseToken?: string;
-  }[]
+const handleLastAccessDate = async (
+  edgeExpirationDate: string,
+  isPackOnly: boolean
 ) => {
-  return call({
-    url: `/api/${utils.isiOS ? 'apple' : 'google'}/signup`,
-    method: 'POST',
-    body: JSON.stringify(
-      utils.isiOS ? { receipt: purchases[0].transactionReceipt } : { purchases }
-    )
-  });
+  let lastAccessDate;
+  try {
+    lastAccessDate = JSON.parse(
+      await RNFetchBlob.fs.readFile(`${utils.offPath}/lastAccessDate`, 'utf8')
+    );
+  } catch (e) {}
+  try {
+    if (
+      (lastAccessDate && new Date(lastAccessDate) < new Date()) ||
+      !lastAccessDate
+    ) {
+      RNFetchBlob.fs.writeFile(
+        `${utils.offPath}/lastAccessDate`,
+        JSON.stringify(new Date().toString()),
+        'utf8'
+      );
+    }
+    if (!isPackOnly && edgeExpirationDate) {
+      try {
+        RNFetchBlob.fs.writeFile(
+          `${utils.offPath}/edgeExpirationDate`,
+          JSON.stringify(edgeExpirationDate),
+          'utf8'
+        );
+      } catch (e) {}
+    }
+  } catch (e) {}
 };
 
-const validateEmail: (
-  email: string
-) => Promise<{ exists?: boolean; message?: string; title?: string }> =
-  email => {
-    return call({ url: `/usora/api/is-email-unique?email=${email}` });
-  };
-
-export { call, authenticate, validatePurchases, validateEmail };
+export { call, authenticate };

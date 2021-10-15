@@ -1,5 +1,6 @@
 import { Dimensions, Platform } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import RNFetchBlob from 'rn-fetch-blob';
 import * as svgs from './images/svgs';
 
 interface UtilsInterface {
@@ -12,6 +13,7 @@ interface UtilsInterface {
   isiOS: boolean;
   isTablet: boolean;
   fallbackAvatar: string;
+  offPath: string;
   serverDownError: {
     title: string;
     message: string;
@@ -33,7 +35,7 @@ class Utils implements UtilsInterface {
     'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png';
   fallbackThumb =
     'https://dmmior4id2ysr.cloudfront.net/assets/images/drumeo_fallback_thumb.jpg';
-
+  offPath = RNFetchBlob.fs.dirs.DocumentDir;
   private _color: {
     [brand: string]: 'rgba(11, 118, 219, 1)' | 'rgba(251, 27, 47, 1)';
   } = {
@@ -321,30 +323,6 @@ class Utils implements UtilsInterface {
           'Access the Drumeo Edge website.',
           'Cancel anytime through App Store.'
         ];
-    }
-  }
-
-  get subscriptionsSkus() {
-    switch (this.brand) {
-      case 'pianote':
-        return this.isiOS
-          ? [
-              'pianote_app_1_month_membership_2021',
-              'pianote_app_1_year_membership_2021'
-            ]
-          : ['pianote_app_1_year_2021', 'pianote_app_1_month_2021'];
-      case 'guitareo':
-        return this.isiOS
-          ? ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021']
-          : ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021'];
-      case 'singeo':
-        return this.isiOS
-          ? ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021']
-          : ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021'];
-      default:
-        return this.isiOS
-          ? ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021']
-          : ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021'];
     }
   }
 }

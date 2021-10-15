@@ -15,7 +15,10 @@ import {
   BackHandler,
   Alert
 } from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
 import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import type { ParamListBase } from '@react-navigation/native';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { utils } from '../../utils';
@@ -33,7 +36,8 @@ import { CardsContext } from '../../state/cards/CardsContext';
 interface Props {}
 
 export const Downloads: React.FC<Props> = ({}) => {
-  const { goBack } = useNavigation();
+  const { goBack, navigate } =
+    useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
@@ -47,6 +51,7 @@ export const Downloads: React.FC<Props> = ({}) => {
   useEffect(() => {
     const dldEventListener = Download_V2.addEventListener?.(percentageListener);
     BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    handleLastAccessDate();
     downloads?.map(d => {
       addCards([d.lesson]);
       if (d.overview) {
@@ -59,6 +64,54 @@ export const Downloads: React.FC<Props> = ({}) => {
       dldEventListener?.remove?.();
     };
   }, [downloads]);
+
+  const handleLastAccessDate = async () => {
+    let lastAccessDate, edgeExpirationDate;
+
+    try {
+      lastAccessDate = JSON.parse(
+        await RNFetchBlob.fs.readFile(`${utils.offPath}/lastAccessDate`, 'utf8')
+      );
+    } catch (e) {}
+    try {
+      if (
+        (lastAccessDate && new Date(lastAccessDate) < new Date()) ||
+        !lastAccessDate
+      ) {
+        await RNFetchBlob.fs.writeFile(
+          `${utils.offPath}/lastAccessDate`,
+          JSON.stringify(new Date().toString()),
+          'utf8'
+        );
+      }
+      edgeExpirationDate = JSON.parse(
+        await RNFetchBlob.fs.readFile(
+          `${utils.offPath}/edgeExpirationDate`,
+          'utf8'
+        )
+      );
+      if (edgeExpirationDate) {
+        let currentDateInSavedTimezone = calcTime(
+          lastAccessDate,
+          edgeExpirationDate.timezone_type
+        );
+        if (
+          new Date(currentDateInSavedTimezone) >
+          new Date(edgeExpirationDate.date)
+        ) {
+          navigate('login');
+        }
+      }
+    } catch (e) {}
+  };
+
+  const calcTime = (date: string, offset: number) => {
+    var d = new Date(date);
+    // get UTC time in msec
+    var utc = d.getTime() + d.getTimezoneOffset() * 60000;
+    var nd = new Date(utc + 3600000 * offset);
+    return nd;
+  };
 
   const handleBackPress = useCallback(() => {
     if (!isConnected) {
