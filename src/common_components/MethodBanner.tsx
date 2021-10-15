@@ -66,7 +66,7 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
     next_lesson
   } = method;
 
-  const onMainBtnPress = useCallback(() => {
+  const onMainBtnPress = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (!completed) navigate('lessonPart', { id: next_lesson?.id });
@@ -75,12 +75,12 @@ export const MethodBanner: React.FC<Props> = ({ expandableInfo }) => {
         'Hold your horses...',
         `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
       );
-  }, [completed, next_lesson?.id, resetModalRef, isConnected]);
+  };
 
-  const goToMethod = useCallback(() => {
+  const goToMethod = () => {
     if (!isConnected) return showNoConnectionAlert();
     navigate('method');
-  }, [isConnected]);
+  };
 
   const resetProgress = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();

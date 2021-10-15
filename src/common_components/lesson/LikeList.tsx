@@ -46,12 +46,12 @@ export const LikeList: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const getLikeList = useCallback(async () => {
+  const getLikeList = async () => {
     const likeList: { data: Likes[] } = await commentService.getCommentLikes(
       commentId
     );
     setLikes(likeList.data);
-  }, [commentId]);
+  };
 
   useEffect(() => {
     if (!isConnected) return showNoConnectionAlert();

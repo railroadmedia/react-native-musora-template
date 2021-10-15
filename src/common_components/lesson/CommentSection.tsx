@@ -68,7 +68,7 @@ export const CommentSection = forwardRef<
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const addComment = useCallback(async () => {
+  const addComment = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     actionModalCommentInput.current?.toggle();
@@ -87,29 +87,26 @@ export const CommentSection = forwardRef<
       setCommentText('');
       setComments(c?.data);
     }
-  }, [commentText, lessonId, sortByComments, isConnected]);
+  };
 
-  const showAddComment = useCallback(() => {
+  const showAddComment = () => {
     actionModalCommentInput.current?.toggle();
-  }, [actionModalCommentInput]);
+  };
 
   const toggleFilterModal = useCallback(() => {
     setFilterModalVisible(!filterModalVisible);
   }, [filterModalVisible]);
 
-  const selectFilter = useCallback(
-    async (sort: string) => {
-      if (!isConnected) return showNoConnectionAlert();
+  const selectFilter = async (sort: string) => {
+    if (!isConnected) return showNoConnectionAlert();
 
-      page.current = 1;
-      toggleFilterModal();
-      const c = await commentService.getComments(lessonId, sort, page.current);
-      allCommentsNum.current = c.meta.totalCommentsAndReplies;
-      setComments(c.data);
-      setSortByComments(sort);
-    },
-    [lessonId, sortByComments, toggleFilterModal, isConnected]
-  );
+    page.current = 1;
+    toggleFilterModal();
+    const c = await commentService.getComments(lessonId, sort, page.current);
+    allCommentsNum.current = c.meta.totalCommentsAndReplies;
+    setComments(c.data);
+    setSortByComments(sort);
+  };
 
   const onDeleteComment = useCallback(
     (id: number) => {

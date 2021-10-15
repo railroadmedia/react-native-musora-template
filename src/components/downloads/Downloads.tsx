@@ -113,7 +113,7 @@ export const Downloads: React.FC<Props> = ({}) => {
     return nd;
   };
 
-  const handleBackPress = useCallback(() => {
+  const handleBackPress = () => {
     if (!isConnected) {
       showNoConnectionAlert();
       return false;
@@ -121,7 +121,7 @@ export const Downloads: React.FC<Props> = ({}) => {
 
     goBack();
     return true;
-  }, []);
+  };
 
   const percentageListener = useCallback(() => {
     setLoading(false);

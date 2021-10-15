@@ -87,9 +87,9 @@ export const PacksBanner: React.FC<Props> = ({
     return window.width < window.height ? window.width : window.height;
   }, [isLandscape]);
 
-  const showPackInfo = useCallback(() => {
+  const showPackInfo = () => {
     setShowInfo(!showInfo);
-  }, [showInfo]);
+  };
 
   const renderColoredBtn = () => {
     return (

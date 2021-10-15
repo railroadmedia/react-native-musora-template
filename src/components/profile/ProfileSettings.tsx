@@ -49,7 +49,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const onSave = useCallback(async () => {
+  const onSave = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     textInput.current?.blur();
@@ -82,13 +82,13 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         );
       }
     }
-  }, [name, croppedImage, customAlert.current, isConnected]);
+  };
 
-  const toggleChangePhoto = useCallback(() => {
+  const toggleChangePhoto = () => {
     choosePhotoModal.current?.toggle('Select a Photo', ' ');
-  }, [choosePhotoModal]);
+  };
 
-  const cropImage = useCallback((path: string) => {
+  const cropImage = (path: string) => {
     ImagePicker.openCropper({
       path,
       width: 300,
@@ -110,9 +110,9 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       .catch(error => {
         loadingRef.current?.toggleLoading(false);
       });
-  }, []);
+  };
 
-  const takeAPhoto = useCallback(async () => {
+  const takeAPhoto = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     choosePhotoModal.current?.toggle();
@@ -127,9 +127,9 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         loadingRef.current?.toggleLoading(false);
       }
     });
-  }, [loadingRef, customAlert, choosePhotoModal, isConnected]);
+  };
 
-  const chooseFromLibrary = useCallback(async () => {
+  const chooseFromLibrary = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     choosePhotoModal.current?.toggle();
@@ -146,7 +146,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         loadingRef.current?.toggleLoading(false);
       }
     });
-  }, [loadingRef, customAlert, choosePhotoModal, isConnected]);
+  };
 
   return (
     <Modal

@@ -203,18 +203,15 @@ export const LessonPart: React.FC<Props> = ({
     );
   }, [lesson?.id]);
 
-  const isCloseToBottom = useCallback(
-    ({
-      layoutMeasurement,
-      contentOffset,
-      contentSize
-    }: {
-      layoutMeasurement: NativeScrollSize;
-      contentOffset: NativeScrollPoint;
-      contentSize: NativeScrollSize;
-    }) => layoutMeasurement.height + contentOffset.y >= contentSize.height - 40,
-    []
-  );
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize
+  }: {
+    layoutMeasurement: NativeScrollSize;
+    contentOffset: NativeScrollPoint;
+    contentSize: NativeScrollSize;
+  }) => layoutMeasurement.height + contentOffset.y >= contentSize.height - 40;
 
   useEffect(() => {
     isMounted.current = true;
@@ -226,7 +223,7 @@ export const LessonPart: React.FC<Props> = ({
     };
   }, [id]);
 
-  const createResourcesArr = useCallback((lessonResources: Resource[]) => {
+  const createResourcesArr = (lessonResources: Resource[]) => {
     const extensions = ['mp3', 'pdf', 'zip'];
 
     lessonResources.forEach((resource: Resource) => {
@@ -253,62 +250,59 @@ export const LessonPart: React.FC<Props> = ({
         );
       }
     });
-  }, []);
+  };
 
-  const getLesson = useCallback(
-    async (lessonId: number) => {
-      let content: LessonResponse;
-      if (!isConnected) {
-        content = offlineContent[lessonId]?.lesson;
-        if (!content) {
-          content = offlineContent[parentId].overview?.lessons.find(
-            (l: { id: number }) => l.id === lessonId
-          );
-        }
-        content = await handleNeighbourLesson(
-          { ...content, parent_id: parentId },
-          'next_lesson'
+  const getLesson = async (lessonId: number) => {
+    let content: LessonResponse;
+    if (!isConnected) {
+      content = offlineContent[lessonId]?.lesson;
+      if (!content) {
+        content = offlineContent[parentId].overview?.lessons.find(
+          (l: { id: number }) => l.id === lessonId
         );
-        content = await handleNeighbourLesson(
-          { ...content, parent_id: parentId },
-          'previous_lesson'
-        );
-      } else {
-        content = await contentService.getContentById(
-          lessonId,
-          false,
-          abortC.current.signal
-        );
-        if (content.title && content.message) {
-          return alert.current?.toggle(content.title, content.message);
-        }
       }
-      setLesson(content);
-      setProgress(getProgress(content.user_progress));
-      setIncompleteLessonId(
-        content.type === 'course-part'
-          ? content.next_lesson?.id
-          : content.parent?.next_lesson?.id
+      content = await handleNeighbourLesson(
+        { ...content, parent_id: parentId },
+        'next_lesson'
       );
-      addCards(content.related_lessons);
-      setRefreshing(false);
-      if (contentType === 'Play Along') {
-        setVideoType('audio');
+      content = await handleNeighbourLesson(
+        { ...content, parent_id: parentId },
+        'previous_lesson'
+      );
+    } else {
+      content = await contentService.getContentById(
+        lessonId,
+        false,
+        abortC.current.signal
+      );
+      if (content.title && content.message) {
+        return alert.current?.toggle(content.title, content.message);
       }
-      if (content.resources) createResourcesArr(content.resources);
-      if (
-        contentType !== 'song' &&
-        !content.video_playback_endpoints &&
-        !content?.youtube_video_id
-      ) {
-        alert.current?.toggle(
-          `We're sorry, there was an issue loading this video, try reloading the lesson.`,
-          `If the problem persists please contact support.`
-        );
-      }
-    },
-    [alert, contentType, createResourcesArr, addCards, isConnected]
-  );
+    }
+    setLesson(content);
+    setProgress(getProgress(content.user_progress));
+    setIncompleteLessonId(
+      content.type === 'course-part'
+        ? content.next_lesson?.id
+        : content.parent?.next_lesson?.id
+    );
+    addCards(content.related_lessons);
+    setRefreshing(false);
+    if (contentType === 'Play Along') {
+      setVideoType('audio');
+    }
+    if (content.resources) createResourcesArr(content.resources);
+    if (
+      contentType !== 'song' &&
+      !content.video_playback_endpoints &&
+      !content?.youtube_video_id
+    ) {
+      alert.current?.toggle(
+        `We're sorry, there was an issue loading this video, try reloading the lesson.`,
+        `If the problem persists please contact support.`
+      );
+    }
+  };
 
   const handleNeighbourLesson = (
     content: {
@@ -367,11 +361,11 @@ export const LessonPart: React.FC<Props> = ({
     return true;
   }, [assignmentFSStyle, selectedAssignment, fullscreen, goBack]);
 
-  const onNoVideoBack = useCallback(() => {
+  const onNoVideoBack = () => {
     if (!utils.isTablet) Orientation.lockToPortrait();
     StatusBar.setHidden(false);
     goBack();
-  }, []);
+  };
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', onAndroidBack);
@@ -419,16 +413,16 @@ export const LessonPart: React.FC<Props> = ({
     return mp3s;
   };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (!lesson) return;
 
     setRefreshing(true);
     getLesson(lesson.id);
-  }, [lesson?.id, getLesson, isConnected]);
+  };
 
-  const renderTagsDependingOnContentType = useCallback(() => {
+  const renderTagsDependingOnContentType = useMemo(() => {
     const {
       xp,
       type,
@@ -478,7 +472,7 @@ export const LessonPart: React.FC<Props> = ({
     return '';
   }, [lesson, contentType]);
 
-  const toggleLike = useCallback(async () => {
+  const toggleLike = async () => {
     if (!lesson) return;
     const { is_liked_by_current_user, id, like_count } = lesson;
 
@@ -492,7 +486,7 @@ export const LessonPart: React.FC<Props> = ({
       like_count: is_liked_by_current_user ? like_count - 1 : like_count + 1,
       is_liked_by_current_user: !is_liked_by_current_user
     });
-  }, [lesson]);
+  };
 
   const toggleMyList = useCallback(() => {
     if (!lesson) return;
@@ -509,31 +503,28 @@ export const LessonPart: React.FC<Props> = ({
     });
   }, [lesson, removeModalRef]);
 
-  const toggleVideoAudio = useCallback(() => {
+  const toggleVideoAudio = () => {
     setVideoType(videoType === 'audio' ? 'video' : 'audio');
-  }, [videoType]);
+  };
 
-  const selectAssignment = useCallback(
-    async (assignment: Assignment, index: number) => {
-      setSelectedAssignment({
-        ...assignment,
-        index,
-        progress: getProgress(assignment.user_progress),
-        sheet_music_image_url: assignment.sheet_music_image_url
-          ? await getSheetWHRatio(assignment.sheet_music_image_url)
-          : undefined
-      });
-    },
-    []
-  );
+  const selectAssignment = async (assignment: Assignment, index: number) => {
+    setSelectedAssignment({
+      ...assignment,
+      index,
+      progress: getProgress(assignment.user_progress),
+      sheet_music_image_url: assignment.sheet_music_image_url
+        ? await getSheetWHRatio(assignment.sheet_music_image_url)
+        : undefined
+    });
+  };
 
-  const goToSoundSlice = useCallback(() => {
+  const goToSoundSlice = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     soundsliceRef.current?.toggleSoundslice();
-  }, [soundsliceRef, isConnected]);
+  };
 
-  const onAddToMyList = useCallback(() => {
+  const onAddToMyList = () => {
     if (lesson?.is_added_to_primary_playlist) {
       removeModalRef.current?.toggle(
         'Hold your horses...',
@@ -542,11 +533,11 @@ export const LessonPart: React.FC<Props> = ({
     } else {
       toggleMyList();
     }
-  }, [removeModalRef, lesson?.is_added_to_primary_playlist, toggleMyList]);
+  };
 
-  const toggleShowInfo = useCallback(() => {
+  const toggleShowInfo = () => {
     setShowInfo(!showInfo);
-  }, [showInfo]);
+  };
 
   const switchLesson = useCallback(
     (lessonId: number) => {
@@ -598,7 +589,7 @@ export const LessonPart: React.FC<Props> = ({
     }
   }, [completeLessonPage, lesson, incompleteLessonId, getLesson]);
 
-  const goToMarket = useCallback(() => {
+  const goToMarket = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     Rate.rate(
@@ -611,7 +602,7 @@ export const LessonPart: React.FC<Props> = ({
       },
       () => {}
     );
-  }, [isConnected]);
+  };
 
   const showRatingModal = () =>
     Alert.alert(
@@ -629,107 +620,94 @@ export const LessonPart: React.FC<Props> = ({
       { cancelable: false }
     );
 
-  const onComplete = useCallback(
-    async (assignmentId?: number) => {
-      if (!isConnected) return showNoConnectionAlert();
+  const onComplete = async (assignmentId?: number) => {
+    if (!isConnected) return showNoConnectionAlert();
 
-      if (!lesson) return;
-      const res: CompletedResponse = await userService.markAsComplete(
-        assignmentId || lesson.id
-      );
-      let incompleteAssignments: number;
-      if (assignmentId) {
-        incompleteAssignments = lesson.assignments.filter(
-          (a: Assignment) =>
-            a.user_progress[0]?.progress_percent !== 100 &&
-            a.id !== assignmentId
-        ).length;
-        if (!incompleteAssignments) {
-          if (incompleteLessonId)
-            completeLessonPage.current?.toggle(
-              'Lesson complete',
-              `You earned ${lesson.xp} XP!`
-            );
-          else if (!incompleteLessonId)
-            completeOverviewPage.current?.toggle(
-              overviewCompleteText,
-              `You earned ${lesson.xp} XP!`
-            );
-        }
-        setProgress(incompleteAssignments ? progress : 100);
-        setLesson({
-          ...lesson,
-          assignments: lesson.assignments.map(a =>
-            a.id === assignmentId
-              ? { ...a, user_progress: [{ progress_percent: 100 }] }
-              : a
-          )
-        });
-        if (selectedAssignment) {
-          setSelectedAssignment({ ...selectedAssignment, progress: 100 });
+    if (!lesson) return;
+    const res: CompletedResponse = await userService.markAsComplete(
+      assignmentId || lesson.id
+    );
+    let incompleteAssignments: number;
+    if (assignmentId) {
+      incompleteAssignments = lesson.assignments.filter(
+        (a: Assignment) =>
+          a.user_progress[0]?.progress_percent !== 100 && a.id !== assignmentId
+      ).length;
+      if (!incompleteAssignments) {
+        if (incompleteLessonId)
+          completeLessonPage.current?.toggle(
+            'Lesson complete',
+            `You earned ${lesson.xp} XP!`
+          );
+        else if (!incompleteLessonId)
+          completeOverviewPage.current?.toggle(
+            overviewCompleteText,
+            `You earned ${lesson.xp} XP!`
+          );
+      }
+      setProgress(incompleteAssignments ? progress : 100);
+      setLesson({
+        ...lesson,
+        assignments: lesson.assignments.map(a =>
+          a.id === assignmentId
+            ? { ...a, user_progress: [{ progress_percent: 100 }] }
+            : a
+        )
+      });
+      if (selectedAssignment) {
+        setSelectedAssignment({ ...selectedAssignment, progress: 100 });
+      }
+    } else {
+      if (contentType === 'method') {
+        if (!lesson.is_last_incomplete_lesson_from_course) {
+          completeLessonPage.current?.toggle(
+            'Lesson complete',
+            `You earned ${lesson.xp} XP!`
+          );
+        } else if (!lesson.is_last_incomplete_course_from_level) {
+          completeOverviewPage.current?.toggle(
+            overviewCompleteText,
+            `You earned ${lesson.current_course.xp} XP!`
+          );
+        } else if (lesson.is_last_incomplete_course_from_level) {
+          completeOverviewPage.current?.toggle(
+            overviewCompleteText,
+            `You earned ${lesson.current_level.xp} XP!`
+          );
         }
       } else {
-        if (contentType === 'method') {
-          if (!lesson.is_last_incomplete_lesson_from_course) {
-            completeLessonPage.current?.toggle(
-              'Lesson complete',
-              `You earned ${lesson.xp} XP!`
-            );
-          } else if (!lesson.is_last_incomplete_course_from_level) {
-            completeOverviewPage.current?.toggle(
-              overviewCompleteText,
-              `You earned ${lesson.current_course.xp} XP!`
-            );
-          } else if (lesson.is_last_incomplete_course_from_level) {
-            completeOverviewPage.current?.toggle(
-              overviewCompleteText,
-              `You earned ${lesson.current_level.xp} XP!`
-            );
-          }
+        if (incompleteLessonId) {
+          completeLessonPage.current?.toggle(
+            'Lesson complete',
+            `You earned ${lesson.xp} XP!`
+          );
         } else {
-          if (incompleteLessonId) {
-            completeLessonPage.current?.toggle(
-              'Lesson complete',
-              `You earned ${lesson.xp} XP!`
-            );
-          } else {
-            completeOverviewPage.current?.toggle(
-              overviewCompleteText,
-              `You earned ${lesson.xp} XP!`
-            );
-          }
+          completeOverviewPage.current?.toggle(
+            overviewCompleteText,
+            `You earned ${lesson.xp} XP!`
+          );
         }
-        setProgress(100);
-        setLesson({
-          ...lesson,
-          assignments: lesson.assignments.map(a => ({
-            ...a,
-            progress: 100
-          }))
-        });
       }
-      if (
-        (utils.isiOS && res.displayIosReviewModal) ||
-        (!utils.isiOS && res.displayGoogleReviewModal)
-      )
-        showRatingModal();
-      if (res.parent?.user_progress) {
-        setProgress(getProgress(res.parent.user_progress));
-      }
-    },
-    [
-      contentType,
-      incompleteLessonId,
-      lesson,
-      overviewCompleteText,
-      progress,
-      selectedAssignment,
-      showRatingModal,
-      isConnected
-    ]
-  );
+      setProgress(100);
+      setLesson({
+        ...lesson,
+        assignments: lesson.assignments.map(a => ({
+          ...a,
+          progress: 100
+        }))
+      });
+    }
+    if (
+      (utils.isiOS && res.displayIosReviewModal) ||
+      (!utils.isiOS && res.displayGoogleReviewModal)
+    )
+      showRatingModal();
+    if (res.parent?.user_progress) {
+      setProgress(getProgress(res.parent.user_progress));
+    }
+  };
 
-  const onCompleteAssignment = useCallback(() => {
+  const onCompleteAssignment = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (selectedAssignment) {
@@ -742,7 +720,7 @@ export const LessonPart: React.FC<Props> = ({
         );
       }
     }
-  }, [selectedAssignment, resetModalRef, onComplete, isConnected]);
+  };
 
   const onLessonProgressBtnPress = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
@@ -797,11 +775,11 @@ export const LessonPart: React.FC<Props> = ({
     [video]
   );
 
-  const togglePausedVideo = useCallback(() => {
+  const togglePausedVideo = () => {
     if (video) {
       video.current?.togglePaused(true, true);
     }
-  }, [video]);
+  };
 
   const toSupport = useCallback(() => {
     alert.current?.toggle();
@@ -871,10 +849,10 @@ export const LessonPart: React.FC<Props> = ({
     [theme]
   );
 
-  const onReloadBtnPressed = useCallback(() => {
+  const onReloadBtnPressed = () => {
     refresh();
     alert.current?.toggle();
-  }, [alert, refresh]);
+  };
 
   const onSheetDoubleTapped = useCallback((hide: boolean) => {
     setAssignmentFSStyle(
@@ -1140,7 +1118,7 @@ export const LessonPart: React.FC<Props> = ({
                     <Text style={styles.title}>{lesson?.title}</Text>
                     <View style={styles.rowContainer}>
                       <Text style={styles.tag}>
-                        {renderTagsDependingOnContentType()}
+                        {renderTagsDependingOnContentType}
                       </Text>
                     </View>
                   </View>

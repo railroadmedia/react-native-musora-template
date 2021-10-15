@@ -39,9 +39,9 @@ export const CommentInputModal = forwardRef(
       }
     }));
 
-    const toggleModal = useCallback(() => {
+    const toggleModal = () => {
       setModalVisible(!modalVisible);
-    }, [modalVisible]);
+    };
 
     return (
       <Modal

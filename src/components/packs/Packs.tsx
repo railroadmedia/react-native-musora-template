@@ -95,14 +95,14 @@ export const Packs: React.FC<Props> = () => {
       });
   };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
     getPacks();
-  }, [isConnected]);
+  };
 
   const renderFLRefreshControl = (): ReactElement => (
     <RefreshControl
@@ -259,14 +259,11 @@ export const Packs: React.FC<Props> = () => {
     navigate('packOverview', { mobile_app_url: topHeaderPack?.mobile_app_url });
   }, [topHeaderPack?.mobile_app_url, isConnected]);
 
-  const goToPack = useCallback(
-    (mobile_app_url: string) => {
-      if (!isConnected) return showNoConnectionAlert();
+  const goToPack = (mobile_app_url: string) => {
+    if (!isConnected) return showNoConnectionAlert();
 
-      navigate('packOverview', { mobile_app_url });
-    },
-    [isConnected]
-  );
+    navigate('packOverview', { mobile_app_url });
+  };
 
   const onMainBtnClick = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();

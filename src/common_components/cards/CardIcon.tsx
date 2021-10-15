@@ -98,8 +98,6 @@ export const CardIcon: React.FC<Props> = ({
     onResetProgress?.(id);
   }, [id, resetModalRef, isConnected]);
 
-  const onDownloadDone = useCallback(() => {}, []);
-
   return (
     <View>
       {iconType === 'downloads' ? (

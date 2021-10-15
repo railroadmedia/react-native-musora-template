@@ -63,7 +63,7 @@ export const Replies: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const addReply = useCallback(async () => {
+  const addReply = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     actionModalCommentInput.current?.toggle();
@@ -82,7 +82,7 @@ export const Replies: React.FC<Props> = ({
       setComment(c);
       setReplyText('');
     }
-  }, [comment, onAddOrRemoveReply, replyText, isConnected]);
+  };
 
   const onDeleteReply = useCallback(
     async (id: number) => {

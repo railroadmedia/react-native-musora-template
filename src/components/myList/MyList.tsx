@@ -276,22 +276,19 @@ export const MyList: React.FC<Props> = ({}) => {
     [isConnected]
   );
 
-  const onNavigate = useCallback(
-    title => {
-      if (!isConnected) return showNoConnectionAlert();
+  const onNavigate = (title: TitleTypes) => {
+    if (!isConnected) return showNoConnectionAlert();
 
-      setPageTitle(title);
-      dispatch({
-        type: UPDATE_MY_LIST_LOADERS,
-        loadingMore: false,
-        refreshing: true
-      });
-      decideCall(title);
-    },
-    [isConnected]
-  );
+    setPageTitle(title);
+    dispatch({
+      type: UPDATE_MY_LIST_LOADERS,
+      loadingMore: false,
+      refreshing: true
+    });
+    decideCall(title);
+  };
 
-  const decideCall = useCallback(title => {
+  const decideCall = (title: TitleTypes) => {
     if (title === 'In Progress') {
       setInProgress();
     } else if (title === 'Completed') {
@@ -299,7 +296,7 @@ export const MyList: React.FC<Props> = ({}) => {
     } else {
       setMyList();
     }
-  }, []);
+  };
 
   const renderFLHeader = (): ReactElement => {
     if (pageTitle === 'My List')
@@ -310,7 +307,7 @@ export const MyList: React.FC<Props> = ({}) => {
               testID={title}
               key={index}
               style={[styles.navigationButton]}
-              onPress={() => onNavigate(title)}
+              onPress={() => onNavigate(title as TitleTypes)}
             >
               <Text style={styles.navigationBtnText}>{title}</Text>
               {right({

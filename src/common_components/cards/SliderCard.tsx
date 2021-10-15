@@ -41,7 +41,7 @@ export const SliderCard: React.FC<Props> = props => {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const onCardPress = useCallback(() => {
+  const onCardPress = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     let { route, contentType } = getContentType(
@@ -56,7 +56,7 @@ export const SliderCard: React.FC<Props> = props => {
       contentType,
       url: item.mobile_app_url
     });
-  }, [isConnected]);
+  };
 
   return (
     <TouchableOpacity

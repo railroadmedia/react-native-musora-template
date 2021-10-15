@@ -151,7 +151,7 @@ export const CourseOverview: React.FC<Props> = ({
     course?.xp
   ]);
 
-  const likeOrDislikeContent = useCallback(() => {
+  const likeOrDislikeContent = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (!course) return;
@@ -170,9 +170,9 @@ export const CourseOverview: React.FC<Props> = ({
         like_count: course.like_count + 1
       });
     }
-  }, [course, isConnected]);
+  };
 
-  const toggleMyList = useCallback(() => {
+  const toggleMyList = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (!course) return;
@@ -185,7 +185,7 @@ export const CourseOverview: React.FC<Props> = ({
       userService.addToMyList(course.id);
       setCourse({ ...course, is_added_to_primary_playlist: true });
     }
-  }, [course, removeModalRef, isConnected]);
+  };
 
   const addToMyList = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
@@ -220,7 +220,7 @@ export const CourseOverview: React.FC<Props> = ({
     resetModalRef.current?.toggle();
   }, [course, resetModalRef, isConnected]);
 
-  const onMainBtnPress = useCallback(() => {
+  const onMainBtnPress = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     if (course?.completed) {
@@ -236,13 +236,7 @@ export const CourseOverview: React.FC<Props> = ({
         });
       }
     }
-  }, [
-    resetModalRef,
-    course?.completed,
-    course?.id,
-    course?.next_lesson,
-    isConnected
-  ]);
+  };
 
   const flRefreshControl = (
     <RefreshControl

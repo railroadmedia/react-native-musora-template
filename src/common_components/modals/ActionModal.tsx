@@ -48,9 +48,9 @@ export const ActionModal = forwardRef<
     }
   }));
 
-  const closeModal = useCallback(() => {
+  const closeModal = () => {
     setVisible(false);
-  }, []);
+  };
 
   return (
     <Modal
