@@ -45,9 +45,13 @@ const authenticate: Authenticate = async function (email, password, purchases) {
 };
 
 const call: Call = async function ({ url, method, signal, body }) {
+  let newUrl = url;
+  if (!url.includes('https')) {
+    newUrl = url.replace('http', 'https');
+  }
   try {
     let response = await fetch(
-      url.includes(utils.rootUrl) ? url : utils.rootUrl + url,
+      newUrl.includes(utils.rootUrl) ? newUrl : utils.rootUrl + newUrl,
       {
         method: method || 'GET',
         headers: body

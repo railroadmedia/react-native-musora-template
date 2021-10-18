@@ -169,7 +169,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       fontSize: utils.figmaFontSizeScaler(14),
       fontFamily: 'OpenSans',
       textAlign: 'center',
-      marginBottom: 10
+      margin: 10
     },
     levelTitle: {
       color: current.textColor,

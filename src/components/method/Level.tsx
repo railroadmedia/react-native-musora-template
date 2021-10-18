@@ -105,7 +105,7 @@ export const Level: React.FC<Props> = ({
       id: level?.next_lesson.id,
       contentType: 'method'
     });
-  }, [level?.next_lesson.id, isConnected]);
+  }, [level?.next_lesson?.id, isConnected]);
 
   const goToMethodCourse = useCallback(
     (mobile_app_url: string) => {

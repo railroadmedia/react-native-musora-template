@@ -233,9 +233,7 @@ export const CommentSection = forwardRef<
         <Image
           style={styles.userProfileImg}
           source={{
-            uri:
-              user?.avatarUrl ||
-              'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png'
+            uri: user?.avatarUrl || utils.fallbackAvatar
           }}
         />
         <TouchableOpacity
@@ -270,11 +268,7 @@ export const CommentSection = forwardRef<
         <SafeAreaView style={styles.commentInputContainer} edges={['bottom']}>
           <Image
             style={[styles.userProfileImg, { marginVertical: 15 }]}
-            source={{
-              uri:
-                user?.avatarUrl ||
-                'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png'
-            }}
+            source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
           />
           <TextInput
             multiline={true}

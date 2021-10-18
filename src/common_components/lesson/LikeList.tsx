@@ -82,11 +82,7 @@ export const LikeList: React.FC<Props> = ({
           <View style={styles.cardContainer}>
             <View style={styles.rowContainer}>
               <Image
-                source={{
-                  uri:
-                    item.avatar_url ||
-                    'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png'
-                }}
+                source={{ uri: item.avatar_url || utils.fallbackAvatar }}
                 style={styles.userProfileImg}
               />
               <View>

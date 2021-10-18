@@ -9,6 +9,12 @@ export const methodService: MethodService = {
       signal
     });
   },
+  getFoundation: function (signal: AbortSignal) {
+    return call({
+      url: `/musora-api/learning-paths/foundations-2019`,
+      signal
+    });
+  },
   getLevel: function (url, signal) {
     return call({ url, signal });
   },

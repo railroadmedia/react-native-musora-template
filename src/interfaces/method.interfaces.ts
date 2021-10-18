@@ -33,12 +33,13 @@ export interface Level {
   next_lesson: Card;
 }
 
-export interface Method {
+export interface Unit extends Level {}
+
+interface LearningPath {
   id?: number;
   started?: boolean;
   level_rank?: string;
   title?: string;
-  levels?: Level[];
   completed?: boolean;
   vimeo_video_id?: number;
   lesson_rank?: number;
@@ -50,6 +51,14 @@ export interface Method {
   banner_background_image?: string;
   length_in_seconds?: string;
   next_lesson?: Card;
+}
+
+export interface Method extends LearningPath {
+  levels?: Level[];
+}
+
+export interface Foundation extends LearningPath {
+  units?: Level[];
 }
 
 export interface MethodReducer {

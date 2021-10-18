@@ -45,6 +45,7 @@ import { Login } from './components/auth/Login';
 import { LaunchScreen } from './components/auth/LaunchScreen';
 import { CoachOverview } from './components/coach/CoachOverview';
 import { SignUp } from './components/auth/SignUp';
+import { Foundation } from './components/method/Foundation';
 
 type Scenes =
   | 'home'
@@ -186,6 +187,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
               options={props => ({ title: props.route.params.title })}
               component={SeeAll}
             />
+            <Stack.Screen name='foundation' component={Foundation} />
             <Stack.Screen name='method' component={Method} />
             <Stack.Screen name='level' component={Level} />
             <Stack.Screen name='courseOverview' component={CourseOverview} />
