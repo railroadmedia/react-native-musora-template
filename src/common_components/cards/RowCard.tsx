@@ -50,7 +50,7 @@ export const RowCard: React.FC<Props> = props => {
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const onCardPress = useCallback(() => {
+  const onCardPress = () => {
     if (!isConnected) {
       let ocExists = !!offlineContent[id];
       if (!ocExists) {
@@ -81,7 +81,7 @@ export const RowCard: React.FC<Props> = props => {
       url: item.mobile_app_url,
       item: !isConnected ? item : null
     });
-  }, [isConnected, offlineContent]);
+  };
 
   const renderImage = () => {
     if (route?.match(/^(live|schedule)$/)) {

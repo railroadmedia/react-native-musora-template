@@ -113,9 +113,9 @@ export const Profile: React.FC = () => {
       });
   };
 
-  const showEditProfile = useCallback(() => {
+  const showEditProfile = () => {
     setShowProfileSettings(!showProfileSettings);
-  }, [showProfileSettings]);
+  };
 
   const renderStickyHeader = () => (
     <View

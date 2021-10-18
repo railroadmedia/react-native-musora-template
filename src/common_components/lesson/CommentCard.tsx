@@ -41,6 +41,7 @@ export interface CommentCardRefObj {}
 let windowWidth = Dimensions.get('window').width;
 const DEFAULT_PROFILE_IMAGE =
   'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/No_image_available.svg/2000px-No_image_available.svg.png';
+
 export const CommentCard = forwardRef(
   (
     {
@@ -58,8 +59,8 @@ export const CommentCard = forwardRef(
       }
     >();
 
-    const lastPostTime = useCallback((date: string) => {
-      const formatedDate = date?.replace(/-/g, '/');
+    const lastPostTime = useMemo(() => {
+      const formatedDate = comment.created_on?.replace(/-/g, '/');
       const dif: number =
         new Date().getTime() - new Date(formatedDate).getTime();
       if (dif < 120 * 1000) return `1 Minute Ago`;
@@ -76,7 +77,7 @@ export const CommentCard = forwardRef(
         return `${(dif / 1000 / 60 / 60 / 24 / 30).toFixed()} Months Ago`;
       if (dif < 60 * 1000 * 60 * 24 * 365 * 2) return `1 Year Ago`;
       return `${(dif / 1000 / 60 / 60 / 24 / 365).toFixed()} Years Ago`;
-    }, []);
+    }, [comment.created_on]);
 
     const [isLiked, setIsLiked] = useState(comment.is_liked);
     const [likeCount, setLikeCount] = useState(comment.like_count);
@@ -90,7 +91,7 @@ export const CommentCard = forwardRef(
 
     const styles = useMemo(() => setStyles(theme), [theme]);
 
-    const goToReplies = useCallback(() => {
+    const goToReplies = () => {
       if (!isConnected) return showNoConnectionAlert();
 
       if (lessonId) {
@@ -101,20 +102,20 @@ export const CommentCard = forwardRef(
           onAddOrRemoveReply: onAddOrRemoveReplyParent
         });
       }
-    }, [comment, lessonId, isConnected]);
+    };
 
-    const goToLikeList = useCallback(() => {
+    const goToLikeList = () => {
       if (!isConnected) return showNoConnectionAlert();
 
       navigate('likeList', { commentId: comment.id });
-    }, [isConnected]);
+    };
 
-    const showDeleteAlert = useCallback(() => {
+    const showDeleteAlert = () => {
       alert.current?.toggle(
         'Hold your horses...',
         'This will delete this comment and cannot be undone. Are you sure about this?'
       );
-    }, [alert]);
+    };
 
     const closeDeleteModal = useCallback(() => {
       alert.current?.toggle();
@@ -218,7 +219,7 @@ export const CommentCard = forwardRef(
                 {comment.user?.['display_name']} |{' '}
               </Text>
               <Text style={styles.tag}>{comment.user?.xp_level} | </Text>
-              <Text style={styles.tag}>{lastPostTime(comment.created_on)}</Text>
+              <Text style={styles.tag}>{lastPostTime}</Text>
             </View>
             <View style={styles.iconContainer}>
               <View

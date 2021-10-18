@@ -111,16 +111,16 @@ export const CoachOverview: React.FC<Props> = ({
       });
   };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     setRefreshing(true);
     getCoach();
-  }, [getCoach, isConnected]);
+  };
 
-  const toggleShowInfo = useCallback(() => {
+  const toggleShowInfo = () => {
     setShowInfo(!showInfo);
-  }, [showInfo]);
+  };
 
   const renderHeader = (
     <>
@@ -183,38 +183,33 @@ export const CoachOverview: React.FC<Props> = ({
     />
   );
 
-  const isCloseToBottom = useCallback(
-    ({
-      layoutMeasurement,
-      contentOffset,
-      contentSize
-    }: {
-      layoutMeasurement: NativeScrollSize;
-      contentOffset: NativeScrollPoint;
-      contentSize: NativeScrollSize;
-    }) => layoutMeasurement.height + contentOffset.y >= contentSize.height - 40,
-    []
-  );
+  const isCloseToBottom = ({
+    layoutMeasurement,
+    contentOffset,
+    contentSize
+  }: {
+    layoutMeasurement: NativeScrollSize;
+    contentOffset: NativeScrollPoint;
+    contentSize: NativeScrollSize;
+  }) => layoutMeasurement.height + contentOffset.y >= contentSize.height - 40;
 
-  const loadMoreComments = useCallback(
-    ({ nativeEvent }: { nativeEvent: NativeScrollEvent }) => {
-      if (isConnected && isCloseToBottom(nativeEvent))
-        commentSectionRef?.current?.loadMoreComments();
-    },
-    [isCloseToBottom, commentSectionRef]
-  );
+  const loadMoreComments = ({
+    nativeEvent
+  }: {
+    nativeEvent: NativeScrollEvent;
+  }) => {
+    if (isConnected && isCloseToBottom(nativeEvent))
+      commentSectionRef?.current?.loadMoreComments();
+  };
 
-  const goToSeeAll = useCallback(
-    (title: string, seeAllFetcher: string) => {
-      if (!isConnected) return showNoConnectionAlert();
+  const goToSeeAll = (title: string, seeAllFetcher: string) => {
+    if (!isConnected) return showNoConnectionAlert();
 
-      navigate('seeAll', {
-        title,
-        fetcher: { scene: 'coaches', fetcherName: seeAllFetcher }
-      });
-    },
-    [isConnected]
-  );
+    navigate('seeAll', {
+      title,
+      fetcher: { scene: 'coaches', fetcherName: seeAllFetcher }
+    });
+  };
 
   const renderCarousel = (items: number[] | undefined, title: string) => {
     let seeAllFetcher = '';

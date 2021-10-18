@@ -63,7 +63,7 @@ export const Replies: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const addReply = useCallback(async () => {
+  const addReply = async () => {
     if (!isConnected) return showNoConnectionAlert();
 
     actionModalCommentInput.current?.toggle();
@@ -82,7 +82,7 @@ export const Replies: React.FC<Props> = ({
       setComment(c);
       setReplyText('');
     }
-  }, [comment, onAddOrRemoveReply, replyText, isConnected]);
+  };
 
   const onDeleteReply = useCallback(
     async (id: number) => {
@@ -120,11 +120,7 @@ export const Replies: React.FC<Props> = ({
               <View style={styles.inputContainer}>
                 <Image
                   style={styles.userProfileImg}
-                  source={{
-                    uri:
-                      user?.avatarUrl ||
-                      'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png'
-                  }}
+                  source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
                 />
                 <TouchableOpacity
                   style={styles.placeholderBtn}
@@ -163,11 +159,7 @@ export const Replies: React.FC<Props> = ({
         <SafeAreaView edges={['bottom']} style={styles.bottomSafeArea}>
           <Image
             style={[styles.userProfileImg, { marginVertical: 15 }]}
-            source={{
-              uri:
-                user?.avatarUrl ||
-                'https://www.drumeo.com/laravel/public/assets/images/default-avatars/default-male-profile-thumbnail.png'
-            }}
+            source={{ uri: user?.avatarUrl || utils.fallbackAvatar }}
           />
           <TextInput
             multiline={true}

@@ -110,14 +110,14 @@ export const PackOverview: React.FC<Props> = ({
       });
   };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     setRefreshing(true);
     getPack();
-  }, [isConnected]);
+  };
 
-  const createResourcesArr = useCallback((lessonResources: Resource[]) => {
+  const createResourcesArr = (lessonResources: Resource[]) => {
     const extensions = ['mp3', 'pdf', 'zip'];
 
     lessonResources.forEach((resource: Resource) => {
@@ -144,7 +144,7 @@ export const PackOverview: React.FC<Props> = ({
         );
       }
     });
-  }, []);
+  };
 
   const onMainBtnClick = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();

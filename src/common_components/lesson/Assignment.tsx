@@ -12,7 +12,8 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  ScaledSize
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SvgUri } from 'react-native-svg';
@@ -49,9 +50,9 @@ export const Assignment: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const dimChange = useCallback(e => {
-    setWidth(e.window.width);
-  }, []);
+  const dimChange = ({ window }: { window: ScaledSize }) => {
+    setWidth(window.width);
+  };
 
   useEffect(() => {
     const listener = Dimensions.addEventListener('change', dimChange);

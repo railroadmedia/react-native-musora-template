@@ -110,7 +110,7 @@ export const ShowOverview: React.FC<Props> = ({
       });
   };
 
-  const loadMore = useCallback(() => {
+  const loadMore = () => {
     if (!isConnected) return showNoConnectionAlert();
     console.log(filters.current);
     setAnimateLessons(true);
@@ -130,9 +130,9 @@ export const ShowOverview: React.FC<Props> = ({
           setAnimateLessons(false);
         }
       });
-  }, [showLessons, isConnected]);
+  };
 
-  const refresh = useCallback(() => {
+  const refresh = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     abortC.current.abort();
@@ -142,7 +142,7 @@ export const ShowOverview: React.FC<Props> = ({
     selectedFilters.current = { apiQuery: '', formattedQuery: '' };
     setRefreshing(true);
     getShow();
-  }, [isConnected]);
+  };
 
   const onApplyFilters = useCallback(({ apiQuery, formattedQuery }) => {
     if (isMounted.current) {

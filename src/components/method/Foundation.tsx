@@ -21,24 +21,24 @@ import type { ParamListBase } from '@react-navigation/native';
 
 import { ThemeContext } from '../../state/theme/ThemeContext';
 import { CardsContext } from '../../state/cards/CardsContext';
-import { MethodContext } from '../../state/method/MethodContext';
-import { methodService } from '../../services/method.service';
 import { utils } from '../../utils';
 import { themeStyles } from '../../themeStyles';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { LearningPath } from './LearningPath';
 import { NextLesson } from '../../common_components/NextLesson';
+import type { Foundation as I_Foundation } from '../../interfaces/method.interfaces';
+import { methodService } from '../../services/method.service';
 
-export const Method: React.FC = () => {
+export const Foundation: React.FC = () => {
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
   const { addCards } = useContext(CardsContext);
-  const { method, updateMethod } = useContext(MethodContext);
 
   const [refreshing, setRefreshing] = useState(false);
+  const [foundation, setFoundation] = useState<I_Foundation>();
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -48,23 +48,25 @@ export const Method: React.FC = () => {
   useEffect(() => {
     isMounted.current = true;
     abortC.current = new AbortController();
-    setMethod();
+    getFoundations();
     return () => {
       isMounted.current = false;
       abortC.current.abort();
     };
   }, []);
 
-  const setMethod = () => {
+  const getFoundations = () => {
     if (!isConnected) return showNoConnectionAlert();
 
-    methodService.getMethod(abortC.current.signal).then(methodRes => {
-      if (isMounted.current) {
-        if (methodRes.next_lesson) addCards([methodRes.next_lesson]);
-        setRefreshing(false);
-        updateMethod(methodRes);
-      }
-    });
+    methodService
+      .getFoundation(abortC.current.signal)
+      .then((foundationRes: I_Foundation) => {
+        if (isMounted.current) {
+          if (foundationRes.next_lesson) addCards([foundationRes.next_lesson]);
+          setRefreshing(false);
+          setFoundation(foundationRes);
+        }
+      });
   };
 
   const refresh = (): void => {
@@ -73,15 +75,15 @@ export const Method: React.FC = () => {
     abortC.current.abort();
     abortC.current = new AbortController();
     setRefreshing(true);
-    setMethod();
+    getFoundations();
   };
 
-  const onLevelPress = useCallback(
+  const onUnitPress = useCallback(
     (mobile_app_url: string, published_on: string): void => {
       if (!isConnected) return showNoConnectionAlert();
 
       if (new Date() > new Date(published_on)) {
-        navigate('level', { mobile_app_url });
+        navigate('courseOverview', { mobile_app_url });
       }
     },
     [isConnected]
@@ -94,7 +96,7 @@ export const Method: React.FC = () => {
         barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
       />
 
-      {method?.id ? (
+      {foundation?.id ? (
         <React.Fragment>
           <ScrollView
             style={{ flex: 1 }}
@@ -107,15 +109,15 @@ export const Method: React.FC = () => {
               />
             }
           >
-            <LearningPath learningPath={method} onCardPress={onLevelPress} />
+            <LearningPath learningPath={foundation} onCardPress={onUnitPress} />
           </ScrollView>
-          {method?.next_lesson && (
+          {foundation?.next_lesson && (
             <NextLesson
-              item={method.next_lesson.id}
-              text={`METHOD - ${method?.progress_percent?.toFixed(
+              item={foundation.next_lesson.id}
+              text={`FOUNDATION - ${foundation?.progress_percent?.toFixed(
                 2
               )}% COMPLETE`}
-              progress={method.progress_percent || 0}
+              progress={foundation.progress_percent || 0}
             />
           )}
         </React.Fragment>

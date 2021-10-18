@@ -88,14 +88,14 @@ export const Settings: React.FC<Props> = () => {
     ];
   }, []);
 
-  const onButtonPress = useCallback((title: string, route?: string) => {
+  const onButtonPress = (title: string, route?: string) => {
     if (title === 'Manage Subscription') manageSubscription();
     else if (title === 'Restore Purchases') restorePurchases();
     else if (title === 'Profile Settings') setShowProfileSettings(true);
     else if (route) navigate(route, {});
-  }, []);
+  };
 
-  const manageSubscription = useCallback(() => {
+  const manageSubscription = () => {
     if (!isConnected) return showNoConnectionAlert();
 
     let { isAppleAppSubscriber, isGoogleAppSubscriber } = cachedUser || {};
@@ -132,11 +132,11 @@ export const Settings: React.FC<Props> = () => {
         );
       }
     }
-  }, [isConnected]);
+  };
 
-  const restorePurchases = useCallback(async () => {
+  const restorePurchases = async () => {
     if (!isConnected) return showNoConnectionAlert();
-  }, [isConnected]);
+  };
 
   const onContactSupport = useCallback(() => {
     alertBtn.current = '';

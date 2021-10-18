@@ -1,10 +1,14 @@
 import { call } from './auth.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { SceneService } from '../interfaces/service.interfaces';
+import { utils } from '../utils';
 
 export const homeService: SceneService = {
   getMethod: function ({ signal }) {
-    return call({ url: `/musora-api/learning-paths/drumeo-method`, signal });
+    return call({
+      url: `/musora-api/learning-paths/${utils.brand}-method`,
+      signal
+    });
   },
   getAll: function ({ page, filters, sort, signal }) {
     return call({

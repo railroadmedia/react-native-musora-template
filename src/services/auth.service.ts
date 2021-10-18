@@ -3,6 +3,7 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import type { Authenticate, Call } from '../interfaces/service.interfaces';
 
@@ -30,8 +31,10 @@ const authenticate: Authenticate = async function (email, password, purchases) {
         })
       })
     ).json();
+
     if (res.token) {
       await saveCreds(email, password, res.token);
+      handleLastAccessDate(res.edgeExpirationDate, res.isPackOlyOwner);
     } else await resetGenericPassword().catch(() => {});
     return res;
   } catch (error: any) {
@@ -46,9 +49,13 @@ const saveCreds = async (email: string, password: string, token: string) => {
 };
 
 const call: Call = async function ({ url, method, signal, body }) {
+  let newUrl = url;
+  if (!url.includes('https')) {
+    newUrl = url.replace('http', 'https');
+  }
   try {
     let response = await fetch(
-      url.includes(utils.rootUrl) ? url : utils.rootUrl + url,
+      newUrl.includes(utils.rootUrl) ? newUrl : utils.rootUrl + newUrl,
       {
         method: method || 'GET',
         headers: body
@@ -117,6 +124,39 @@ const validatePurchase: (formData: FormData) => Promise<{ token?: string }> =
       body: formData
     });
   };
+
+const handleLastAccessDate = async (
+  edgeExpirationDate: string,
+  isPackOnly: boolean
+) => {
+  let lastAccessDate;
+  try {
+    lastAccessDate = JSON.parse(
+      await RNFetchBlob.fs.readFile(`${utils.offPath}/lastAccessDate`, 'utf8')
+    );
+  } catch (e) {}
+  try {
+    if (
+      (lastAccessDate && new Date(lastAccessDate) < new Date()) ||
+      !lastAccessDate
+    ) {
+      RNFetchBlob.fs.writeFile(
+        `${utils.offPath}/lastAccessDate`,
+        JSON.stringify(new Date().toString()),
+        'utf8'
+      );
+    }
+    if (!isPackOnly && edgeExpirationDate) {
+      try {
+        RNFetchBlob.fs.writeFile(
+          `${utils.offPath}/edgeExpirationDate`,
+          JSON.stringify(edgeExpirationDate),
+          'utf8'
+        );
+      } catch (e) {}
+    }
+  } catch (e) {}
+};
 
 export {
   call,

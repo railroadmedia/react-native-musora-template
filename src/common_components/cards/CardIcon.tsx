@@ -1,4 +1,10 @@
-import React, { useCallback, useContext, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { View, StyleSheet } from 'react-native';
 import * as AddCalendarEvent from 'react-native-add-calendar-event';
 
@@ -19,12 +25,6 @@ interface Props {
   onRemoveFromMyList?: (id: number) => void;
 }
 
-const iconStyle = {
-  height: 25,
-  width: 25,
-  fill: utils.color
-};
-
 export const CardIcon: React.FC<Props> = ({
   item,
   iconType,
@@ -39,6 +39,15 @@ export const CardIcon: React.FC<Props> = ({
     live_event_end_time,
     title
   } = item;
+
+  const iconStyle = useMemo(() => {
+    return {
+      height: 25,
+      width: 25,
+      fill: utils.color
+    };
+  }, []);
+
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
 
@@ -97,8 +106,6 @@ export const CardIcon: React.FC<Props> = ({
     userService.resetProgress(id);
     onResetProgress?.(id);
   }, [id, resetModalRef, isConnected]);
-
-  const onDownloadDone = useCallback(() => {}, []);
 
   return (
     <View>
