@@ -3,7 +3,6 @@ import {
   getGenericPassword,
   resetGenericPassword
 } from 'react-native-keychain';
-import RNIap from 'react-native-iap';
 
 import type { Authenticate, Call } from '../interfaces/service.interfaces';
 
@@ -32,14 +31,18 @@ const authenticate: Authenticate = async function (email, password, purchases) {
       })
     ).json();
     if (res.token) {
-      token = `Bearer ${res.token}`;
-      await setGenericPassword(email, password);
+      await saveCreds(email, password, res.token);
     } else await resetGenericPassword().catch(() => {});
     return res;
   } catch (error: any) {
     await resetGenericPassword().catch(() => {});
     throw new Error(error.message);
   }
+};
+
+const saveCreds = async (email: string, password: string, token: string) => {
+  token = `Bearer ${token}`;
+  await setGenericPassword(email, password);
 };
 
 const call: Call = async function ({ url, method, signal, body }) {
@@ -75,7 +78,7 @@ const call: Call = async function ({ url, method, signal, body }) {
   }
 };
 
-const validatePurchases = (
+const validatePreSignup: (
   purchases: {
     purchase_token?: string;
     package_name?: string;
@@ -84,15 +87,18 @@ const validatePurchases = (
     productId?: string;
     purchaseToken?: string;
   }[]
-) => {
-  return call({
-    url: `/api/${utils.isiOS ? 'apple' : 'google'}/signup`,
-    method: 'POST',
-    body: JSON.stringify(
-      utils.isiOS ? { receipt: purchases[0].transactionReceipt } : { purchases }
-    )
-  });
-};
+) => Promise<{ message: string; shouldSignup: boolean; shouldRenew: boolean }> =
+  purchases => {
+    return call({
+      url: `/api/${utils.isiOS ? 'apple' : 'google'}/signup`,
+      method: 'POST',
+      body: JSON.stringify(
+        utils.isiOS
+          ? { receipt: purchases[0].transactionReceipt }
+          : { purchases }
+      )
+    });
+  };
 
 const validateEmail: (
   email: string
@@ -101,4 +107,22 @@ const validateEmail: (
     return call({ url: `/usora/api/is-email-unique?email=${email}` });
   };
 
-export { call, authenticate, validatePurchases, validateEmail };
+const validatePurchase: (formData: FormData) => Promise<{ token?: string }> =
+  formData => {
+    return call({
+      url: `/mobile-app/${
+        utils.isiOS ? 'apple' : 'google'
+      }/verify-receipt-and-process-payment`,
+      method: 'POST',
+      body: formData
+    });
+  };
+
+export {
+  call,
+  authenticate,
+  validatePreSignup,
+  validateEmail,
+  validatePurchase,
+  saveCreds
+};

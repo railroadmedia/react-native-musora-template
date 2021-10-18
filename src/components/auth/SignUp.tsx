@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
+  EmitterSubscription,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StatusBar,
@@ -15,14 +17,26 @@ import {
 import { StackActions, useNavigation } from '@react-navigation/core';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
-import RNIap, { Subscription } from 'react-native-iap';
+import RNIap, {
+  InAppPurchase,
+  ProductPurchase,
+  PurchaseError,
+  purchaseErrorListener,
+  purchaseUpdatedListener,
+  Subscription,
+  SubscriptionPurchase
+} from 'react-native-iap';
 
 import { utils } from '../../utils';
 import { BackHeader } from '../../components/header/BackHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { check, pswdVisible } from '../../images/svgs';
-import { validateEmail } from '../..';
+import {
+  validateEmail,
+  validatePurchase,
+  saveCreds
+} from '../../services/auth.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 
 interface Props {
@@ -40,6 +54,9 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
   const creds = useRef({ u: '', p: '', confirmP: '' });
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const subscriptions = useRef<Subscription[]>([]);
+  const purchaseUpdateSubscription = useRef<EmitterSubscription>();
+  const purchaseErrorSubscription = useRef<EmitterSubscription>();
+  const selectedPlan = useRef<Subscription>();
 
   const { goBack, dispatch, navigate } =
     useNavigation<StackNavigationProp<ParamListBase>>();
@@ -54,13 +71,70 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
       RNIap.getSubscriptions(utils.subscriptionsSkus).then(res).catch(res)
     );
     subPromise.then(subs => {
-      console.log(subs);
       subscriptions.current = subs.sort((s1, s2) =>
         parseFloat(s1.price) < parseFloat(s2.price) ? -1 : 1
       );
       setLoading(false);
     });
   }, [activeIndex]);
+
+  useEffect(() => {
+    new Promise((res, rej) =>
+      utils.isiOS
+        ? res(null)
+        : RNIap.flushFailedPurchasesCachedAsPendingAndroid()
+            .then(res)
+            .catch(rej)
+    )
+      .then(() => {
+        purchaseUpdateSubscription.current = purchaseUpdatedListener(
+          async (
+            purchase: InAppPurchase | SubscriptionPurchase | ProductPurchase
+          ) => {
+            const { transactionReceipt, productId, purchaseToken } = purchase;
+            if (transactionReceipt) {
+              let formData = new FormData();
+              formData.append('email', creds.current.u);
+              formData.append('password', creds.current.p);
+              if (utils.isiOS) formData.append('receipt', transactionReceipt);
+              else {
+                formData.append('package_name', `com.drumeo`);
+                formData.append('product_id', productId);
+                formData.append('purchase_token', purchaseToken);
+              }
+              formData.append('price', selectedPlan.current?.price);
+              formData.append('currency', selectedPlan.current?.currency);
+              let validation = await validatePurchase(formData);
+              if (validation.token) {
+                saveCreds(creds.current.u, creds.current.p, validation.token);
+                await RNIap.finishTransaction(purchase);
+                // navigate('signUpOnboarding');
+                navigate('home');
+              }
+            }
+            setLoading(false);
+          }
+        );
+
+        purchaseErrorSubscription.current = purchaseErrorListener(
+          (e: PurchaseError) => {
+            setLoading(false);
+            warningRef.current?.toggle('Something went wrong', e.message);
+          }
+        );
+      })
+      .catch((e: any) => {
+        setLoading(false);
+        warningRef.current?.toggle('Something went wrong', e.message);
+      });
+
+    return () => {
+      purchaseUpdateSubscription.current?.remove();
+      purchaseUpdateSubscription.current = undefined;
+      purchaseErrorSubscription.current?.remove();
+      purchaseErrorSubscription.current = undefined;
+    };
+  }, []);
 
   const animateIndicator = (toValue: number, duration = 0) =>
     Animated.timing(leftAnim, {
@@ -96,6 +170,7 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
   );
 
   const onNext = async () => {
+    Keyboard.dismiss();
     if (!nextValid()) return;
     if (activeIndex === 0) {
       setLoading(true);
@@ -136,6 +211,16 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
           'The passwords do not match'
         );
     return valid;
+  };
+
+  const onGetStarted = async (plan: Subscription) => {
+    setLoading(true);
+    selectedPlan.current = plan;
+    try {
+      await RNIap.requestSubscription(plan.productId);
+    } catch (e: any) {
+      warningRef.current?.toggle('Something went wrong', e.message);
+    }
   };
 
   const renderUserInput = () => (
@@ -206,7 +291,10 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
                   {subscriptions.current[0]?.localizedPrice}
                   <Text style={{ fontSize: 15 }}>/mo</Text>
                 </Text>
-                <TouchableOpacity style={styles.startTOpacity}>
+                <TouchableOpacity
+                  style={styles.startTOpacity}
+                  onPress={() => onGetStarted(subscriptions.current[0])}
+                >
                   <Text style={styles.startTxt}>GET STARTED</Text>
                 </TouchableOpacity>
               </View>
@@ -225,7 +313,10 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
                 {subscriptions.current[1]?.localizedPrice}
                 <Text style={{ fontSize: 15 }}>/yr</Text>
               </Text>
-              <TouchableOpacity style={styles.startTOpacity}>
+              <TouchableOpacity
+                style={styles.startTOpacity}
+                onPress={() => onGetStarted(subscriptions.current[1])}
+              >
                 <Text style={styles.startTxt}>GET STARTED</Text>
               </TouchableOpacity>
             </View>

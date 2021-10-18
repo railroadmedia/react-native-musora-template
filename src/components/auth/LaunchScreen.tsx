@@ -19,7 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RNIap from 'react-native-iap';
 import { Gradient } from '../../common_components/Gradient';
 import { utils } from '../../utils';
-import { authenticate } from '../../services/auth.service';
+import { authenticate, validatePreSignup } from '../../services/auth.service';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
@@ -92,12 +92,27 @@ export const LaunchScreen: React.FC = () => {
     if (!isConnected) return showNoConnectionAlert();
     setLoading(true);
     try {
-      let subsHistory = (await RNIap.getPurchaseHistory()).find(h =>
+      let subsHistory = (await RNIap.getPurchaseHistory()).filter(h =>
         utils.subscriptionsSkus.includes(h.productId)
       );
-      if (!subsHistory) navigate('signup');
+      if (!subsHistory?.length) navigate('signup');
       else {
-        // TBD
+        let { shouldSignup, shouldRenew, message } = await validatePreSignup(
+          utils.isiOS
+            ? subsHistory
+            : subsHistory.map(p => ({
+                purchase_token: p.purchaseToken,
+                package_name: 'com.drumeo',
+                product_id: p.productId
+              }))
+        );
+        if (shouldSignup) {
+          // TBD
+        } else if (shouldRenew) {
+          // TBD
+        } else {
+          // TBD
+        }
       }
     } catch (e: any) {
       warningRef.current?.toggle('', e.message);
