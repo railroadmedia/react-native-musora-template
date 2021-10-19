@@ -21,6 +21,8 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { NavigationMenu } from '../../common_components/NavigationMenu';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { call } from '../../services/auth.service';
+import { UserContext } from '../../state/user/UserContext';
 
 interface Props {
   visibleOn: string[];
@@ -46,6 +48,7 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
   const [activeScene, setActiveScene] = useState('home');
 
   const { theme } = useContext(ThemeContext);
+  const { user } = useContext(UserContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const styles = useMemo(() => setStyle(theme), [theme]);
 
@@ -111,9 +114,20 @@ export const BottomNav: React.FC<Props> = ({ visibleOn }) => {
     (icon: string) => {
       if (!isConnected) return showNoConnectionAlert();
       changeActiveBtn?.(icon);
-      navigate(icon);
+      if (icon === 'forum') {
+        navigate('forum', {
+          tryCall: call,
+          rootUrl: utils.rootUrl,
+          NetworkContext: ConnectionContext,
+          isDark: theme === 'DARK',
+          appColor: utils.color,
+          user
+        });
+      } else {
+        navigate(icon);
+      }
     },
-    [isConnected]
+    [isConnected, theme]
   );
 
   return (

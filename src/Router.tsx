@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -46,6 +46,7 @@ import { LaunchScreen } from './components/auth/LaunchScreen';
 import { CoachOverview } from './components/coach/CoachOverview';
 import { SignUp } from './components/auth/SignUp';
 import { Foundation } from './components/method/Foundation';
+const Forum = require('react-native-musora-forum');
 
 type Scenes =
   | 'home'
@@ -120,7 +121,8 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'studentreview',
       'askquestion',
       'submitcollabvideo',
-      'lessonpart'
+      'lessonpart',
+      'forum'
     ];
     return titleExceptions.includes(route?.toLowerCase());
   }, []);
@@ -196,6 +198,8 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
             <Stack.Screen name='packOverview' component={PackOverview} />
             <Stack.Screen name='coachOverview' component={CoachOverview} />
             <Stack.Screen name='showOverview' component={ShowOverview} />
+            <Stack.Screen name='forum' component={Forum.default} />
+
             <Stack.Screen
               name='settings'
               options={{ title: 'Settings' }}
