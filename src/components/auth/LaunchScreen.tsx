@@ -40,17 +40,18 @@ export const LaunchScreen: React.FC = () => {
   const scrollview = useRef<ScrollView>(null);
 
   useEffect(() => {
-    new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
-      async () => {
-        if (Platform.OS === 'android')
-          await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
-        else await RNIap.clearTransactionIOS();
-        login();
-      }
-    );
-    return () => {
-      RNIap.endConnection();
-    };
+    login();
+    // new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
+    //   async () => {
+    //     if (Platform.OS === 'android')
+    //       await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+    //     else await RNIap.clearTransactionIOS();
+    //     login();
+    //   }
+    // );
+    // return () => {
+    //   RNIap.endConnection();
+    // };
   }, []);
 
   useEffect(() => {
