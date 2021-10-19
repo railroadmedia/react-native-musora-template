@@ -43,8 +43,12 @@ const authenticate: Authenticate = async function (email, password, purchases) {
   }
 };
 
-const saveCreds = async (email: string, password: string, token: string) => {
-  token = `Bearer ${token}`;
+const saveCreds = async (
+  email: string,
+  password: string,
+  currentToken: string
+) => {
+  token = `Bearer ${currentToken}`;
   await setGenericPassword(email, password);
 };
 
