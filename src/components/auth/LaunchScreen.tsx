@@ -107,7 +107,7 @@ export const LaunchScreen: React.FC = () => {
               }))
         );
         if (shouldSignup) {
-          // TBD
+          navigate('signup');
         } else if (shouldRenew) {
           // TBD
         } else {
