@@ -53,6 +53,7 @@ type Scenes =
   | 'courses'
   | 'songs'
   | 'playAlongs'
+  | 'studentFocus'
   | 'coaches'
   | 'shows'
   | 'search'

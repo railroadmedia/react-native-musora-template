@@ -1,3 +1,5 @@
+import type { ShowCard } from './search.interfaces';
+
 export interface CatalogueState {
   all?: number[];
   newContent?: number[];
@@ -24,7 +26,7 @@ interface CatalogueAction {
   type?: string;
   scene?: string;
   cache?: CatalogueCache;
-  all?: { id: number }[];
+  all?: { id: number }[] | ShowCard[];
   newContent?: { id: number }[];
   inProgress?: { id: number }[];
   recentlyViewed?: { id: number }[];

@@ -15,6 +15,7 @@ import type {
   PackBundle,
   PackLessonBundle
 } from './packs.interfaces';
+import type { ShowCard } from './search.interfaces';
 import type { Show, ShowLessons } from './show.interfaces';
 import type {
   AskQuestionBody,
@@ -142,6 +143,10 @@ export interface SceneService {
 export interface ServiceProvider {
   home: SceneService;
   courses: SceneService;
+  songs: SceneService;
+  playAlongs: SceneService;
+  studentFocus: SceneService;
+  shows: SceneService;
   [scene: string]: SceneService;
 }
 
@@ -233,8 +238,7 @@ export interface PacksService {
   ) => Promise<{}>;
 }
 
-export interface ShowService {
-  getAll: () => Promise<Show>;
+export interface ShowService extends SceneService {
   getLessons: (
     type: string,
     page: number,
@@ -244,7 +248,7 @@ export interface ShowService {
   ) => Promise<ShowLessons>;
 }
 
-export interface StudentFocuService {
+export interface StudentFocuService extends SceneService {
   submitStudentReview: (body: StudentReviewBody) => Promise<FormResp>;
   askQuestion: (body: AskQuestionBody) => Promise<FormResp>;
   submitCollabVideo: (body: SubmitCollabVideoBody) => Promise<FormResp>;

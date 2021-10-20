@@ -44,6 +44,8 @@ import { themeStyles } from '../../themeStyles';
 import { utils } from '../../utils';
 import { Live } from './Live';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { ShowCard } from '../../common_components/cards/ShowCard';
+import type { ShowCard as I_ShowCard } from '../../interfaces/search.interfaces';
 
 interface Props {
   route: RouteProp<ParamListBase>;
@@ -99,6 +101,9 @@ export const Catalogue: React.FC<Props> = ({
       .then(([aRes, ncRes, ipRes, rvRes, mRes]) => {
         if (isMounted.current) {
           filters.current = aRes?.meta?.filterOptions;
+          if (scene === 'shows' && aRes) {
+            aRes = transformShowsData(aRes as I_ShowCard);
+          }
           updateMethod(mRes);
           addCardsAndCache(
             aRes?.data
@@ -117,6 +122,22 @@ export const Catalogue: React.FC<Props> = ({
           });
         }
       });
+  };
+
+  const transformTitle = (title: string) => {
+    if (title === 'studentFocus') return 'Student Focus';
+    if (title === 'playAlongs') return 'Play Alongs';
+    return title;
+  };
+
+  const transformShowsData = (showData: I_ShowCard) => {
+    let allShows: { data: any[] } = { data: [] };
+
+    allShows.data = Object.values(showData);
+    for (let i = 0; i < allShows.data.length; i++) {
+      allShows.data[i].id = i;
+    }
+    return allShows;
   };
 
   const renderCarousel = (items: number[] | undefined, title: string) => {
@@ -183,63 +204,66 @@ export const Catalogue: React.FC<Props> = ({
           </Text>
         </View>
       ) : (
-        <Text style={styles.sceneTitle}>{scene}</Text>
+        <Text style={styles.sceneTitle}>{transformTitle(scene)}</Text>
       )}
-      <Live />
+      {scene.match(/^(home)$/) && <Live />}
       {!!recentlyViewed?.length ? (
         renderCarousel(recentlyViewed, 'Recently Viewed')
       ) : (
         <>
           {renderCarousel(inProgress, 'Continue')}
-          {renderCarousel(newContent, 'New Lessons')}
+          {scene.match(/^(courses)$/) &&
+            renderCarousel(newContent, 'New Lessons')}
         </>
       )}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          marginHorizontal: 5
-        }}
-      >
-        <Text style={styles.sectionTitle}>All Lessons</Text>
-        <Sort onPress={() => {}} />
-        <Filters
-          options={filters.current}
-          onApply={({ apiQuery, formattedQuery }) => {
-            if (isMounted.current) {
-              page.current = 1;
-              abortC.current.abort();
-              abortC.current = new AbortController();
-              filters.current = { refreshing: true };
-              selectedFilters.current = formattedQuery;
-              dispatch({
-                type: SET_ALL,
-                all: [],
-                loadingMore: false,
-                refreshing: true
-              });
-              provider[scene]
-                ?.getAll({
-                  page: page.current,
-                  signal: abortC.current.signal,
-                  filters: apiQuery
-                })
-                .then(aRes => {
-                  filters.current = aRes?.meta?.filterOptions;
-                  if (isMounted.current) {
-                    addCards(aRes?.data);
-                    dispatch({
-                      type: SET_ALL,
-                      all: aRes?.data,
-                      loadingMore: false,
-                      refreshing: false
-                    });
-                  }
-                });
-            }
+      {scene !== 'shows' && (
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 5
           }}
-        />
-      </View>
+        >
+          <Text style={styles.sectionTitle}>All Lessons</Text>
+          <Sort onPress={() => {}} />
+          <Filters
+            options={filters.current}
+            onApply={({ apiQuery, formattedQuery }) => {
+              if (isMounted.current) {
+                page.current = 1;
+                abortC.current.abort();
+                abortC.current = new AbortController();
+                filters.current = { refreshing: true };
+                selectedFilters.current = formattedQuery;
+                dispatch({
+                  type: SET_ALL,
+                  all: [],
+                  loadingMore: false,
+                  refreshing: true
+                });
+                provider[scene]
+                  ?.getAll({
+                    page: page.current,
+                    signal: abortC.current.signal,
+                    filters: apiQuery
+                  })
+                  .then(aRes => {
+                    filters.current = aRes?.meta?.filterOptions;
+                    if (isMounted.current) {
+                      addCards(aRes?.data);
+                      dispatch({
+                        type: SET_ALL,
+                        all: aRes?.data,
+                        loadingMore: false,
+                        refreshing: false
+                      });
+                    }
+                  });
+              }
+            }}
+          />
+        </View>
+      )}
       {!!selectedFilters.current && (
         <Text style={styles.appliedFilters}>
           <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
@@ -249,9 +273,13 @@ export const Catalogue: React.FC<Props> = ({
     </>
   );
 
-  const renderFLItem = ({ item }: { item: number }) => (
-    <RowCard id={item} route={scene} />
-  );
+  const renderFLItem = ({ item }: { item: number }) => {
+    return scene === 'shows' ? (
+      <ShowCard id={item} />
+    ) : (
+      <RowCard id={item} route={scene} />
+    );
+  };
 
   const flEmpty = refreshing ? (
     <ActivityIndicator
@@ -316,12 +344,17 @@ export const Catalogue: React.FC<Props> = ({
     });
   };
 
+  const goToStudentReview = () => {
+    navigate('studentReview');
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
         showsVerticalScrollIndicator={false}
         data={all}
         renderItem={renderFLItem}
+        numColumns={scene === 'shows' ? 2 : 1}
         keyExtractor={id => id.toString()}
         ListHeaderComponent={flHeader}
         ListEmptyComponent={flEmpty}
@@ -329,6 +362,16 @@ export const Catalogue: React.FC<Props> = ({
         refreshControl={flRefreshControl}
         onEndReached={loadMore}
       />
+      {scene.match(/^(studentFocus)$/) && (
+        <TouchableOpacity
+          style={styles.studentFocusBtn}
+          onPress={goToStudentReview}
+        >
+          <Text style={styles.studentFocusBtnText}>
+            APPLY FOR A STUDENT PLAN
+          </Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
@@ -341,7 +384,7 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
     },
     sceneTitle: {
       color: current.textColor,
-      fontFamily: 'OpenSans',
+      fontFamily: 'OpenSans-Bold',
       fontSize: utils.figmaFontSizeScaler(30),
       fontWeight: '800',
       textTransform: 'capitalize',
@@ -393,5 +436,31 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       textTransform: 'uppercase',
       fontFamily: 'RobotoCondensed-Regular',
       color: current.contrastTextColor
+    },
+    studentFocusBtn: {
+      alignSelf: 'center',
+      borderRadius: 25,
+      minHeight: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: utils.color,
+      position: 'absolute',
+      bottom: 10
+    },
+    studentFocusBtnText: {
+      textAlign: 'center',
+      fontFamily: 'RobotoCondensed-Bold',
+      fontSize: 15,
+      color: '#FFFFFF',
+      paddingHorizontal: 35
+    },
+    showBtn: {
+      flex: 1,
+      padding: 5,
+      aspectRatio: 1
+    },
+    touchableImageShow: {
+      flex: 1,
+      borderRadius: 10
     }
   });
