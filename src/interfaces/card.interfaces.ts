@@ -16,6 +16,7 @@ export interface Card {
   status?: string;
   style?: string;
   thumbnail_url?: string;
+  thumbnailUrl?: string;
   title?: string;
   type: string;
   live_event_start_time?: string;

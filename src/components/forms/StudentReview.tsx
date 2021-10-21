@@ -60,7 +60,7 @@ const windowWidth = Dimensions.get('screen').width;
 interface Props {}
 
 export const StudentReview: React.FC<Props> = () => {
-  const { navigate } = useNavigation<
+  const { navigate, goBack } = useNavigation<
     NavigationProp<ReactNavigation.RootParamList> & {
       navigate: (scene: string) => void;
     }
@@ -181,6 +181,9 @@ export const StudentReview: React.FC<Props> = () => {
       animated: true
     });
     switch (activeCarouselIndicator) {
+      case 0:
+        goBack();
+        break;
       case 2:
         disabled = !improvement.current.length;
         break;

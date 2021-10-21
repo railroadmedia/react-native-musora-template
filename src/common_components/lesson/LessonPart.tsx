@@ -1323,13 +1323,21 @@ export const LessonPart: React.FC<Props> = ({
           )}
         </View>
       </KeyboardAvoidingView>
-      {selectedAssignment && (
-        <Soundslice
-          ref={soundsliceRef}
-          slug={selectedAssignment.soundslice_slug}
-          assignmentId={selectedAssignment?.id}
-        />
-      )}
+
+      <Soundslice
+        ref={soundsliceRef}
+        slug={
+          contentType === 'song'
+            ? lesson?.assignments[0].soundslice_slug
+            : selectedAssignment?.soundslice_slug
+        }
+        assignmentId={
+          contentType === 'song'
+            ? lesson?.assignments[0].id
+            : selectedAssignment?.id
+        }
+      />
+
       {isConnected &&
         !refreshing &&
         !item?.apiKey &&

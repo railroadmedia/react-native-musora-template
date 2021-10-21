@@ -8,8 +8,24 @@ export default function App() {
 
   return (
     <Router
-      catalogues={['home', 'courses']}
-      bottomNavVisibleOn={['home', 'search', 'forum', 'courses']}
+      catalogues={[
+        'home',
+        'courses',
+        'songs',
+        'playAlongs',
+        'shows',
+        'studentFocus'
+      ]}
+      bottomNavVisibleOn={[
+        'home',
+        'search',
+        'forum',
+        'courses',
+        'songs',
+        'shows',
+        'playAlongs',
+        'studentFocus'
+      ]}
     />
   );
 }
