@@ -59,7 +59,9 @@ type Scenes =
   | 'search'
   | 'forum'
   | 'seeAll'
-  | 'coachOverview';
+  | 'coachOverview'
+  | 'live'
+  | 'scheduled';
 interface Props {
   bottomNavVisibleOn: Scenes[];
   catalogues: Scenes[];

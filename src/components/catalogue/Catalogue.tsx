@@ -45,7 +45,8 @@ import { utils } from '../../utils';
 import { Live } from './Live';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { ShowCard } from '../../common_components/cards/ShowCard';
-import type { ShowCard as I_ShowCard } from '../../interfaces/search.interfaces';
+import type { Show } from '../../interfaces/show.interfaces';
+import type { Card } from '../../interfaces/card.interfaces';
 
 interface Props {
   route: RouteProp<ParamListBase>;
@@ -96,13 +97,18 @@ export const Catalogue: React.FC<Props> = ({
 
   const setCatalogue = () => {
     if (!isConnected) return showNoConnectionAlert();
+
     refreshPromise.current = provider[scene]
       ?.getCatalogue?.({ page: page.current, signal: abortC.current.signal })
       .then(([aRes, ncRes, ipRes, rvRes, mRes]) => {
         if (isMounted.current) {
           filters.current = aRes?.meta?.filterOptions;
-          if (scene === 'shows' && aRes) {
-            aRes = transformShowsData(aRes as I_ShowCard);
+          if (aRes) {
+            if (scene === 'shows') {
+              aRes = transformShowsData(aRes as Record<string, Show>);
+            } else if (scene === 'live' || scene === 'scheduled') {
+              aRes.data = groupByMonth(aRes as Card[]);
+            }
           }
           updateMethod(mRes);
           addCardsAndCache(
@@ -130,10 +136,28 @@ export const Catalogue: React.FC<Props> = ({
     return title;
   };
 
-  const transformShowsData = (showData: I_ShowCard) => {
+  const groupByMonth = (content: Card[]) => {
+    return content.map((x: Card, i: number) => {
+      let month = new Date(
+        `${x.live_event_start_time || x.published_on} UTC`
+      ).toLocaleString([], { month: 'long' });
+      let prevMonth = new Date(
+        `${
+          content[i - 1]?.live_event_start_time || content[i - 1]?.published_on
+        } UTC`
+      ).toLocaleString([], { month: 'long' });
+      return month === prevMonth ? x : { ...x, month };
+    });
+  };
+
+  const transformShowsData = (showData: Record<string, Show>) => {
     let allShows: { data: any[] } = { data: [] };
 
-    allShows.data = Object.values(showData);
+    allShows.data = Object.keys(showData).map(key => ({
+      ...showData[key],
+      type: key
+    }));
+
     for (let i = 0; i < allShows.data.length; i++) {
       allShows.data[i].id = i;
     }
@@ -216,7 +240,7 @@ export const Catalogue: React.FC<Props> = ({
             renderCarousel(newContent, 'New Lessons')}
         </>
       )}
-      {scene !== 'shows' && (
+      {scene !== 'shows' && scene !== 'live' && scene !== 'scheduled' && (
         <View
           style={{
             flexDirection: 'row',

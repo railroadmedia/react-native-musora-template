@@ -15,8 +15,7 @@ import type {
   PackBundle,
   PackLessonBundle
 } from './packs.interfaces';
-import type { ShowCard } from './search.interfaces';
-import type { Show, ShowLessons } from './show.interfaces';
+import type { ShowLessons } from './show.interfaces';
 import type {
   AskQuestionBody,
   FormResp,
@@ -270,7 +269,7 @@ export interface CommentService {
     commentId: number
   ) => Promise<{ data: Comment[] }>;
 }
-export interface LiveService {
+export interface LiveService extends SceneService {
   getLive: (signal: AbortSignal) => Promise<Live>;
 }
 

@@ -19,13 +19,3 @@ interface SearchAction {
 export interface SearchReducer {
   (state: SearchState, action: SearchAction): SearchState;
 }
-
-export interface ShowCard {
-  id: number;
-  thumbnailUrl: string;
-  name: string;
-  type: string;
-  icon: string;
-  description: string;
-  allowableFilters: string[];
-}

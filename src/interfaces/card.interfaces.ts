@@ -26,6 +26,7 @@ export interface Card {
   sizeInBytes?: number;
   lessons?: Card[];
   parentId?: number;
+  month?: string;
 }
 
 export interface CardsReducer {

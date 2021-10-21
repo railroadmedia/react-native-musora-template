@@ -139,7 +139,7 @@ export const CardIcon: React.FC<Props> = ({
           container: styles.icon,
           onPress: () =>
             calendarModalRef.current?.toggle(
-              '',
+              ' ',
               `Add this lesson to your calendar so you're notified when it's available`
             )
         })
@@ -189,6 +189,7 @@ export const CardIcon: React.FC<Props> = ({
       />
 
       <ActionModal
+        ref={calendarModalRef}
         icon={addToCalendar({
           icon: { height: 128, width: 300, fill: utils.color }
         })}
