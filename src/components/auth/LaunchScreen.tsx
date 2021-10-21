@@ -40,18 +40,17 @@ export const LaunchScreen: React.FC = () => {
   const scrollview = useRef<ScrollView>(null);
 
   useEffect(() => {
-    login();
-    // new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
-    //   async () => {
-    //     if (Platform.OS === 'android')
-    //       await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
-    //     else await RNIap.clearTransactionIOS();
-    //     login();
-    //   }
-    // );
-    // return () => {
-    //   RNIap.endConnection();
-    // };
+    new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
+      async () => {
+        if (Platform.OS === 'android')
+          await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+        else await RNIap.clearTransactionIOS();
+        login();
+      }
+    );
+    return () => {
+      RNIap.endConnection();
+    };
   }, []);
 
   useEffect(() => {
@@ -96,7 +95,7 @@ export const LaunchScreen: React.FC = () => {
       let subsHistory = (await RNIap.getPurchaseHistory()).filter(h =>
         utils.subscriptionsSkus.includes(h.productId)
       );
-      if (!subsHistory?.length) navigate('signup');
+      if (!subsHistory?.length) navigate('subscriptions');
       else {
         let { shouldSignup, shouldRenew, message } = await validatePreSignup(
           utils.isiOS
@@ -108,7 +107,7 @@ export const LaunchScreen: React.FC = () => {
               }))
         );
         if (shouldSignup) {
-          navigate('signup');
+          navigate('subscriptions');
         } else if (shouldRenew) {
           // TBD
         } else {

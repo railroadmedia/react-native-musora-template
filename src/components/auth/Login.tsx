@@ -43,8 +43,8 @@ export const Login: React.FC = () => {
         if (auth?.token) {
           if (canNavigateHome(auth)) navigate('home');
           else if (canNavigatePacks(auth)) navigate('packs');
-          else if (auth?.isEdgeExpired) {
-          }
+          else if (auth?.isEdgeExpired)
+            navigate('subscriptions', { renew: true });
         } else warningRef.current?.toggle(auth.title, auth.message);
         setLoading(false);
       })
@@ -148,7 +148,6 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     backgroundColor: 'white',
-    width: '80%',
     marginTop: 15,
     borderRadius: 99,
     flexDirection: 'row'
