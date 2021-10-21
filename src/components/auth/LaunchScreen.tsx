@@ -12,8 +12,7 @@ import {
   View,
   Animated,
   ActivityIndicator,
-  StatusBar,
-  Platform
+  StatusBar
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import RNIap from 'react-native-iap';
@@ -42,9 +41,10 @@ export const LaunchScreen: React.FC = () => {
   useEffect(() => {
     new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
       async () => {
-        if (Platform.OS === 'android')
-          await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
-        else await RNIap.clearTransactionIOS();
+        try {
+          if (utils.isiOS) await RNIap.clearTransactionIOS();
+          else await RNIap.flushFailedPurchasesCachedAsPendingAndroid();
+        } catch (e) {}
         login();
       }
     );

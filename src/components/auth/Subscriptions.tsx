@@ -6,7 +6,6 @@ import {
   ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
-  Platform,
   StatusBar,
   StyleSheet,
   Text,
@@ -442,7 +441,7 @@ export const Subscriptions: React.FC<Props> = ({
   return (
     <KeyboardAvoidingView
       style={{ backgroundColor: utils.color, flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={utils.isiOS ? 'padding' : 'height'}
     >
       <ScrollView
         showsVerticalScrollIndicator={false}

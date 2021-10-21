@@ -76,11 +76,7 @@ export interface AuthenticateResponse {
 }
 
 export interface Authenticate {
-  (
-    email?: string,
-    password?: string,
-    purchases?: []
-  ): Promise<AuthenticateResponse>;
+  (email?: string, password?: string): Promise<AuthenticateResponse>;
 }
 
 export interface Call {

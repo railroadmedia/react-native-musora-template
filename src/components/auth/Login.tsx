@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,11 +8,10 @@ import {
   View,
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform,
   StatusBar
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { authenticate } from '../../services/auth.service';
+import { authenticate, restorePurchase } from '../../services/auth.service';
 import { pswdVisible } from '../../images/svgs';
 
 import { utils } from '../../utils';
@@ -22,8 +21,11 @@ import type { ParamListBase } from '@react-navigation/native';
 import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
 import { BackHeader } from '../../components/header/BackHeader';
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const Login: React.FC = () => {
+  const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+
   const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [visiblePswd, setVisiblePswd] = useState(false);
@@ -35,6 +37,15 @@ export const Login: React.FC = () => {
   const onLogin = () => {
     setLoading(true);
     login();
+  };
+
+  const onRestore = () => {
+    if (!isConnected) return showNoConnectionAlert();
+    setLoading(true);
+    restorePurchase().then(restore => {
+      console.log(restore);
+      setLoading(false);
+    });
   };
 
   const login = () =>
@@ -78,7 +89,7 @@ export const Login: React.FC = () => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: utils.color }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={utils.isiOS ? 'padding' : 'height'}
     >
       <StatusBar backgroundColor={utils.color} barStyle={'light-content'} />
       <BackHeader title={''} transparent={true} textColor={'white'} />
@@ -109,7 +120,10 @@ export const Login: React.FC = () => {
           <TouchableOpacity style={styles.bottomLinkTOpacity}>
             <Text style={styles.bottomLinkTxt}>Forgot your password?</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomLinkTOpacity}>
+          <TouchableOpacity
+            style={styles.bottomLinkTOpacity}
+            onPress={onRestore}
+          >
             <Text style={styles.bottomLinkTxt}>Restore purchases</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottomLinkTOpacity}>

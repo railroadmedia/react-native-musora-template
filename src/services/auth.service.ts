@@ -1,3 +1,4 @@
+import RNIap, { ProductPurchase, SubscriptionPurchase } from 'react-native-iap';
 import {
   setGenericPassword,
   getGenericPassword,
@@ -10,8 +11,9 @@ import type { Authenticate, Call } from '../interfaces/service.interfaces';
 import { utils } from '../utils';
 
 let token = '';
+let purchases: (ProductPurchase | SubscriptionPurchase)[];
 
-const authenticate: Authenticate = async function (email, password, purchases) {
+const authenticate: Authenticate = async function (email, password) {
   try {
     if (!email || !password) {
       let cred = await getGenericPassword();
@@ -27,7 +29,7 @@ const authenticate: Authenticate = async function (email, password, purchases) {
         body: JSON.stringify({
           email,
           password,
-          ...(purchases ? purchases : {})
+          ...(await getPurchases())
         })
       })
     ).json();
@@ -125,6 +127,14 @@ const validatePurchase: (formData: FormData) => Promise<{ token?: string }> =
     });
   };
 
+const restorePurchase = async () => {
+  return call({
+    url: `/api/${utils.isiOS ? 'apple' : 'google'}/restore`,
+    method: 'POST',
+    body: JSON.stringify(await getPurchases())
+  });
+};
+
 const handleLastAccessDate = async (
   edgeExpirationDate: string,
   isPackOnly: boolean
@@ -158,11 +168,29 @@ const handleLastAccessDate = async (
   } catch (e) {}
 };
 
+const getPurchases = async () => {
+  if (!purchases)
+    purchases = (await RNIap.getPurchaseHistory()).filter(h =>
+      utils.subscriptionsSkus.includes(h.productId)
+    );
+  return utils.isiOS
+    ? { receipt: purchases[0]?.transactionReceipt }
+    : {
+        purchases: purchases.map(m => ({
+          purchase_token: m.purchaseToken,
+          package_name: 'com.drumeo',
+          product_id: m.productId
+        }))
+      };
+};
+
 export {
   call,
   authenticate,
   validatePreSignup,
   validateEmail,
   validatePurchase,
-  saveCreds
+  saveCreds,
+  getPurchases,
+  restorePurchase
 };
