@@ -349,6 +349,19 @@ class Utils implements UtilsInterface {
           : ['drumeo_app_1_month_2021', 'drumeo_app_1_year_2021'];
     }
   }
+
+  get expirationMsg() {
+    switch (this.brand) {
+      case 'pianote':
+        return 'Your account no longer has access to Pianote. Click the button below to renew your membership — or, if you believe this is an error, please contact support@pianote.com.';
+      case 'guitareo':
+        return 'Your account no longer has access to Guitareo. Click the button below to renew your membership — or, if you believe this is an error, please contact support@guitareo.com.';
+      case 'singeo':
+        return 'Your account no longer has access to Singeo. Click the button below to renew your membership — or, if you believe this is an error, please contact support@singeo.com.';
+      default:
+        return 'Your account no longer has access to Drumeo Edge. Click the button below to renew your membership — or, if you believe this is an error, please contact support@drumeo.com.';
+    }
+  }
 }
 
 export let utils = new Utils();

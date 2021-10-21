@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Animated,
   EmitterSubscription,
+  ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -28,7 +29,7 @@ import RNIap, {
 } from 'react-native-iap';
 
 import { utils } from '../../utils';
-import { BackHeader } from '../../components/header/BackHeader';
+import { BackHeader } from '../header/BackHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import { check, pswdVisible } from '../../images/svgs';
@@ -38,12 +39,24 @@ import {
   saveCreds
 } from '../../services/auth.service';
 import { ActionModal } from '../../common_components/modals/ActionModal';
+import { Gradient } from '../../common_components/Gradient';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 interface Props {
-  renew?: boolean;
+  route: { params: { renew: boolean } };
 }
-export const SignUp: React.FC<Props> = ({ renew }) => {
-  const [activeIndex, setActiveindex] = useState(0);
+export const Subscriptions: React.FC<Props> = ({
+  route: { params: { renew } = {} }
+}) => {
+  const screens = renew
+    ? ['renew', 'plans']
+    : ['userInput', 'passwordInput', 'plans'];
+
+  const { isLandscape } = useContext(OrientationContext);
+
+  const [activeScreen, setActiveScreen] = useState(
+    renew ? 'renew' : 'userInput'
+  );
   const [visiblePswd, setVisiblePswd] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -61,11 +74,11 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
   const { goBack, dispatch, navigate } =
     useNavigation<StackNavigationProp<ParamListBase>>();
 
-  let { bottom } = useSafeAreaInsets();
+  let { bottom, top } = useSafeAreaInsets();
   if (!bottom) bottom = 20;
 
   useEffect(() => {
-    if (activeIndex < 2 || subscriptions.current.length) return;
+    if (activeScreen !== 'plans' || subscriptions.current.length) return;
     setLoading(true);
     const subPromise: Promise<Subscription[]> = new Promise(res =>
       RNIap.getSubscriptions(utils.subscriptionsSkus).then(res).catch(res)
@@ -76,7 +89,7 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
       );
       setLoading(false);
     });
-  }, [activeIndex]);
+  }, [activeScreen]);
 
   useEffect(() => {
     new Promise((res, rej) =>
@@ -143,6 +156,20 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
       useNativeDriver: true
     }).start();
 
+  const renderBackHeader = () => (
+    <>
+      <BackHeader
+        title={
+          activeScreen?.match(/^(user|password)Input$/) ? 'Create Account' : ''
+        }
+        transparent={true}
+        textColor={'white'}
+        onBack={onBack}
+      />
+      <StatusBar backgroundColor={utils.color} barStyle={'light-content'} />
+    </>
+  );
+
   const renderNext = () => (
     <TouchableOpacity style={styles.nextTOpacity} onPress={onNext}>
       <Text style={styles.nextTxt}>NEXT</Text>
@@ -172,7 +199,7 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
   const onNext = async () => {
     Keyboard.dismiss();
     if (!nextValid()) return;
-    if (activeIndex === 0) {
+    if (activeScreen === 'userInput') {
       setLoading(true);
       let { exists, message, title } = await validateEmail(creds.current.u);
       setLoading(false);
@@ -183,20 +210,21 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
         );
       else if (message) return warningRef.current?.toggle(title, message);
     }
+    const nextIndex = screens.indexOf(activeScreen) + 1;
     scrollview.current?.scrollTo({
-      x: (activeIndex + 1) * scrollviewWidth.current
+      x: nextIndex * scrollviewWidth.current
     });
-    animateIndicator(indPos[activeIndex + 1], 200);
-    setActiveindex(activeIndex + 1);
+    animateIndicator(indPos[nextIndex], 200);
+    setActiveScreen(screens[nextIndex]);
   };
 
   const nextValid = () => {
     let valid = false;
     const { u, p, confirmP } = creds.current;
-    if (activeIndex === 0)
+    if (activeScreen === 'userInput')
       if (u) valid = true;
       else warningRef.current?.toggle('Field required', 'Type your email');
-    else if (activeIndex === 1)
+    else if (activeScreen === 'passwordInput')
       if (p && p.length >= 8 && p === confirmP) valid = true;
       else if (!p)
         warningRef.current?.toggle('Field required', 'Type your password');
@@ -213,19 +241,32 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
     return valid;
   };
 
-  const onGetStarted = async (plan: Subscription) => {
+  const onGetStarted = (plan: Subscription) => {
     setLoading(true);
     selectedPlan.current = plan;
-    try {
-      await RNIap.requestSubscription(plan.productId);
-    } catch (e: any) {
-      warningRef.current?.toggle('Something went wrong', e.message);
-    }
+    RNIap.requestSubscription(plan.productId).catch((e: any) =>
+      warningRef.current?.toggle('Something went wrong', e.message)
+    );
+  };
+
+  const onBack = () => {
+    if (activeScreen.match(/^(renew|userInput)$/)) goBack();
+    else if (activeScreen === 'passwordInput')
+      creds.current = { u: '', p: '', confirmP: '' };
+    else if (activeScreen === 'plans')
+      creds.current = { ...creds.current, p: '', confirmP: '' };
+    const prevIndex = screens.indexOf(activeScreen) - 1;
+    scrollview.current?.scrollTo({
+      x: prevIndex * scrollviewWidth.current
+    });
+    animateIndicator(indPos[prevIndex], 200);
+    setActiveScreen(screens[prevIndex]);
   };
 
   const renderUserInput = () => (
     <View style={{ width: `${100 / 3}%` }}>
-      {activeIndex === 0 && (
+      {renderBackHeader()}
+      {activeScreen === 'userInput' && (
         <>
           <Text style={styles.subtitle}>What's your email?</Text>
           <TextInput
@@ -245,7 +286,8 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
 
   const renderPasswordInput = () => (
     <View style={{ width: `${100 / 3}%` }}>
-      {activeIndex === 1 && (
+      {renderBackHeader()}
+      {activeScreen === 'passwordInput' && (
         <>
           <Text style={styles.subtitle}>Create a password</Text>
           {renderSecuredTextInput('p')}
@@ -258,15 +300,49 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
     </View>
   );
 
+  const renderRenewMembership = () => (
+    <View style={{ width: `${100 / 3}%` }}>
+      <ImageBackground
+        source={utils.launchScreens[0].jpg}
+        resizeMode={'cover'}
+        style={{
+          flex: 2,
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          paddingTop: top
+        }}
+      >
+        {utils.svgBrand({ icon: { height: 20, fill: 'white' } })}
+        <Gradient
+          key={`${isLandscape}`}
+          colors={['transparent', utils.color]}
+          height={'50%'}
+          width={'100%'}
+        />
+        <Text style={styles.expiredTitleTxt}>Your Membership Has Expired</Text>
+      </ImageBackground>
+      <Text style={styles.expiredMsgTxt}>{utils.expirationMsg}</Text>
+      <TouchableOpacity
+        style={styles.renewTOpacity}
+        onPress={() => {
+          const nextIndex = screens.indexOf(activeScreen) + 1;
+          scrollview.current?.scrollTo({
+            x: nextIndex * scrollviewWidth.current
+          });
+          animateIndicator(indPos[nextIndex], 200);
+          setActiveScreen(screens[nextIndex]);
+        }}
+      >
+        <Text style={styles.renewTOpacityTxt}>RENEW MEMBERSHIP</Text>
+      </TouchableOpacity>
+      <View style={{ position: 'absolute' }}>{renderBackHeader()}</View>
+    </View>
+  );
+
   const renderPlans = () => (
-    <View
-      style={{
-        width: `${100 / 3}%`,
-        overflow: 'hidden',
-        justifyContent: 'space-between'
-      }}
-    >
-      {activeIndex === 2 && (
+    <View style={{ width: `${100 / 3}%`, justifyContent: 'space-between' }}>
+      {renderBackHeader()}
+      {activeScreen === 'plans' && (
         <>
           <View>
             <Text
@@ -368,24 +444,6 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
       style={{ backgroundColor: utils.color, flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <StatusBar backgroundColor={utils.color} barStyle={'light-content'} />
-      <BackHeader
-        title={activeIndex < 2 ? 'Create Account' : ''}
-        transparent={true}
-        textColor={'white'}
-        onBack={() => {
-          if (activeIndex === 0) goBack();
-          else if (activeIndex === 1)
-            creds.current = { u: '', p: '', confirmP: '' };
-          else if (activeIndex === 2)
-            creds.current = { ...creds.current, p: '', confirmP: '' };
-          scrollview.current?.scrollTo({
-            x: (activeIndex - 1) * scrollviewWidth.current
-          });
-          animateIndicator(indPos[activeIndex - 1], 200);
-          setActiveindex(activeIndex - 1);
-        }}
-      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps={'handled'}
@@ -399,55 +457,59 @@ export const SignUp: React.FC<Props> = ({ renew }) => {
           pagingEnabled={true}
           showsHorizontalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
-          onLayout={({
-            nativeEvent: {
-              layout: { width }
-            }
-          }) => {
-            scrollviewWidth.current = width;
-            scrollview.current?.scrollTo({
-              x: activeIndex * width,
-              animated: false
-            });
-          }}
+          onLayout={({ nativeEvent: { layout } }) =>
+            (scrollviewWidth.current = layout.width)
+          }
           contentContainerStyle={{ width: '300%' }}
         >
-          {renderUserInput()}
-          {renderPasswordInput()}
+          {renew ? (
+            renderRenewMembership()
+          ) : (
+            <>
+              {renderUserInput()}
+              {renderPasswordInput()}
+            </>
+          )}
           {renderPlans()}
         </ScrollView>
       </ScrollView>
-      <View
-        style={[styles.activeIndicatorContainer, { paddingBottom: bottom }]}
-      >
-        <Animated.View
-          style={[
-            styles.indicator,
-            {
-              left: 0,
-              backgroundColor: 'white',
-              position: 'absolute',
-              transform: [{ translateX: leftAnim }]
-            }
-          ]}
-        />
-        {[`EMAIL\nADDRESS`, `SET A\nPASSWORD`, `CHOOSE\nA PLAN`].map((d, i) => (
-          <View
-            key={d}
-            style={{ alignItems: 'center' }}
-            onLayout={({ nativeEvent: { layout } }) => (indPos[i] += layout.x)}
-          >
-            <View
-              style={styles.indicator}
-              onLayout={({ nativeEvent: { layout } }) => {
-                if (!i) animateIndicator(layout.x);
-                indPos[i] += layout.x;
-              }}
-            />
-            <Text style={styles.indicatorTxt}>{d}</Text>
-          </View>
-        ))}
-      </View>
+      {!renew && (
+        <View
+          style={[styles.activeIndicatorContainer, { paddingBottom: bottom }]}
+        >
+          <Animated.View
+            style={[
+              styles.indicator,
+              {
+                left: 0,
+                backgroundColor: 'white',
+                position: 'absolute',
+                transform: [{ translateX: leftAnim }]
+              }
+            ]}
+          />
+          {[`EMAIL\nADDRESS`, `SET A\nPASSWORD`, `CHOOSE\nA PLAN`].map(
+            (d, i) => (
+              <View
+                key={d}
+                style={{ alignItems: 'center' }}
+                onLayout={({ nativeEvent: { layout } }) =>
+                  (indPos[i] += layout.x)
+                }
+              >
+                <View
+                  style={styles.indicator}
+                  onLayout={({ nativeEvent: { layout } }) => {
+                    if (!i) animateIndicator(layout.x);
+                    indPos[i] += layout.x;
+                  }}
+                />
+                <Text style={styles.indicatorTxt}>{d}</Text>
+              </View>
+            )
+          )}
+        </View>
+      )}
       <ActionModal
         ref={warningRef}
         onAction={() => warningRef.current?.toggle()}
@@ -594,6 +656,39 @@ const styles = StyleSheet.create({
     fontSize: 25,
     textAlign: 'center',
     paddingHorizontal: 5,
+    fontWeight: '700'
+  },
+  expiredTitleTxt: {
+    padding: 5,
+    color: 'white',
+    fontSize: 30,
+    fontFamily: 'OpenSans',
+    fontWeight: '700',
+    position: 'absolute',
+    alignSelf: 'center',
+    textAlign: 'center',
+    bottom: 0
+  },
+  expiredMsgTxt: {
+    padding: 20,
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'OpenSans',
+    textAlign: 'center'
+  },
+  renewTOpacity: {
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 99,
+    alignSelf: 'center',
+    paddingHorizontal: 50,
+    marginBottom: 20
+  },
+  renewTOpacityTxt: {
+    textAlign: 'center',
+    fontFamily: 'RobotoCondensed-Regular',
+    fontSize: 20,
+    color: utils.color,
     fontWeight: '700'
   }
 });

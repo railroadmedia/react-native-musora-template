@@ -44,7 +44,7 @@ import { LessonPart } from './common_components/lesson/LessonPart';
 import { Login } from './components/auth/Login';
 import { LaunchScreen } from './components/auth/LaunchScreen';
 import { CoachOverview } from './components/coach/CoachOverview';
-import { SignUp } from './components/auth/SignUp';
+import { Subscriptions } from './components/auth/Subscriptions';
 import { Foundation } from './components/method/Foundation';
 const Forum = require('react-native-musora-forum');
 
@@ -111,7 +111,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
   const hideHeader = useCallback((route: string) => {
     const titleExceptions: string[] = [
       'login',
-      'signup',
+      'subscriptions',
       'launch',
       'level',
       'showoverview',
@@ -161,7 +161,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
             }}
           >
             <Stack.Screen name='launch' component={LaunchScreen} />
-            <Stack.Screen name='signup' component={SignUp} />
+            <Stack.Screen name='subscriptions' component={Subscriptions} />
             <Stack.Screen name='login' component={Login} />
             {catalogues.map(c => (
               <Stack.Screen name={c} key={c} component={Catalogue} />
