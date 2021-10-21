@@ -27,12 +27,12 @@ const titles = [
   { title: 'Method', route: 'method' },
   { title: 'Packs', route: 'packs' },
   { title: 'Courses', route: 'courses' },
-  { title: 'Show Overview Test', route: 'showOverview' },
-  { title: 'Coach Overview Test', route: 'coachOverview' },
   { title: 'Shows', route: 'shows' },
   { title: 'Songs', route: 'songs' },
   { title: 'Play-Alongs', route: 'playAlongs' },
-  { title: 'Student Focus', route: 'studentFocus' }
+  { title: 'Student Focus', route: 'studentFocus' },
+  { title: 'Live', route: 'live' },
+  { title: 'Schedule', route: 'scheduled' }
 ];
 
 interface Props {
@@ -69,25 +69,7 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
         if (!isConnected) return showNoConnectionAlert();
 
         toggleModal();
-        if (route === 'showOverview') {
-          navigate(route, {
-            show: {
-              thumbnailUrl:
-                'https://dpwjbsxqtam5n.cloudfront.net/shows/show-quick-tips.jpg',
-              name: 'Quick Tips',
-              type: 'quick-tips',
-              icon: 'icon-shows',
-              description:
-                'These videos are great for quick inspiration or if you don’t have time to sit \n                    down and watch a full lesson. They are short and to the point, giving you tips, concepts, \n                    and exercises you can take to your kit.',
-              allowableFilters: [
-                'difficulty',
-                'instructor',
-                'topic',
-                'progress'
-              ]
-            }
-          });
-        } else if (route === 'coachOverview') {
+        if (route === 'coachOverview') {
           navigate(route, { id: 281906 });
         } else {
           navigate(route);

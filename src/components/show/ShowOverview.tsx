@@ -89,7 +89,6 @@ export const ShowOverview: React.FC<Props> = ({
 
   const getShow = () => {
     if (!isConnected) return showNoConnectionAlert();
-
     showService
       .getLessons(
         show.type,
@@ -112,7 +111,7 @@ export const ShowOverview: React.FC<Props> = ({
 
   const loadMore = () => {
     if (!isConnected) return showNoConnectionAlert();
-    console.log(filters.current);
+
     setAnimateLessons(true);
     showService
       .getLessons(

@@ -14,7 +14,9 @@ export default function App() {
         'songs',
         'playAlongs',
         'shows',
-        'studentFocus'
+        'studentFocus',
+        'live',
+        'scheduled'
       ]}
       bottomNavVisibleOn={[
         'home',
@@ -24,7 +26,9 @@ export default function App() {
         'songs',
         'shows',
         'playAlongs',
-        'studentFocus'
+        'studentFocus',
+        'live',
+        'scheduled'
       ]}
     />
   );

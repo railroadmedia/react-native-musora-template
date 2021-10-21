@@ -108,7 +108,7 @@ export const decideSubtitle = (props: {
   //   type?.includes('learning-path')
   // )
   //   return null;
-  if (route?.match(/^(live|schedule)$/)) return type;
+  if (route?.match(/^(live|scheduled)$/)) return type;
   if (route?.match(/^(coachOverview)$/))
     return length_in_seconds ? `${(length_in_seconds / 60) >> 0} mins` : '';
   if (route?.match(/^(coaches)$/))
@@ -198,5 +198,5 @@ export const getContentType = function (
     default:
       route = 'lessonPart';
   }
-  return { route, contentType };
+  return { navigationRoute: route, contentType };
 };

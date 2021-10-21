@@ -44,13 +44,13 @@ export const SliderCard: React.FC<Props> = props => {
   const onCardPress = () => {
     if (!isConnected) return showNoConnectionAlert();
 
-    let { route, contentType } = getContentType(
+    let { navigationRoute, contentType } = getContentType(
       item.type,
       item.bundle_count,
       item.lessons
     );
 
-    navigate(route, {
+    navigate(navigationRoute, {
       id,
       parentId: item.parentId,
       contentType,

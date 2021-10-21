@@ -66,15 +66,15 @@ export const RowCard: React.FC<Props> = props => {
       }
       if (!ocExists) return showNoConnectionAlert();
     }
-
+    if (route === 'live' || route === 'scheduled') return;
     if (onNavigate) return onNavigate?.();
-    let { route, contentType } = getContentType(
+    let { navigationRoute, contentType } = getContentType(
       item.type,
       item.bundle_count,
       item.lessons
     );
 
-    navigate(route, {
+    navigate(navigationRoute, {
       id,
       parentId,
       contentType,
@@ -84,7 +84,7 @@ export const RowCard: React.FC<Props> = props => {
   };
 
   const renderImage = () => {
-    if (route?.match(/^(live|schedule)$/)) {
+    if (route?.match(/^(live|scheduled)$/)) {
       let st = new Date(
         `${item.live_event_start_time || item.published_on} UTC`
       );
@@ -103,34 +103,37 @@ export const RowCard: React.FC<Props> = props => {
   };
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={styles.listContainer}
-      onPress={onCardPress}
-    >
-      {renderImage()}
+    <>
+      {!!item.month && <Text style={styles.month}>{item.month}</Text>}
+      <TouchableOpacity
+        activeOpacity={0.9}
+        style={styles.listContainer}
+        onPress={onCardPress}
+      >
+        {renderImage()}
 
-      <View style={styles.cardTextContainerSmall}>
-        <View style={{ flex: 1 }}>
-          <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
-            {item.title}
-          </Text>
-          <Text
-            numberOfLines={1}
-            ellipsizeMode={'tail'}
-            style={styles.subtitle}
-          >
-            {decideSubtitle({ item, route, sizeInBytes })}
-          </Text>
+        <View style={styles.cardTextContainerSmall}>
+          <View style={{ flex: 1 }}>
+            <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
+              {item.title}
+            </Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode={'tail'}
+              style={styles.subtitle}
+            >
+              {decideSubtitle({ item, route, sizeInBytes })}
+            </Text>
+          </View>
+          <CardIcon
+            item={item}
+            iconType={iconType}
+            onResetProgress={onResetProgress}
+            onRemoveFromMyList={onRemoveFromMyList}
+          />
         </View>
-        <CardIcon
-          item={item}
-          iconType={iconType}
-          onResetProgress={onResetProgress}
-          onRemoveFromMyList={onRemoveFromMyList}
-        />
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </>
   );
 };
 
@@ -180,5 +183,11 @@ let setStyles = (theme: string, current = themeStyles[theme]) =>
       color: 'white',
       textAlign: 'center',
       fontFamily: 'OpenSans'
+    },
+    month: {
+      paddingLeft: 10,
+      fontFamily: 'OpenSans=Bold',
+      color: current.textColor,
+      fontSize: utils.figmaFontSizeScaler(18)
     }
   });
