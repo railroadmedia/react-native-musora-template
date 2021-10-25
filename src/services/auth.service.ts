@@ -61,11 +61,8 @@ const call: Call = async function ({ url, method, signal, body }) {
       {
         method: method || 'GET',
         headers: body
-          ? { Authorization: token }
-          : {
-              Authorization: token,
-              'Content-Type': 'application/json'
-            },
+          ? { Authorization: token, 'Content-Type': 'application/json' }
+          : { Authorization: token },
         ...(signal ? { signal } : null),
         ...(body
           ? body instanceof FormData
@@ -101,11 +98,9 @@ const validatePreSignup: (
     return call({
       url: `/api/${utils.isiOS ? 'apple' : 'google'}/signup`,
       method: 'POST',
-      body: JSON.stringify(
-        utils.isiOS
-          ? { receipt: purchases[0].transactionReceipt }
-          : { purchases }
-      )
+      body: utils.isiOS
+        ? { receipt: purchases[0].transactionReceipt }
+        : { purchases }
     });
   };
 
@@ -127,11 +122,15 @@ const validatePurchase: (formData: FormData) => Promise<{ token?: string }> =
     });
   };
 
-const restorePurchase = async () => {
+const restorePurchase: () => Promise<{
+  shouldLogin?: boolean;
+  email?: string;
+  shouldCreateAccount?: boolean;
+}> = async () => {
   return call({
     url: `/api/${utils.isiOS ? 'apple' : 'google'}/restore`,
     method: 'POST',
-    body: JSON.stringify(await getPurchases())
+    body: await getPurchases()
   });
 };
 

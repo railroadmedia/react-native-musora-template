@@ -120,8 +120,7 @@ export const Subscriptions: React.FC<Props> = ({
               if (validation.token) {
                 saveCreds(creds.current.u, creds.current.p, validation.token);
                 await RNIap.finishTransaction(purchase);
-                // navigate('signUpOnboarding');
-                navigate('home');
+                navigate('subscriptionOboarding');
               }
             }
             setLoading(false);
@@ -457,7 +456,11 @@ export const Subscriptions: React.FC<Props> = ({
           showsHorizontalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
           onLayout={({ nativeEvent: { layout } }) =>
-            (scrollviewWidth.current = layout.width)
+            scrollview.current?.scrollTo({
+              x:
+                screens.indexOf(activeScreen) *
+                (scrollviewWidth.current = layout.width)
+            })
           }
           contentContainerStyle={{ width: '300%' }}
         >

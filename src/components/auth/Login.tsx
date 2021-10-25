@@ -15,7 +15,7 @@ import { authenticate, restorePurchase } from '../../services/auth.service';
 import { pswdVisible } from '../../images/svgs';
 
 import { utils } from '../../utils';
-import { useNavigation } from '@react-navigation/core';
+import { StackActions, useNavigation } from '@react-navigation/core';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { ParamListBase } from '@react-navigation/native';
 import { ActionModal } from '../../common_components/modals/ActionModal';
@@ -26,12 +26,14 @@ import { ConnectionContext } from '../../state/connection/ConnectionContext';
 export const Login: React.FC = () => {
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
-  const { navigate } = useNavigation<StackNavigationProp<ParamListBase>>();
+  const { navigate, dispatch } =
+    useNavigation<StackNavigationProp<ParamListBase>>();
 
   const [visiblePswd, setVisiblePswd] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const creds = useRef({ u: '', p: '' });
+  const userInputRef = useRef<TextInput>(null);
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
 
   const onLogin = () => {
@@ -42,9 +44,13 @@ export const Login: React.FC = () => {
   const onRestore = () => {
     if (!isConnected) return showNoConnectionAlert();
     setLoading(true);
-    restorePurchase().then(restore => {
-      console.log(restore);
+    restorePurchase().then(({ shouldCreateAccount, shouldLogin, email }) => {
       setLoading(false);
+      if (shouldCreateAccount) dispatch(StackActions.replace('subscriptions'));
+      else if (shouldLogin) {
+        userInputRef.current?.setNativeProps({ text: email });
+        creds.current.u = email || '';
+      }
     });
   };
 
@@ -64,6 +70,7 @@ export const Login: React.FC = () => {
   const renderTInput = (secured: boolean) => (
     <View style={styles.textInputContainer}>
       <TextInput
+        ref={secured ? null : userInputRef}
         spellCheck={false}
         autoCorrect={false}
         autoCapitalize={'none'}

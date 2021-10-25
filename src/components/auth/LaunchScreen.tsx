@@ -97,7 +97,7 @@ export const LaunchScreen: React.FC = () => {
       );
       if (!subsHistory?.length) navigate('subscriptions');
       else {
-        let { shouldSignup, shouldRenew, message } = await validatePreSignup(
+        let a = await validatePreSignup(
           utils.isiOS
             ? subsHistory
             : subsHistory.map(p => ({
@@ -106,10 +106,12 @@ export const LaunchScreen: React.FC = () => {
                 product_id: p.productId
               }))
         );
+        let { shouldSignup, shouldRenew, message } = a;
+        if (message) warningRef.current?.toggle('', message);
         if (shouldSignup) {
           navigate('subscriptions');
         } else if (shouldRenew) {
-          // TBD
+          navigate('subscriptions', { renew: true });
         } else {
           // TBD
         }
