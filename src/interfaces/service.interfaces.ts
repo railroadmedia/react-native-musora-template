@@ -172,6 +172,7 @@ export interface UserService {
     };
   }) => Promise<{}>;
   updateUsersSoundsliceProgress: (
+    session_id: number,
     mediaId: number,
     currentSecond: number,
     mediaLengthSeconds: number
@@ -188,7 +189,8 @@ export interface UserService {
     id: number,
     content_id: number,
     length_in_seconds: number,
-    media_category: string
+    media_category: string,
+    media_type: string
   ) => Promise<MediaSessionResponse>;
 }
 

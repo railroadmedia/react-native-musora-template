@@ -25,7 +25,7 @@ export const showService: ShowService = {
     sort = '-published_on'
   ) {
     return call({
-      url: `/musora-api/all?included_types[]=${type}&statuses[]=published&statuses[]=scheduled&sort=${sort}&brand=drumeo&limit=10&page=${page}&future&${filters}`,
+      url: `/musora-api/all?included_types[]=${type}&statuses[]=published&statuses[]=scheduled&brand=drumeo&limit=10&page=${page}&future&sort=${sort}&${filters}`,
       signal
     });
   },

@@ -3,7 +3,8 @@ import React, {
   useEffect,
   useReducer,
   useMemo,
-  useRef
+  useRef,
+  useCallback
 } from 'react';
 import {
   StyleSheet,
@@ -77,7 +78,11 @@ export const Catalogue: React.FC<Props> = ({
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
   const filters = useRef<{} | undefined>({ refreshing: true });
-  const selectedFilters = useRef('');
+  const selectedFilters = useRef<{ formattedQuery: string; apiQuery: string }>({
+    formattedQuery: '',
+    apiQuery: ''
+  });
+  const selectedSort = useRef('');
 
   useEffect(() => {
     isMounted.current = true;
@@ -164,6 +169,64 @@ export const Catalogue: React.FC<Props> = ({
     return allShows;
   };
 
+  const getAll = () => {
+    dispatch({
+      type: SET_ALL,
+      all: [],
+      loadingMore: false,
+      refreshing: true
+    });
+    provider[scene]
+      ?.getAll({
+        page: page.current,
+        signal: abortC.current.signal,
+        filters: selectedFilters.current.apiQuery,
+        sort: selectedSort.current
+      })
+      .then(aRes => {
+        filters.current = aRes?.meta?.filterOptions;
+        if (isMounted.current) {
+          addCards(aRes?.data);
+          dispatch({
+            type: SET_ALL,
+            all: aRes?.data,
+            loadingMore: false,
+            refreshing: false
+          });
+        }
+      });
+  };
+
+  const onSort = useCallback((sortBy: string) => {
+    if (isMounted.current) {
+      page.current = 1;
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      selectedSort.current = sortBy;
+      getAll();
+    }
+  }, []);
+
+  const onFilter = useCallback(
+    ({
+      apiQuery,
+      formattedQuery
+    }: {
+      apiQuery: string;
+      formattedQuery: string;
+    }) => {
+      if (isMounted.current) {
+        page.current = 1;
+        abortC.current.abort();
+        abortC.current = new AbortController();
+        filters.current = { refreshing: true };
+        selectedFilters.current = { formattedQuery, apiQuery };
+        getAll();
+      }
+    },
+    []
+  );
+
   const renderCarousel = (items: number[] | undefined, title: string) => {
     let seeAllFetcher = 'getInProgress';
     switch (title) {
@@ -249,49 +312,14 @@ export const Catalogue: React.FC<Props> = ({
           }}
         >
           <Text style={styles.sectionTitle}>All Lessons</Text>
-          <Sort onPress={() => {}} />
-          <Filters
-            options={filters.current}
-            onApply={({ apiQuery, formattedQuery }) => {
-              if (isMounted.current) {
-                page.current = 1;
-                abortC.current.abort();
-                abortC.current = new AbortController();
-                filters.current = { refreshing: true };
-                selectedFilters.current = formattedQuery;
-                dispatch({
-                  type: SET_ALL,
-                  all: [],
-                  loadingMore: false,
-                  refreshing: true
-                });
-                provider[scene]
-                  ?.getAll({
-                    page: page.current,
-                    signal: abortC.current.signal,
-                    filters: apiQuery
-                  })
-                  .then(aRes => {
-                    filters.current = aRes?.meta?.filterOptions;
-                    if (isMounted.current) {
-                      addCards(aRes?.data);
-                      dispatch({
-                        type: SET_ALL,
-                        all: aRes?.data,
-                        loadingMore: false,
-                        refreshing: false
-                      });
-                    }
-                  });
-              }
-            }}
-          />
+          <Sort onSort={onSort} />
+          <Filters options={filters.current} onApply={onFilter} />
         </View>
       )}
-      {!!selectedFilters.current && (
+      {selectedFilters.current?.formattedQuery !== '' && (
         <Text style={styles.appliedFilters}>
           <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
-          {selectedFilters.current}
+          {selectedFilters.current.formattedQuery}
         </Text>
       )}
     </>
@@ -342,7 +370,8 @@ export const Catalogue: React.FC<Props> = ({
     abortC.current.abort();
     abortC.current = new AbortController();
     filters.current = { refreshing: true, reset: true };
-    selectedFilters.current = '';
+    selectedFilters.current = { apiQuery: '', formattedQuery: '' };
+    selectedSort.current = '-published_on';
     dispatch({ loadingMore: false, refreshing: true });
     setCatalogue();
   };
@@ -355,7 +384,9 @@ export const Catalogue: React.FC<Props> = ({
       provider[scene]
         ?.getAll({
           page: ++page.current,
-          signal: abortC.current.signal
+          signal: abortC.current.signal,
+          filters: selectedFilters.current.apiQuery,
+          sort: selectedSort.current
         })
         .then(aRes => {
           addCards(aRes?.data);

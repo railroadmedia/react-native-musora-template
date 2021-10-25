@@ -818,7 +818,8 @@ export const LessonPart: React.FC<Props> = ({
             videoId,
             contentId,
             lengthInSec,
-            mediaCategory
+            mediaCategory,
+            'video'
           )
         )?.session_id?.id,
         currentTime,
@@ -1336,6 +1337,7 @@ export const LessonPart: React.FC<Props> = ({
             ? lesson?.assignments[0].id
             : selectedAssignment?.id
         }
+        contentId={lesson?.id}
       />
 
       {isConnected &&
