@@ -40,6 +40,7 @@ import { CardsContext } from '../../state/cards/CardsContext';
 import type { Card } from '../../interfaces/card.interfaces';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { Filters } from '../catalogue/Filters';
+import { Sort } from '../../common_components/Sort';
 
 interface Props {
   route: RouteProp<ParamListBase, 'showOverview'> & {
@@ -74,6 +75,7 @@ export const ShowOverview: React.FC<Props> = ({
     formattedQuery: '',
     apiQuery: ''
   });
+  const selectedSort = useRef('');
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -95,12 +97,11 @@ export const ShowOverview: React.FC<Props> = ({
         page.current,
         abortC.current.signal,
         selectedFilters.current.apiQuery,
-        '-published_on'
+        selectedSort.current
       )
       .then((showRes: ShowLessons) => {
         if (showRes) {
           filters.current = showRes.meta?.filterOptions;
-
           addCards(showRes.data);
           setShowLessons(showRes.data);
           setRefreshing(false);
@@ -119,7 +120,7 @@ export const ShowOverview: React.FC<Props> = ({
         ++page.current,
         abortC.current.signal,
         selectedFilters.current?.apiQuery,
-        '-published_on'
+        selectedSort.current
       )
       .then((showRes: ShowLessons) => {
         if (showRes) {
@@ -150,6 +151,16 @@ export const ShowOverview: React.FC<Props> = ({
       abortC.current = new AbortController();
       filters.current = { refreshing: true };
       selectedFilters.current = { apiQuery, formattedQuery };
+      getShow();
+    }
+  }, []);
+
+  const onSort = useCallback((sortBy: string) => {
+    if (isMounted.current) {
+      page.current = 1;
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      selectedSort.current = sortBy;
       getShow();
     }
   }, []);
@@ -196,6 +207,7 @@ export const ShowOverview: React.FC<Props> = ({
       <View style={styles.subtitleContainer}>
         <Text style={styles.subtitle}>ALL EPISODES</Text>
         <View style={styles.center}>
+          <Sort onSort={onSort} />
           <Filters options={filters.current} onApply={onApplyFilters} />
         </View>
       </View>

@@ -77,12 +77,13 @@ export const userService: UserService = {
     });
   },
   updateUsersSoundsliceProgress: function (
-    mediaId,
-    currentSecond,
-    mediaLengthSeconds
+    session_id: number,
+    mediaId: number,
+    currentSecond: number,
+    mediaLengthSeconds: number
   ) {
     return call({
-      url: `/musora-api/media?media_type=assignment&media-category=soundslice&media_id=${mediaId}&media_length_seconds=${mediaLengthSeconds}&current_second=${currentSecond}`,
+      url: `/musora-api/media/${session_id}?media_type=assignment&media_category=soundslice&media_id=${mediaId}&length_in_seconds=${mediaLengthSeconds}&seconds_played=${currentSecond}&current_second=${currentSecond}`,
       method: 'PUT'
     });
   },
@@ -107,14 +108,15 @@ export const userService: UserService = {
       method: 'PUT'
     });
   },
-  getMediaSessionId: function (
-    id: number,
-    content_id: number,
-    length_in_seconds: number,
-    media_category: string
+  getMediaSessionId: async function (
+    media_id,
+    content_id,
+    length_in_seconds,
+    media_category,
+    media_type
   ) {
     return call({
-      url: `/musora-api/media?media_category=${media_category}&media_id=${id}&content_id=${content_id}&media_length_seconds=${length_in_seconds}&media_type=video`,
+      url: `/musora-api/media?media_category=${media_category}&media_id=${media_id}&content_id=${content_id}&media_length_seconds=${length_in_seconds}&media_type=${media_type}`,
       method: 'PUT'
     });
   }

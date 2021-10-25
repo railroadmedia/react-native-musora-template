@@ -26,6 +26,7 @@ import { userService } from '../../services/user.service';
 interface Props {
   slug?: string;
   assignmentId?: number;
+  contentId?: number;
 }
 
 export interface SoundsliceRefObj {
@@ -33,7 +34,10 @@ export interface SoundsliceRefObj {
 }
 
 export const Soundslice = forwardRef(
-  ({ slug, assignmentId }: Props, ref: React.Ref<SoundsliceRefObj>) => {
+  (
+    { slug, assignmentId, contentId }: Props,
+    ref: React.Ref<SoundsliceRefObj>
+  ) => {
     const [showModal, setShowModal] = useState(false);
     const webViewRef = useRef<WebView>(null);
 
@@ -79,7 +83,7 @@ export const Soundslice = forwardRef(
             <TouchableOpacity onPress={toggle} style={{ padding: 5 }}>
               {x({ icon: { height: 35, width: 35, fill: '#000000' } })}
             </TouchableOpacity>
-            {assignmentId && slug && (
+            {assignmentId && contentId && slug && (
               <WebView
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
@@ -89,9 +93,18 @@ export const Soundslice = forwardRef(
                 automaticallyAdjustContentInsets={true}
                 mediaPlaybackRequiresUserAction={false}
                 ignoreSilentHardwareSwitch={true}
-                onMessage={({ nativeEvent: { data } }) => {
+                onMessage={async ({ nativeEvent: { data } }) => {
                   const dataParsed = JSON.parse(data);
                   userService.updateUsersSoundsliceProgress(
+                    (
+                      await userService.getMediaSessionId(
+                        assignmentId,
+                        contentId,
+                        dataParsed.duration,
+                        'soundslice',
+                        'assignment'
+                      )
+                    )?.session_id?.id,
                     assignmentId,
                     dataParsed.currentTime,
                     dataParsed.duration

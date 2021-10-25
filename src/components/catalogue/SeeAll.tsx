@@ -1,5 +1,11 @@
 import type { ParamListBase, RouteProp } from '@react-navigation/native';
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef
+} from 'react';
 import { useReducer } from 'react';
 import {
   ActivityIndicator,
@@ -9,6 +15,7 @@ import {
   Text,
   View
 } from 'react-native';
+import { Sort } from '../../common_components/Sort';
 import { RowCard } from '../../common_components/cards/RowCard';
 import { provider } from '../../services/catalogueSceneProvider.service';
 import { CardsContext } from '../../state/cards/CardsContext';
@@ -50,7 +57,11 @@ export const SeeAll: React.FC<Props> = ({
   const page = useRef(1);
   const refreshPromise = useRef<Promise<void | {}>>();
   const filters = useRef<{} | undefined>({ refreshing: true });
-  const selectedFilters = useRef('');
+  const selectedFilters = useRef<{ formattedQuery: string; apiQuery: string }>({
+    formattedQuery: '',
+    apiQuery: ''
+  });
+  const selectedSort = useRef('');
 
   const [{ content, refreshing, loadingMore }, dispatch] = useReducer(
     seeAllReducer,
@@ -84,49 +95,73 @@ export const SeeAll: React.FC<Props> = ({
     });
   };
 
+  const resetContent = () => {
+    dispatch({
+      type: SET_CONTENT,
+      content: [],
+      loadingMore: false,
+      refreshing: true
+    });
+    provider[scene][fetcherName]?.({
+      page: page.current,
+      signal: abortC.current.signal,
+      filters: selectedFilters.current.apiQuery,
+      sort: selectedSort.current
+    }).then(({ data, meta }) => {
+      filters.current = meta?.filterOptions;
+      if (isMounted.current) {
+        addCards(data);
+        dispatch({
+          type: SET_CONTENT,
+          content: data,
+          loadingMore: false,
+          refreshing: false
+        });
+      }
+    });
+  };
+
+  const onSort = useCallback((sortBy: string) => {
+    if (isMounted.current) {
+      page.current = 1;
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      selectedSort.current = sortBy;
+      resetContent();
+    }
+  }, []);
+
+  const onFilter = useCallback(
+    ({
+      apiQuery,
+      formattedQuery
+    }: {
+      apiQuery: string;
+      formattedQuery: string;
+    }) => {
+      if (isMounted.current) {
+        page.current = 1;
+        abortC.current.abort();
+        abortC.current = new AbortController();
+        filters.current = { refreshing: true };
+        selectedFilters.current = { formattedQuery, apiQuery };
+        resetContent();
+      }
+    },
+    []
+  );
+
   const flHeader = (
     <>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Text style={styles.subtitle}>{scene}</Text>
-        <Filters
-          options={filters.current}
-          onApply={({ apiQuery, formattedQuery }) => {
-            if (isMounted.current) {
-              page.current = 1;
-              abortC.current.abort();
-              abortC.current = new AbortController();
-              filters.current = { refreshing: true };
-              selectedFilters.current = formattedQuery;
-              dispatch({
-                type: SET_CONTENT,
-                content: [],
-                loadingMore: false,
-                refreshing: true
-              });
-              provider[scene][fetcherName]?.({
-                page: page.current,
-                signal: abortC.current.signal,
-                filters: apiQuery
-              }).then(({ data, meta }) => {
-                filters.current = meta?.filterOptions;
-                if (isMounted.current) {
-                  addCards(data);
-                  dispatch({
-                    type: SET_CONTENT,
-                    content: data,
-                    loadingMore: false,
-                    refreshing: false
-                  });
-                }
-              });
-            }
-          }}
-        />
+        <Sort onSort={onSort} />
+        <Filters options={filters.current} onApply={onFilter} />
       </View>
-      {!!selectedFilters.current && (
+      {selectedFilters.current.formattedQuery !== '' && (
         <Text style={styles.appliedFilters}>
           <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
-          {selectedFilters.current}
+          {selectedFilters.current.formattedQuery}
         </Text>
       )}
     </>
@@ -171,7 +206,8 @@ export const SeeAll: React.FC<Props> = ({
     abortC.current.abort();
     abortC.current = new AbortController();
     filters.current = { refreshing: true, reset: true };
-    selectedFilters.current = '';
+    selectedFilters.current = { apiQuery: '', formattedQuery: '' };
+    selectedSort.current = '-published_on';
     dispatch({ type: ADD_CONTENT, loadingMore: false, refreshing: true });
     setContent();
   };

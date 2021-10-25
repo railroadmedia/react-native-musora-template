@@ -82,7 +82,7 @@ export const getSheetWHRatio = async (
             .split('" ')[0]
             .split(' ');
         }
-        svgs[i].whRatio = vbArr[2] / vbArr[3];
+        svgs[i].whRatio = parseInt(vbArr[2]) / parseInt(vbArr[3]);
         if (i === svgs.length - 1) return res(svgs);
       });
     });
