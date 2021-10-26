@@ -138,7 +138,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       <Store>
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName={'subscriptionOnboarding'}
+            initialRouteName={'launch'}
             screenOptions={{
               header: ({
                 options: { title },

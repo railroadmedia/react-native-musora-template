@@ -132,7 +132,7 @@ export const LessonPart: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
-  const { addCards } = useContext(CardsContext);
+  const { addCards, updateCard } = useContext(CardsContext);
 
   const abortC = useRef(new AbortController());
   const isMounted = useRef(true);
@@ -494,8 +494,10 @@ export const LessonPart: React.FC<Props> = ({
     if (lesson.is_added_to_primary_playlist) {
       userService.removeFromMyList(lesson.id);
       removeModalRef.current?.toggle();
+      updateCard({ ...lesson, is_added_to_primary_playlist: false });
     } else {
       userService.addToMyList(lesson.id);
+      updateCard({ ...lesson, is_added_to_primary_playlist: true });
     }
     setLesson({
       ...lesson,
@@ -645,14 +647,20 @@ export const LessonPart: React.FC<Props> = ({
             `You earned ${lesson.xp} XP!`
           );
       }
+      console.log(progress);
       setProgress(incompleteAssignments ? progress : 100);
       setLesson({
         ...lesson,
-        assignments: lesson.assignments.map(a =>
+        assignments: lesson.assignments?.map(a =>
           a.id === assignmentId
             ? { ...a, user_progress: [{ progress_percent: 100 }] }
             : a
         )
+      });
+      updateCard({
+        ...lesson,
+        progress_percent: incompleteAssignments ? progress : 100,
+        completed: incompleteAssignments ? false : true
       });
       if (selectedAssignment) {
         setSelectedAssignment({ ...selectedAssignment, progress: 100 });
@@ -691,10 +699,15 @@ export const LessonPart: React.FC<Props> = ({
       setProgress(100);
       setLesson({
         ...lesson,
-        assignments: lesson.assignments.map(a => ({
+        assignments: lesson.assignments?.map(a => ({
           ...a,
-          progress: 100
+          user_progress: [{ progress_percent: 100 }]
         }))
+      });
+      updateCard({
+        ...lesson,
+        progress_percent: 100,
+        completed: true
       });
     }
     if (
@@ -702,8 +715,12 @@ export const LessonPart: React.FC<Props> = ({
       (!utils.isiOS && res.displayGoogleReviewModal)
     )
       showRatingModal();
-    if (res.parent?.user_progress) {
+    if (res.parent?.type !== 'course' && res.parent?.user_progress) {
       setProgress(getProgress(res.parent.user_progress));
+      updateCard({
+        ...lesson,
+        progress_percent: getProgress(res.parent.user_progress)
+      });
     }
   };
 
@@ -749,15 +766,16 @@ export const LessonPart: React.FC<Props> = ({
       else if (res.progress_percent) setProgress(res.progress_percent);
     } else {
       setProgress(0);
+      updateCard({ ...lesson, progress_percent: 0, completed: false });
     }
     setLesson({
       ...lesson,
       assignments: !selectedAssignment
-        ? lesson.assignments.map((a: Assignment) => ({
+        ? lesson.assignments?.map((a: Assignment) => ({
             ...a,
             user_progress: [{ progress_percent: 0 }]
           }))
-        : lesson.assignments.map((a: Assignment) =>
+        : lesson.assignments?.map((a: Assignment) =>
             a.id === resetId
               ? {
                   ...a,

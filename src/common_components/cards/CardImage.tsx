@@ -1,29 +1,25 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, View, Text } from 'react-native';
+import type { Card } from '../../interfaces/card.interfaces';
 import { completedCircle, inProgressCircle, lock } from '../../images/svgs';
 import { getImageUri } from './cardhelpers';
 
 interface Props {
-  type: string;
-  thumbnail_url?: string;
-  published_on: string;
-  completed?: boolean;
-  progress_percent?: number;
+  item: Card;
   size: number;
   route: string;
-  isLocked?: boolean;
 }
 
-export const CardImage: React.FC<Props> = ({
-  type,
-  thumbnail_url,
-  published_on,
-  completed,
-  progress_percent,
-  size,
-  route,
-  isLocked
-}) => {
+export const CardImage: React.FC<Props> = ({ item, size, route }) => {
+  const {
+    type,
+    thumbnail_url,
+    published_on,
+    completed,
+    progress_percent,
+    isLocked
+  } = item;
+
   return (
     <View style={styles.imageContainer}>
       <ImageBackground

@@ -73,7 +73,7 @@ export const CourseOverview: React.FC<Props> = ({
 
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { theme } = useContext(ThemeContext);
-  const { addCards } = useContext(CardsContext);
+  const { addCards, updateCard } = useContext(CardsContext);
 
   const isMounted = useRef(true);
   const abortC = useRef(new AbortController());
@@ -211,6 +211,7 @@ export const CourseOverview: React.FC<Props> = ({
 
     if (!course) return;
     userService.resetProgress(course.id);
+    updateCard({ ...course, progress_percent: 0, completed: false });
     setCourse({
       ...course,
       started: false,
