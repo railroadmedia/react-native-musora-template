@@ -6,19 +6,14 @@ import { getImageUri } from './cardhelpers';
 
 interface Props {
   item: Card;
+  isLocked?: boolean;
   size: number;
   route: string;
 }
 
-export const CardImage: React.FC<Props> = ({ item, size, route }) => {
-  const {
-    type,
-    thumbnail_url,
-    published_on,
-    completed,
-    progress_percent,
-    isLocked
-  } = item;
+export const CardImage: React.FC<Props> = ({ item, size, route, isLocked }) => {
+  const { type, thumbnail_url, published_on, completed, progress_percent } =
+    item || {};
 
   return (
     <View style={styles.imageContainer}>
