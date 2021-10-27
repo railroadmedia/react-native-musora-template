@@ -117,13 +117,12 @@ export const PacksBanner: React.FC<Props> = ({
 
   return (
     <>
-      {!isMainPacksPage && (
-        <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
-          {back({
-            icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
-          })}
-        </TouchableOpacity>
-      )}
+      {!isMainPacksPage &&
+        back({
+          icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 },
+          onPress: goBack,
+          container: styles.backBtnContainer
+        })}
       <ImageBackground
         resizeMode={'cover'}
         source={{
@@ -174,13 +173,9 @@ export const PacksBanner: React.FC<Props> = ({
               <View style={styles.iconBtn} />
               {renderColoredBtn()}
               <TouchableOpacity style={styles.iconBtn} onPress={showPackInfo}>
-                {showInfo
-                  ? infoFilled({
-                      icon: { width: 25, height: 25, fill: '#ffffff' }
-                    })
-                  : info({
-                      icon: { width: 25, height: 25, fill: '#ffffff' }
-                    })}
+                {(showInfo ? infoFilled : info)({
+                  icon: { width: 25, height: 25, fill: '#ffffff' }
+                })}
                 <Text style={styles.infoText}>Info</Text>
               </TouchableOpacity>
             </View>

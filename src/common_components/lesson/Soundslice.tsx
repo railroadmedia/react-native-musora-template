@@ -80,9 +80,12 @@ export const Soundslice = forwardRef(
             barStyle={theme === 'DARK' ? 'light-content' : 'dark-content'}
           />
           <KeyboardAvoidingView style={styles.container}>
-            <TouchableOpacity onPress={toggle} style={{ padding: 5 }}>
-              {x({ icon: { height: 35, width: 35, fill: '#000000' } })}
-            </TouchableOpacity>
+            {x({
+              icon: { height: 35, width: 35, fill: '#000000' },
+              onPress: toggle,
+              container: { padding: 5 }
+            })}
+
             {assignmentId && contentId && slug && (
               <WebView
                 javaScriptEnabled={true}

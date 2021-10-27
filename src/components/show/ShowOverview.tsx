@@ -168,15 +168,16 @@ export const ShowOverview: React.FC<Props> = ({
   const renderFListHeader = (): ReactElement => (
     <>
       <View style={{ alignItems: 'center' }}>
-        <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
-          {back({
-            icon: {
-              fill: themeStyles[theme].textColor,
-              height: 15,
-              width: 15
-            }
-          })}
-        </TouchableOpacity>
+        {back({
+          icon: {
+            fill: themeStyles[theme].textColor,
+            height: 15,
+            width: 15
+          },
+          onPress: goBack,
+          container: styles.backBtnContainer
+        })}
+
         <Image
           style={styles.image}
           source={{

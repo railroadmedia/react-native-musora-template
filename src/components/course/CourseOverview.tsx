@@ -82,6 +82,11 @@ export const CourseOverview: React.FC<Props> = ({
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
+  const coloredIcon = useMemo(
+    () => ({ width: 25, height: 25, fill: utils.color }),
+    []
+  );
+
   const downloadContent = useMemo(() => {
     return new Promise<{}>(async res =>
       course
@@ -258,15 +263,16 @@ export const CourseOverview: React.FC<Props> = ({
       <View style={styles.container}>
         {course?.id ? (
           <ScrollView style={{ flex: 1 }} refreshControl={flRefreshControl}>
-            <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: goBack,
+              container: styles.backBtnContainer
+            })}
+
             <Image
               resizeMode={'cover'}
               source={{ uri: course.thumbnail_url }}
@@ -285,11 +291,9 @@ export const CourseOverview: React.FC<Props> = ({
                   style={styles.underCompleteTOpacities}
                   onPress={toggleMyList}
                 >
-                  {course.is_added_to_primary_playlist
-                    ? x({ icon: { fill: utils.color, height: 25, width: 25 } })
-                    : plus({
-                        icon: { fill: utils.color, height: 25, width: 25 }
-                      })}
+                  {(course.is_added_to_primary_playlist ? x : plus)({
+                    icon: coloredIcon
+                  })}
                   <Text style={styles.myListText}>
                     {course.is_added_to_primary_playlist ? 'Added' : 'My List'}
                   </Text>
@@ -299,10 +303,9 @@ export const CourseOverview: React.FC<Props> = ({
                   style={styles.mainBtn}
                   onPress={onMainBtnPress}
                 >
-                  {course.completed
-                    ? reset({ icon: { fill: 'white', height: 25, width: 25 } })
-                    : play({ icon: { fill: 'white', height: 25, width: 25 } })}
-
+                  {(course.completed ? reset : play)({
+                    icon: { fill: 'white', height: 25, width: 25 }
+                  })}
                   <Text style={styles.mainBtnText}>
                     {course.completed
                       ? 'RESTART'
@@ -315,14 +318,7 @@ export const CourseOverview: React.FC<Props> = ({
                   style={styles.underCompleteTOpacities}
                   onPress={() => setShowInfo(!showInfo)}
                 >
-                  {showInfo
-                    ? infoFilled({
-                        icon: { fill: utils.color, height: 25, width: 25 }
-                      })
-                    : info({
-                        icon: { fill: utils.color, height: 25, width: 25 }
-                      })}
-
+                  {(showInfo ? infoFilled : info)({ icon: coloredIcon })}
                   <Text style={styles.myListText}>Info</Text>
                 </TouchableOpacity>
               </View>
@@ -355,13 +351,9 @@ export const CourseOverview: React.FC<Props> = ({
                       style={styles.underCompleteTOpacities}
                       onPress={likeOrDislikeContent}
                     >
-                      {course.is_liked_by_current_user
-                        ? likeOn({
-                            icon: { fill: utils.color, height: 25, width: 25 }
-                          })
-                        : like({
-                            icon: { fill: utils.color, height: 25, width: 25 }
-                          })}
+                      {(course.is_liked_by_current_user ? likeOn : like)({
+                        icon: coloredIcon
+                      })}
                       <Text style={styles.belowIconText}>
                         {course.like_count}
                       </Text>
@@ -401,9 +393,7 @@ export const CourseOverview: React.FC<Props> = ({
                         )
                       }
                     >
-                      {reset({
-                        icon: { fill: utils.color, height: 25, width: 25 }
-                      })}
+                      {reset({ icon: coloredIcon })}
                       <Text style={styles.belowIconText}>Restart</Text>
                     </TouchableOpacity>
                   </View>
@@ -430,15 +420,16 @@ export const CourseOverview: React.FC<Props> = ({
           </ScrollView>
         ) : (
           <>
-            <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: goBack,
+              container: styles.backBtnContainer
+            })}
+
             <ActivityIndicator
               size={'large'}
               style={{ flex: 1 }}

@@ -11,7 +11,8 @@ import {
   Modal,
   StyleSheet,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
@@ -108,9 +109,12 @@ export const NavigationMenu = forwardRef<{ toggle: () => void }, Props>(
                 </TouchableOpacity>
               )
             )}
-            <TouchableOpacity onPress={toggleModal} style={styles.xBtn}>
-              {x({ icon: { height: 30, width: 30, fill: 'white' } })}
-            </TouchableOpacity>
+            <View style={styles.xBtn}>
+              {x({
+                icon: { height: 30, width: 30, fill: 'white' },
+                onPress: toggleModal
+              })}
+            </View>
           </ScrollView>
         </SafeAreaView>
       </Modal>

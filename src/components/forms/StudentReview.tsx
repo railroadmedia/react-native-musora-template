@@ -202,16 +202,17 @@ export const StudentReview: React.FC<Props> = () => {
   }, [activeCarouselIndicator, scrollView, width]);
 
   const renderTitle = (
-    <TouchableOpacity style={styles.backBtn} onPress={onBack}>
+    <View style={styles.backBtn}>
       {back({
         icon: {
           fill: themeStyles[theme].textColor,
           height: 30,
           width: 30
-        }
+        },
+        onPress: goBack
       })}
       <Text style={styles.title}>Student Review</Text>
-    </TouchableOpacity>
+    </View>
   );
 
   const setExperience = useCallback(

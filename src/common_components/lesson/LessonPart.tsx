@@ -993,15 +993,16 @@ export const LessonPart: React.FC<Props> = ({
               isLandscape ? { aspectRatio: 3 } : null
             ]}
           >
-            <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: goBack,
+              container: styles.backBtnContainer
+            })}
+
             <ImageBackground
               resizeMode='contain'
               imageStyle={styles.album}
@@ -1012,9 +1013,11 @@ export const LessonPart: React.FC<Props> = ({
                 )},ar_1,c_fill,g_face/${lesson?.thumbnail_url}`
               }}
             >
-              <TouchableOpacity style={styles.playBtn} onPress={goToSoundSlice}>
-                {play({ icon: { height: 30, width: 30, fill: '#ffffff' } })}
-              </TouchableOpacity>
+              {play({
+                icon: { height: 30, width: 30, fill: '#ffffff' },
+                onPress: goToSoundSlice,
+                container: styles.playBtn
+              })}
             </ImageBackground>
           </View>
         </>
@@ -1023,18 +1026,16 @@ export const LessonPart: React.FC<Props> = ({
           !lesson?.youtube_video_id) ? (
         <SafeAreaView>
           <View style={styles.videoReplacer}>
-            <TouchableOpacity
-              onPress={onNoVideoBack}
-              style={styles.backBtnContainer}
-            >
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: onNoVideoBack,
+              container: styles.backBtnContainer
+            })}
+
             <ActivityIndicator size='large' color='#ffffff' />
           </View>
         </SafeAreaView>
@@ -1148,9 +1149,9 @@ export const LessonPart: React.FC<Props> = ({
                           onPress={toggleLike}
                           style={styles.underCompleteTOpacities}
                         >
-                          {lesson?.is_liked_by_current_user
-                            ? likeOn({ icon: coloredIcon })
-                            : like({ icon: coloredIcon })}
+                          {(lesson?.is_liked_by_current_user ? likeOn : like)({
+                            icon: coloredIcon
+                          })}
                           <Text style={styles.iconText}>
                             {lesson?.like_count}
                           </Text>
@@ -1160,9 +1161,9 @@ export const LessonPart: React.FC<Props> = ({
                           style={styles.underCompleteTOpacities}
                           onPress={onAddToMyList}
                         >
-                          {lesson?.is_added_to_primary_playlist
-                            ? x({ icon: coloredIcon })
-                            : plus({ icon: coloredIcon })}
+                          {(lesson?.is_added_to_primary_playlist ? x : plus)({
+                            icon: coloredIcon
+                          })}
                           <Text style={styles.iconText}>
                             {lesson?.is_added_to_primary_playlist
                               ? 'Added'
@@ -1213,10 +1214,7 @@ export const LessonPart: React.FC<Props> = ({
                       style={styles.underCompleteTOpacities}
                       onPress={toggleShowInfo}
                     >
-                      {!!showInfo
-                        ? infoFilled({ icon: coloredIcon })
-                        : info({ icon: coloredIcon })}
-
+                      {(showInfo ? infoFilled : info)({ icon: coloredIcon })}
                       <Text style={styles.iconText}>Info</Text>
                     </TouchableOpacity>
                     {contentType === 'Play Along' && (
@@ -1224,10 +1222,9 @@ export const LessonPart: React.FC<Props> = ({
                         onPress={toggleVideoAudio}
                         style={styles.underCompleteTOpacities}
                       >
-                        {videoType === 'audio'
-                          ? watch({ icon: coloredIcon })
-                          : listen({ icon: coloredIcon })}
-
+                        {(videoType === 'audio' ? watch : listen)({
+                          icon: coloredIcon
+                        })}
                         <Text style={styles.iconText}>
                           {videoType === 'audio' ? 'Watch' : 'Listen'}
                         </Text>

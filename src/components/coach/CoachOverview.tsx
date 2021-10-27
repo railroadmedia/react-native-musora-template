@@ -158,12 +158,13 @@ export const CoachOverview: React.FC<Props> = ({
           <Text numberOfLines={2} style={styles.coachName}>
             {coach?.name}
           </Text>
-          <TouchableOpacity style={styles.sideBtn} onPress={toggleShowInfo}>
-            {showInfo
-              ? infoFilled({ icon: iconStyle })
-              : info({ icon: iconStyle })}
+          <View style={styles.sideBtn}>
+            {(showInfo ? infoFilled : info)({
+              icon: iconStyle,
+              onPress: toggleShowInfo
+            })}
             <Text style={styles.infoText}>Info</Text>
-          </TouchableOpacity>
+          </View>
         </View>
       </View>
 

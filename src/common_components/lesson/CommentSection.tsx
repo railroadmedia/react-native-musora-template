@@ -167,10 +167,11 @@ export const CommentSection = forwardRef<
               : (allCommentsNum.current || comments.length) + ' COMMENTS'
             : ''}
         </Text>
-
-        <TouchableOpacity onPress={toggleFilterModal} style={styles.filterIcon}>
-          {filters({ icon: { height: 25, width: 25, fill: utils.color } })}
-        </TouchableOpacity>
+        {filters({
+          icon: { height: 25, width: 25, fill: utils.color },
+          onPress: toggleFilterModal,
+          container: styles.filterIcon
+        })}
 
         <Modal
           transparent={true}
@@ -284,9 +285,12 @@ export const CommentSection = forwardRef<
             onLayout={e => input.current?.focus()}
             onChangeText={text => setCommentText(text)}
           />
-          <TouchableOpacity style={styles.sendIcon} onPress={addComment}>
-            {send({ icon: { height: 30, width: 30, fill: utils.color } })}
-          </TouchableOpacity>
+
+          {send({
+            icon: { height: 30, width: 30, fill: utils.color },
+            onPress: addComment,
+            container: styles.sendIcon
+          })}
         </SafeAreaView>
       </CommentInputModal>
     </View>
