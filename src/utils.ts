@@ -362,6 +362,75 @@ class Utils implements UtilsInterface {
         return 'Your account no longer has access to Drumeo Edge. Click the button below to renew your membership — or, if you believe this is an error, please contact support@drumeo.com.';
     }
   }
+
+  get whatIsIncluded() {
+    switch (this.brand) {
+      case 'pianote':
+        return { video: '', offers: [] };
+      case 'guitareo':
+        return { video: '', offers: [] };
+      case 'singeo':
+        return { video: '', offers: [] };
+      default:
+        return {
+          video:
+            'https://dpwjbsxqtam5n.cloudfront.net/sales/header-compress.mp4',
+          offers: [
+            {
+              title: 'Drumeo Method',
+              image: require('./images/drumeo_method_onboarding.png'),
+              text: 'Get the right drum lessons for you at the right time.'
+            },
+            {
+              title: 'Courses',
+              image: require('./images/courses_onboard.png'),
+              text: 'Series of short lessons based on a single topic.'
+            },
+            {
+              title: 'Shows',
+              image: require('./images/shows_onboard.png'),
+              text: 'Episodic lessons or drum focused entertainment.'
+            },
+            {
+              title: 'Songs',
+              image: require('./images/songs_onboard.png'),
+              text: 'Famous songs with note-for-note transcriptions.'
+            },
+            {
+              title: 'Play-Alongs',
+              image: require('./images/play_alongs_onboard.png'),
+              text: 'Drumless tracks to train your musicality.'
+            }
+          ]
+        };
+    }
+  }
+
+  get skillLevels() {
+    switch (this.brand) {
+      case 'pianote':
+        return [];
+      case 'guitareo':
+        return [];
+      case 'singeo':
+        return [];
+      default:
+        return [
+          {
+            title: 'I’M JUST STARTING',
+            text: 'I’ve never played drums or have played very little.'
+          },
+          {
+            title: 'I’VE PLAYED BEFORE',
+            text: 'I’ve played before, but I need to brush up on the basics.'
+          },
+          {
+            title: 'I’M A\nDRUM GOD',
+            text: 'I’ve played for more than a few years and want to take my skills to the next level.'
+          }
+        ];
+    }
+  }
 }
 
 export let utils = new Utils();

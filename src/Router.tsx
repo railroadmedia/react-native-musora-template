@@ -78,15 +78,9 @@ const Stack = createStackNavigator<{
       fetcherName: 'getAll' | 'getInProgress' | 'getRecentlyViewed' | 'getNew';
     };
   };
-  level: {
-    mobile_app_url: string;
-  };
-  packOverview: {
-    mobile_app_url: string;
-  };
-  showOverview: {
-    show: Show;
-  };
+  level: { mobile_app_url: string };
+  packOverview: { mobile_app_url: string };
+  showOverview: { show: Show };
   courseOverview: {
     mobile_app_url?: string;
     id: number;
@@ -98,18 +92,14 @@ const Stack = createStackNavigator<{
     contentType: string;
     item?: LessonResponse;
   };
-  likeList: {
-    commentId: number;
-  };
+  likeList: { commentId: number };
   replies: {
     parentComment: Comment;
     onDeleteComment: () => void;
     likeOrDislikeComment: () => void;
     onAddOrRemoveReply: (num: number) => void;
   };
-  coachOverview: {
-    id: number;
-  };
+  coachOverview: { id: number };
 }>();
 
 export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
@@ -119,18 +109,18 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'subscriptions',
       'launch',
       'level',
-      'showoverview',
-      'courseoverview',
-      'coachoverview',
-      'packoverview',
-      'studentreview',
-      'askquestion',
-      'submitcollabvideo',
-      'lessonpart',
+      'showOverview',
+      'courseOverview',
+      'coachOverview',
+      'packOverview',
+      'studentReview',
+      'askQuestion',
+      'submitCollabVideo',
+      'lessonPart',
       'forum',
       'subscriptionOnboarding'
     ];
-    return titleExceptions.includes(route?.toLowerCase());
+    return titleExceptions.includes(route);
   }, []);
 
   return (

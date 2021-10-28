@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'white',
     borderRadius: 99,
-    margin: 5
+    margin: 2.5
   },
   tOpacityContainer: {
     flexDirection: 'row',

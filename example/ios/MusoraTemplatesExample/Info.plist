@@ -66,6 +66,12 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Drumeo would like to use your camera for your profile photo</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Drumeo would like to save photos to your photo gallery for your profile photo</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Drumeo would like access to your photo gallery for your profile photo</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
