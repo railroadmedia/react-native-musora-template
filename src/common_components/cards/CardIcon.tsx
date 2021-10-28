@@ -17,6 +17,7 @@ import { ConnectionContext } from '../../state/connection/ConnectionContext';
 import { Download_V2 } from 'RNDownload';
 import { themeStyles } from '../../themeStyles';
 import { ThemeContext } from '../../state/theme/ThemeContext';
+import { CardsContext } from '../../state/cards/CardsContext';
 
 interface Props {
   item: Card;
@@ -49,11 +50,9 @@ export const CardIcon: React.FC<Props> = ({
   }, []);
 
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
-  const { theme } = useContext(ThemeContext);
+  const { updateCard } = useContext(CardsContext);
 
-  const [isAddedToPrimaryList, setIsAddedToPrimaryList] = useState(
-    is_added_to_primary_playlist
-  );
+  const { theme } = useContext(ThemeContext);
   const removeModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const resetModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const calendarModalRef = useRef<React.ElementRef<typeof ActionModal>>(null);
@@ -86,23 +85,24 @@ export const CardIcon: React.FC<Props> = ({
   const addToMyList = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
 
-    setIsAddedToPrimaryList(true);
+    updateCard({ ...item, is_added_to_primary_playlist: true });
     userService.addToMyList(id);
-  }, [setIsAddedToPrimaryList, id, isConnected]);
+  }, [id, isConnected]);
 
   const removeFromMyList = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
 
     removeModalRef.current?.toggle();
-    setIsAddedToPrimaryList(false);
+    updateCard({ ...item, is_added_to_primary_playlist: false });
     userService.removeFromMyList(id);
     onRemoveFromMyList?.(id);
-  }, [setIsAddedToPrimaryList, id, removeModalRef, isConnected]);
+  }, [id, removeModalRef, isConnected]);
 
   const resetProgress = useCallback(() => {
     if (!isConnected) return showNoConnectionAlert();
 
     resetModalRef.current?.toggle();
+    updateCard({ ...item, progress_percent: 0, completed: false });
     userService.resetProgress(id);
     onResetProgress?.(id);
   }, [id, resetModalRef, isConnected]);
@@ -158,7 +158,7 @@ export const CardIcon: React.FC<Props> = ({
               `This will reset your progress\nand cannot be undone.\nAre you sure about this?`
             )
         })
-      ) : isAddedToPrimaryList ? (
+      ) : is_added_to_primary_playlist ? (
         x({
           icon: iconStyle,
           container: styles.icon,

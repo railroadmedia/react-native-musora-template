@@ -46,7 +46,6 @@ export const RowCard: React.FC<Props> = props => {
   } = props;
   const { cards } = useContext(CardsContext);
   const item: Card = cards[id];
-
   const { theme } = useContext(ThemeContext);
   const styles = useMemo(() => setStyles(theme), [theme]);
 
@@ -99,40 +98,46 @@ export const RowCard: React.FC<Props> = props => {
         </View>
       );
     }
-    return <CardImage size={30} {...item} route={route} />;
+    return <CardImage size={30} item={item} route={route} />;
   };
 
   return (
     <>
-      {!!item.month && <Text style={styles.month}>{item.month}</Text>}
-      <TouchableOpacity
-        activeOpacity={0.9}
-        style={styles.listContainer}
-        onPress={onCardPress}
-      >
-        {renderImage()}
+      {!!item?.month && <Text style={styles.month}>{item.month}</Text>}
+      {item && (
+        <TouchableOpacity
+          activeOpacity={0.9}
+          style={styles.listContainer}
+          onPress={onCardPress}
+        >
+          {renderImage()}
 
-        <View style={styles.cardTextContainerSmall}>
-          <View style={{ flex: 1 }}>
-            <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.title}>
-              {item.title}
-            </Text>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode={'tail'}
-              style={styles.subtitle}
-            >
-              {decideSubtitle({ item, route, sizeInBytes })}
-            </Text>
+          <View style={styles.cardTextContainerSmall}>
+            <View style={{ flex: 1 }}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={styles.title}
+              >
+                {item.title}
+              </Text>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode={'tail'}
+                style={styles.subtitle}
+              >
+                {decideSubtitle({ item, route, sizeInBytes })}
+              </Text>
+            </View>
+            <CardIcon
+              item={item}
+              iconType={iconType}
+              onResetProgress={onResetProgress}
+              onRemoveFromMyList={onRemoveFromMyList}
+            />
           </View>
-          <CardIcon
-            item={item}
-            iconType={iconType}
-            onResetProgress={onResetProgress}
-            onRemoveFromMyList={onRemoveFromMyList}
-          />
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      )}
     </>
   );
 };

@@ -27,6 +27,7 @@ export interface Card {
   lessons?: Card[];
   parentId?: number;
   month?: string;
+  isLocked?: boolean;
 }
 
 export interface CardsReducer {

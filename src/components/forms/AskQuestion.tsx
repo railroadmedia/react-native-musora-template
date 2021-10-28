@@ -96,16 +96,17 @@ export const AskQuestion: React.FC<Props> = () => {
       contentContainerStyle={styles.contentContainerStyle}
       keyboardShouldPersistTaps={'handled'}
     >
-      <TouchableOpacity style={styles.backBtn} onPress={goBack}>
+      <View style={styles.backBtn}>
         {back({
           icon: {
             fill: themeStyles[theme].textColor,
             height: 30,
             width: 30
-          }
+          },
+          onPress: goBack
         })}
         <Text style={styles.title}>Ask A Question</Text>
-      </TouchableOpacity>
+      </View>
       <Text style={styles.subtitle}>Enter your question below...</Text>
       <TextInput
         maxLength={250}

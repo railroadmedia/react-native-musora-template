@@ -33,6 +33,7 @@ export interface CompletedResponse {
   displayIosReviewModal?: boolean;
   displayGoogleReviewModal?: boolean;
   parent?: {
+    type: string;
     user_progress: [{ progress_percent: number }];
   };
 }

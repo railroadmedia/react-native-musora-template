@@ -37,6 +37,7 @@ import { ActionModal } from '../../common_components/modals/ActionModal';
 import { userService } from '../../services/user.service';
 import { OrientationContext } from '../../state/orientation/OrientationContext';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { CardsContext } from '../../state/cards/CardsContext';
 
 interface Props {}
 
@@ -48,7 +49,7 @@ export const Packs: React.FC<Props> = () => {
   >();
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
-
+  const { updateCard } = useContext(CardsContext);
   const { isLandscape } = useContext(OrientationContext);
 
   const [refreshing, setRefreshing] = useState(false);
@@ -287,6 +288,7 @@ export const Packs: React.FC<Props> = () => {
     if (topHeaderPack) {
       resetModalRef.current?.toggle();
       userService.resetProgress(topHeaderPack.id);
+      updateCard({ ...topHeaderPack, progress_percent: 0, completed: false });
       refresh();
     }
   }, [topHeaderPack, isConnected]);

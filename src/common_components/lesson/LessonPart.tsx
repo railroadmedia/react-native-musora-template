@@ -132,7 +132,7 @@ export const LessonPart: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
-  const { addCards } = useContext(CardsContext);
+  const { addCards, updateCard } = useContext(CardsContext);
 
   const abortC = useRef(new AbortController());
   const isMounted = useRef(true);
@@ -494,8 +494,10 @@ export const LessonPart: React.FC<Props> = ({
     if (lesson.is_added_to_primary_playlist) {
       userService.removeFromMyList(lesson.id);
       removeModalRef.current?.toggle();
+      updateCard({ ...lesson, is_added_to_primary_playlist: false });
     } else {
       userService.addToMyList(lesson.id);
+      updateCard({ ...lesson, is_added_to_primary_playlist: true });
     }
     setLesson({
       ...lesson,
@@ -645,14 +647,20 @@ export const LessonPart: React.FC<Props> = ({
             `You earned ${lesson.xp} XP!`
           );
       }
+      console.log(progress);
       setProgress(incompleteAssignments ? progress : 100);
       setLesson({
         ...lesson,
-        assignments: lesson.assignments.map(a =>
+        assignments: lesson.assignments?.map(a =>
           a.id === assignmentId
             ? { ...a, user_progress: [{ progress_percent: 100 }] }
             : a
         )
+      });
+      updateCard({
+        ...lesson,
+        progress_percent: incompleteAssignments ? progress : 100,
+        completed: incompleteAssignments ? false : true
       });
       if (selectedAssignment) {
         setSelectedAssignment({ ...selectedAssignment, progress: 100 });
@@ -691,10 +699,15 @@ export const LessonPart: React.FC<Props> = ({
       setProgress(100);
       setLesson({
         ...lesson,
-        assignments: lesson.assignments.map(a => ({
+        assignments: lesson.assignments?.map(a => ({
           ...a,
-          progress: 100
+          user_progress: [{ progress_percent: 100 }]
         }))
+      });
+      updateCard({
+        ...lesson,
+        progress_percent: 100,
+        completed: true
       });
     }
     if (
@@ -702,8 +715,12 @@ export const LessonPart: React.FC<Props> = ({
       (!utils.isiOS && res.displayGoogleReviewModal)
     )
       showRatingModal();
-    if (res.parent?.user_progress) {
+    if (res.parent?.type !== 'course' && res.parent?.user_progress) {
       setProgress(getProgress(res.parent.user_progress));
+      updateCard({
+        ...lesson,
+        progress_percent: getProgress(res.parent.user_progress)
+      });
     }
   };
 
@@ -749,15 +766,16 @@ export const LessonPart: React.FC<Props> = ({
       else if (res.progress_percent) setProgress(res.progress_percent);
     } else {
       setProgress(0);
+      updateCard({ ...lesson, progress_percent: 0, completed: false });
     }
     setLesson({
       ...lesson,
       assignments: !selectedAssignment
-        ? lesson.assignments.map((a: Assignment) => ({
+        ? lesson.assignments?.map((a: Assignment) => ({
             ...a,
             user_progress: [{ progress_percent: 0 }]
           }))
-        : lesson.assignments.map((a: Assignment) =>
+        : lesson.assignments?.map((a: Assignment) =>
             a.id === resetId
               ? {
                   ...a,
@@ -975,15 +993,16 @@ export const LessonPart: React.FC<Props> = ({
               isLandscape ? { aspectRatio: 3 } : null
             ]}
           >
-            <TouchableOpacity onPress={goBack} style={styles.backBtnContainer}>
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: goBack,
+              container: styles.backBtnContainer
+            })}
+
             <ImageBackground
               resizeMode='contain'
               imageStyle={styles.album}
@@ -994,9 +1013,11 @@ export const LessonPart: React.FC<Props> = ({
                 )},ar_1,c_fill,g_face/${lesson?.thumbnail_url}`
               }}
             >
-              <TouchableOpacity style={styles.playBtn} onPress={goToSoundSlice}>
-                {play({ icon: { height: 30, width: 30, fill: '#ffffff' } })}
-              </TouchableOpacity>
+              {play({
+                icon: { height: 30, width: 30, fill: '#ffffff' },
+                onPress: goToSoundSlice,
+                container: styles.playBtn
+              })}
             </ImageBackground>
           </View>
         </>
@@ -1005,18 +1026,16 @@ export const LessonPart: React.FC<Props> = ({
           !lesson?.youtube_video_id) ? (
         <SafeAreaView>
           <View style={styles.videoReplacer}>
-            <TouchableOpacity
-              onPress={onNoVideoBack}
-              style={styles.backBtnContainer}
-            >
-              {back({
-                icon: {
-                  fill: themeStyles[theme].textColor,
-                  height: 15,
-                  width: 15
-                }
-              })}
-            </TouchableOpacity>
+            {back({
+              icon: {
+                fill: themeStyles[theme].textColor,
+                height: 15,
+                width: 15
+              },
+              onPress: onNoVideoBack,
+              container: styles.backBtnContainer
+            })}
+
             <ActivityIndicator size='large' color='#ffffff' />
           </View>
         </SafeAreaView>
@@ -1130,9 +1149,9 @@ export const LessonPart: React.FC<Props> = ({
                           onPress={toggleLike}
                           style={styles.underCompleteTOpacities}
                         >
-                          {lesson?.is_liked_by_current_user
-                            ? likeOn({ icon: coloredIcon })
-                            : like({ icon: coloredIcon })}
+                          {(lesson?.is_liked_by_current_user ? likeOn : like)({
+                            icon: coloredIcon
+                          })}
                           <Text style={styles.iconText}>
                             {lesson?.like_count}
                           </Text>
@@ -1142,9 +1161,9 @@ export const LessonPart: React.FC<Props> = ({
                           style={styles.underCompleteTOpacities}
                           onPress={onAddToMyList}
                         >
-                          {lesson?.is_added_to_primary_playlist
-                            ? x({ icon: coloredIcon })
-                            : plus({ icon: coloredIcon })}
+                          {(lesson?.is_added_to_primary_playlist ? x : plus)({
+                            icon: coloredIcon
+                          })}
                           <Text style={styles.iconText}>
                             {lesson?.is_added_to_primary_playlist
                               ? 'Added'
@@ -1195,10 +1214,7 @@ export const LessonPart: React.FC<Props> = ({
                       style={styles.underCompleteTOpacities}
                       onPress={toggleShowInfo}
                     >
-                      {!!showInfo
-                        ? infoFilled({ icon: coloredIcon })
-                        : info({ icon: coloredIcon })}
-
+                      {(showInfo ? infoFilled : info)({ icon: coloredIcon })}
                       <Text style={styles.iconText}>Info</Text>
                     </TouchableOpacity>
                     {contentType === 'Play Along' && (
@@ -1206,10 +1222,9 @@ export const LessonPart: React.FC<Props> = ({
                         onPress={toggleVideoAudio}
                         style={styles.underCompleteTOpacities}
                       >
-                        {videoType === 'audio'
-                          ? watch({ icon: coloredIcon })
-                          : listen({ icon: coloredIcon })}
-
+                        {(videoType === 'audio' ? watch : listen)({
+                          icon: coloredIcon
+                        })}
                         <Text style={styles.iconText}>
                           {videoType === 'audio' ? 'Watch' : 'Listen'}
                         </Text>

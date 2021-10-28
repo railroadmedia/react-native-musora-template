@@ -42,6 +42,8 @@ import {
 import { myListService } from '../../services/myList.service';
 import { RowCard } from '../../common_components/cards/RowCard';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { Filters } from '../catalogue/Filters';
+import { Sort } from '../../common_components/Sort';
 
 interface Props {}
 
@@ -60,6 +62,12 @@ export const MyList: React.FC<Props> = ({}) => {
   const myListPage = useRef(1);
   const inProgressPage = useRef(1);
   const completedPage = useRef(1);
+  const filters = useRef<{} | undefined>({ refreshing: true });
+  const selectedFilters = useRef<{ formattedQuery: string; apiQuery: string }>({
+    formattedQuery: '',
+    apiQuery: ''
+  });
+  const selectedSort = useRef('');
 
   const [{ myList, completed, inProgress, loadingMore, refreshing }, dispatch] =
     useReducer(myListReducer, {
@@ -69,14 +77,14 @@ export const MyList: React.FC<Props> = ({}) => {
 
   const styles = useMemo(() => setStyles(theme), [theme]);
 
-  const backButtonHandler = useCallback(() => {
+  const backButtonHandler = () => {
     if (pageTitle !== 'My List') {
       setPageTitle('My List');
     } else {
       goBack();
     }
     return true;
-  }, []);
+  };
 
   useEffect(() => {
     BackHandler.addEventListener('hardwareBackPress', backButtonHandler);
@@ -90,9 +98,15 @@ export const MyList: React.FC<Props> = ({}) => {
     if (!isConnected) return showNoConnectionAlert();
 
     myListService
-      .myList({ page: myListPage.current, signal: abortC.current.signal })
+      .myList({
+        page: myListPage.current,
+        signal: abortC.current.signal,
+        filters: selectedFilters.current.apiQuery,
+        sort: selectedSort.current
+      })
       .then(myListRes => {
         if (isMounted.current) {
+          filters.current = myListRes.meta?.filterOptions;
           addCardsAndCache(myListRes?.data);
           dispatch({
             type: SET_MY_LIST_AND_CACHE,
@@ -124,9 +138,12 @@ export const MyList: React.FC<Props> = ({}) => {
     myListService
       .inProgress({
         page: inProgressPage.current,
-        signal: abortC.current.signal
+        signal: abortC.current.signal,
+        filters: selectedFilters.current.apiQuery,
+        sort: selectedSort.current
       })
       .then(inProgressRes => {
+        filters.current = inProgressRes.meta?.filterOptions;
         addCards(inProgressRes?.data);
         dispatch({
           type: SET_IN_PROGRESS,
@@ -140,8 +157,14 @@ export const MyList: React.FC<Props> = ({}) => {
     if (!isConnected) return showNoConnectionAlert();
 
     myListService
-      .completed({ page: completedPage.current, signal: abortC.current.signal })
+      .completed({
+        page: completedPage.current,
+        signal: abortC.current.signal,
+        filters: selectedFilters.current.apiQuery,
+        sort: selectedSort.current
+      })
       .then(completedRes => {
+        filters.current = completedRes.meta?.filterOptions;
         addCards(completedRes?.data);
         dispatch({
           type: SET_COMPLETED,
@@ -188,6 +211,9 @@ export const MyList: React.FC<Props> = ({}) => {
     myListPage.current = 1;
     inProgressPage.current = 1;
     completedPage.current = 1;
+    filters.current = { refreshing: true, reset: true };
+    selectedFilters.current = { apiQuery: '', formattedQuery: '' };
+    selectedSort.current = '';
     dispatch({
       type: UPDATE_MY_LIST_LOADERS,
       loadingMore: false,
@@ -278,7 +304,8 @@ export const MyList: React.FC<Props> = ({}) => {
 
   const onNavigate = (title: TitleTypes) => {
     if (!isConnected) return showNoConnectionAlert();
-
+    selectedFilters.current = { apiQuery: '', formattedQuery: '' };
+    selectedSort.current = '';
     setPageTitle(title);
     dispatch({
       type: UPDATE_MY_LIST_LOADERS,
@@ -297,6 +324,32 @@ export const MyList: React.FC<Props> = ({}) => {
       setMyList();
     }
   };
+
+  const onApplyFilters = useCallback(({ apiQuery, formattedQuery }) => {
+    if (isMounted.current) {
+      myListPage.current = 1;
+      completedPage.current = 1;
+      inProgressPage.current = 1;
+
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      filters.current = { refreshing: true };
+      selectedFilters.current = { apiQuery, formattedQuery };
+      decideCall(pageTitle);
+    }
+  }, []);
+
+  const onSort = useCallback((sortBy: string) => {
+    if (isMounted.current) {
+      myListPage.current = 1;
+      completedPage.current = 1;
+      inProgressPage.current = 1;
+      abortC.current.abort();
+      abortC.current = new AbortController();
+      selectedSort.current = sortBy;
+      decideCall(pageTitle);
+    }
+  }, []);
 
   const renderFLHeader = (): ReactElement => {
     if (pageTitle === 'My List')
@@ -319,11 +372,35 @@ export const MyList: React.FC<Props> = ({}) => {
               })}
             </TouchableOpacity>
           ))}
-          <Text style={styles.title}>Added To My List</Text>
+          {renderTitle('Added To My List')}
         </View>
       );
-    return <Text style={styles.title}>{pageTitle}</Text>;
+    return renderTitle(pageTitle);
   };
+
+  const renderTitle = (title: string) => (
+    <>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}
+      >
+        <Text style={styles.title}>{title}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Sort onSort={onSort} />
+          <Filters options={filters.current} onApply={onApplyFilters} />
+        </View>
+      </View>
+      {selectedFilters.current.formattedQuery !== '' && (
+        <Text style={styles.appliedFilters}>
+          <Text style={{ fontWeight: '800' }}>FILTERS APPLIED</Text>
+          {selectedFilters.current.formattedQuery}
+        </Text>
+      )}
+    </>
+  );
 
   const renderFLItem = ({ item }: { item: number }): ReactElement => (
     <RowCard
@@ -395,5 +472,13 @@ const setStyles = (theme: string, current = themeStyles[theme]) =>
       paddingLeft: 15,
       paddingTop: 5,
       marginBottom: 10
+    },
+    appliedFilters: {
+      flex: 1,
+      padding: 15,
+      paddingVertical: 5,
+      textTransform: 'uppercase',
+      fontFamily: 'RobotoCondensed-Regular',
+      color: current.contrastTextColor
     }
   });

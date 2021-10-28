@@ -35,10 +35,7 @@ export const LibraryCard: React.FC<Props> = ({
     id,
     type,
     title,
-    progress_percent,
     is_added_to_primary_playlist,
-    completed,
-    thumbnail_url,
     published_on,
     mobile_app_url
   } = item;
@@ -74,12 +71,8 @@ export const LibraryCard: React.FC<Props> = ({
         />
 
         <CardImage
-          type={type}
-          thumbnail_url={thumbnail_url}
-          published_on={published_on}
-          completed={completed}
-          progress_percent={progress_percent}
           size={windowW / 10}
+          item={item}
           route={''}
           isLocked={isLocked}
         />

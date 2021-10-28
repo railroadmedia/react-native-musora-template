@@ -68,7 +68,7 @@ export const SliderCard: React.FC<Props> = props => {
       onPress={onCardPress}
     >
       <View style={{ aspectRatio: route === 'songs' ? 1 : 16 / 9 }}>
-        <CardImage size={50} {...item} route={route} />
+        <CardImage size={50} item={item} route={route} />
       </View>
       <View style={styles.cardTextContainerBig}>
         <View style={{ flex: 1 }}>

@@ -86,18 +86,16 @@ export const Assignment: React.FC<Props> = ({
   return (
     <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
       <ScrollView scrollEnabled={true} style={{ flex: 1 }}>
-        <TouchableOpacity
-          onPress={onCloseView}
-          style={[hideTitles ? { padding: 20 } : styles.xBtn]}
-        >
-          {x({
-            icon: {
-              height: 35,
-              width: 35,
-              fill: themeStyles[theme].textColor
-            }
-          })}
-        </TouchableOpacity>
+        {x({
+          icon: {
+            height: 35,
+            width: 35,
+            fill: themeStyles[theme].textColor
+          },
+          container: hideTitles ? { padding: 20 } : styles.xBtn,
+          onPress: onCloseView
+        })}
+
         {!hideTitles && (
           <>
             <View style={styles.titleContainer}>

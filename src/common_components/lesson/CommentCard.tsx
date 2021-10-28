@@ -230,20 +230,11 @@ export const CommentCard = forwardRef(
                     : { marginRight: 15 }
                 ]}
               >
-                {user.id !== comment.user_id && (
-                  <TouchableOpacity
-                    onPress={() => likeOrDislikeComment(comment.id)}
-                    style={{ marginRight: 10 }}
-                  >
-                    {isLiked
-                      ? likeOn({
-                          icon: { height: 20, width: 20, fill: utils.color }
-                        })
-                      : like({
-                          icon: { height: 20, width: 20, fill: utils.color }
-                        })}
-                  </TouchableOpacity>
-                )}
+                {user.id !== comment.user_id &&
+                  (isLiked ? likeOn : like)({
+                    icon: { height: 20, width: 20, fill: utils.color },
+                    onPress: () => likeOrDislikeComment(comment.id)
+                  })}
                 {likeCount > 0 && (
                   <TouchableOpacity
                     style={styles.bubble}
@@ -280,16 +271,12 @@ export const CommentCard = forwardRef(
                   </View>
                 </TouchableWithoutFeedback>
               )}
-              {user.id === comment.user_id && (
-                <TouchableOpacity
-                  style={{ alignItems: 'center', marginRight: 10 }}
-                  onPress={showDeleteAlert}
-                >
-                  {trash({
-                    icon: { height: 20, width: 20, fill: utils.color }
-                  })}
-                </TouchableOpacity>
-              )}
+              {user.id === comment.user_id &&
+                trash({
+                  icon: { height: 20, width: 20, fill: utils.color },
+                  onPress: showDeleteAlert,
+                  container: { alignItems: 'center', marginRight: 10 }
+                })}
             </View>
             {lessonId && comment.replies?.length > 0 ? (
               <Text style={styles.repliesLabel} onPress={goToReplies}>

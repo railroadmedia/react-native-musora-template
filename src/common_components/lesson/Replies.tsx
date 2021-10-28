@@ -173,9 +173,12 @@ export const Replies: React.FC<Props> = ({
             value={replyText}
             onChangeText={text => setReplyText(text)}
           />
-          <TouchableOpacity style={styles.sendIcon} onPress={addReply}>
-            {send({ icon: { height: 30, width: 30, fill: utils.color } })}
-          </TouchableOpacity>
+
+          {send({
+            icon: { height: 30, width: 30, fill: utils.color },
+            onPress: addReply,
+            container: styles.sendIcon
+          })}
         </SafeAreaView>
       </CommentInputModal>
     </SafeAreaView>

@@ -57,11 +57,11 @@ export const LevelBanner: React.FC<Props> = ({
           uri: `https://cdn.musora.com/image/fetch/fl_lossy,q_auto:eco/${thumbnail_url}`
         }}
       >
-        <TouchableOpacity style={styles.backBtnContainer} onPress={goBack}>
-          {back({
-            icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 }
-          })}
-        </TouchableOpacity>
+        {back({
+          icon: { fill: themeStyles[theme].textColor, height: 15, width: 15 },
+          onPress: goBack,
+          container: styles.backBtnContainer
+        })}
 
         <View style={styles.gradientContainer}>
           <Gradient
@@ -78,9 +78,7 @@ export const LevelBanner: React.FC<Props> = ({
         <Text style={styles.levelTitle}>{customTitle}</Text>
         <View style={styles.btnsContainer}>
           <TouchableOpacity style={styles.placeHolder} onPress={onToggleMyList}>
-            {is_added_to_primary_playlist
-              ? x({ icon: iconStyle })
-              : plus({ icon: iconStyle })}
+            {(is_added_to_primary_playlist ? x : plus)({ icon: iconStyle })}
             <Text style={styles.infoText}>
               {is_added_to_primary_playlist ? 'Addded' : 'My List'}
             </Text>

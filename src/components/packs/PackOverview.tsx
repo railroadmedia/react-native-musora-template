@@ -69,7 +69,7 @@ export const PackOverview: React.FC<Props> = ({
   const { theme } = useContext(ThemeContext);
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
-  const { addCards } = useContext(CardsContext);
+  const { addCards, updateCard } = useContext(CardsContext);
 
   const [refreshing, setRefreshing] = useState(false);
   const [showResourcesModal, setShowResourcesModal] = useState(false);
@@ -165,6 +165,7 @@ export const PackOverview: React.FC<Props> = ({
     if (pack) {
       resetModalRef.current?.toggle();
       userService.resetProgress(pack.id);
+      updateCard({ ...pack, progress_percent: 0, completed: false });
       refresh();
     }
   }, [pack, isConnected]);
