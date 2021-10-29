@@ -406,7 +406,7 @@ class Utils implements UtilsInterface {
     }
   }
 
-  get skillLevels() {
+  get onboardingLevels() {
     switch (this.brand) {
       case 'pianote':
         return [];
@@ -428,6 +428,26 @@ class Utils implements UtilsInterface {
             title: 'I’M A\nDRUM GOD',
             text: 'I’ve played for more than a few years and want to take my skills to the next level.'
           }
+        ];
+    }
+  }
+
+  get onboardingTopics() {
+    switch (this.brand) {
+      case 'pianote':
+        return [];
+      case 'guitareo':
+        return [];
+      case 'singeo':
+        return [];
+      default:
+        return [
+          { title: 'DRUM FILLS', image: svgs.drumFills },
+          { title: 'DRUM BEATS', image: svgs.drumBeats },
+          { title: 'MUSICALITY', image: svgs.musicality },
+          { title: 'TECHNIQUE', image: svgs.technique },
+          { title: 'RUDIMENTS', image: svgs.rudiments },
+          { title: 'INDEPENDENCE', image: svgs.independence }
         ];
     }
   }

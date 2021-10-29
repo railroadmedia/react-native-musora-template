@@ -1,5 +1,6 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Animated,
   ImageBackground,
   Keyboard,
@@ -12,16 +13,34 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import ImagePicker from 'react-native-image-crop-picker';
+import type { StackNavigationProp } from '@react-navigation/stack';
+import {
+  useNavigation,
+  ParamListBase,
+  StackActions
+} from '@react-navigation/core';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackHeader } from '../header/BackHeader';
-import { utils } from '../../utils';
-import { camera, library, plus, x } from '../../images/svgs';
-import { ConnectionContext } from '../../state/connection/ConnectionContext';
+
 import { ActionModal } from '../../common_components/modals/ActionModal';
-import { OrientationContext } from '../../state/orientation/OrientationContext';
 import { WhatIsIncluded } from '../../common_components/WhatIsIncluded';
+
+import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
+
+import { getAutoList } from '../../services/auth.service';
+import { methodService } from '../../services/method.service';
+import { userService } from '../../services/user.service';
+
+import type { AutoList } from '../../interfaces/service.interfaces';
+import type { Method } from '../../interfaces/method.interfaces';
+
+import { utils } from '../../utils';
+
+import { camera, library, plus, x } from '../../images/svgs';
 
 export const SubscriptionOnboarding: React.FC = () => {
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
@@ -30,16 +49,37 @@ export const SubscriptionOnboarding: React.FC = () => {
   let { bottom, top } = useSafeAreaInsets();
   if (!bottom) bottom = 20;
 
+  const { dispatch } = useNavigation<StackNavigationProp<ParamListBase>>();
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [picPickerVisible, setPicPickerVisible] = useState(false);
   const [profilePicPath, setProfilePicPath] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [pageSwitcherState, setPageSwitcherState] = useState('NEXT');
+  const [loading, setLoading] = useState(true);
 
   const leftAnim = useRef(new Animated.Value(0)).current;
   const scrollview = useRef<ScrollView>(null);
-  const userData = useRef({ displayName: '' });
+  const userData = useRef({ displayName: '', phone: '' });
   const scrollviewWidth = useRef(0);
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const method = useRef<Method>();
+  const autolist = useRef<AutoList>();
+
+  useEffect(() => {
+    methodService.getMethod().then(m => {
+      method.current = m;
+      setLoading(false);
+    });
+    return () => {
+      // userService.updateAvatar()
+      userService.updateUserDetails({
+        name: userData.current.displayName,
+        phone: userData.current.phone
+      });
+    };
+  }, []);
 
   const animateIndicator = (toValue: number, duration = 0) =>
     Animated.timing(leftAnim, {
@@ -51,36 +91,60 @@ export const SubscriptionOnboarding: React.FC = () => {
   const handleProfilePic = (originFunction: 'openCamera' | 'openPicker') => {
     setPicPickerVisible(false);
     if (!isConnected) return showNoConnectionAlert();
-    setTimeout(() => {
-      ImagePicker[originFunction]({ mediaType: 'photo' }).then(res => {
+    ImagePicker[originFunction]({ mediaType: 'photo' })
+      .then(res => {
         if (res.path)
           ImagePicker.openCropper({
             path: res.path,
             width: 300,
             height: 300,
             mediaType: 'photo'
-          }).then(image => {
-            if (image) setProfilePicPath(image.path);
-          });
+          })
+            .then(image => {
+              if (image) {
+                setPageSwitcherState('NEXT');
+                setProfilePicPath(image.path);
+              }
+            })
+            .catch(() => {});
         else
           warningRef.current?.toggle(
             'Something went wrong',
             'Please try again.'
           );
-      });
-    }, 2000);
+      })
+      .catch(() => {});
   };
 
   const switchPage = (page: number) => {
+    switch (page) {
+      case 0:
+      case 4:
+        setPageSwitcherState('NEXT');
+        break;
+      default:
+        setPageSwitcherState('SKIP');
+    }
     Keyboard.dismiss();
     scrollview.current?.scrollTo({
       x: page * scrollviewWidth.current
     });
     animateIndicator(page * 15);
     setActiveIndex(page);
+    if (page === 7) {
+      setLoading(true);
+      getAutoList(selectedLevel, selectedTopics).then(({ data }) => {
+        autolist.current = data;
+        setLoading(false);
+      });
+    }
   };
 
   const onNext = () => {
+    switchPage(activeIndex + 1);
+  };
+
+  const onSkip = () => {
     switchPage(activeIndex + 1);
   };
 
@@ -89,7 +153,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   };
 
   const welcome = (
-    <View style={{ width: `${100 / 7}%` }}>
+    <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 0 && (
         <>
           <ImageBackground
@@ -106,7 +170,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   );
 
   const displayName = (
-    <View style={{ width: `${100 / 7}%` }}>
+    <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 1 && (
         <>
           <BackHeader
@@ -118,10 +182,15 @@ export const SubscriptionOnboarding: React.FC = () => {
           <TextInput
             spellCheck={false}
             autoCapitalize={'none'}
-            onChangeText={txt => (userData.current.displayName = txt)}
+            onChangeText={txt => {
+              if (txt && pageSwitcherState === 'SKIP')
+                setPageSwitcherState('NEXT');
+              else if (!txt && pageSwitcherState === 'NEXT')
+                setPageSwitcherState('SKIP');
+              userData.current.displayName = txt;
+            }}
             autoCorrect={false}
             style={styles.textInput}
-            keyboardType={'email-address'}
           />
           <Text style={{ fontFamily: 'OpenSans', textAlign: 'center' }}>
             This appears on your Drumeo profile and comments.
@@ -132,7 +201,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   );
 
   const profilePic = (
-    <View style={{ width: `${100 / 7}%` }}>
+    <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 2 && (
         <>
           <BackHeader
@@ -143,7 +212,7 @@ export const SubscriptionOnboarding: React.FC = () => {
           <Text style={styles.labelTxt}>Add a profile picture</Text>
           <ImageBackground
             key={profilePicPath}
-            resizeMode={'stretch'}
+            resizeMode={'contain'}
             source={profilePicPath ? { uri: profilePicPath } : {}}
             style={{
               width: isLandscape ? '25%' : '50%',
@@ -206,7 +275,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   );
 
   const phone = (
-    <View style={{ width: `${100 / 7}%` }}>
+    <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 3 && (
         <>
           <BackHeader
@@ -218,10 +287,16 @@ export const SubscriptionOnboarding: React.FC = () => {
           <TextInput
             spellCheck={false}
             autoCapitalize={'none'}
-            onChangeText={txt => (userData.current.displayName = txt)}
+            onChangeText={txt => {
+              if (txt && pageSwitcherState === 'SKIP')
+                setPageSwitcherState('NEXT');
+              else if (!txt && pageSwitcherState === 'NEXT')
+                setPageSwitcherState('SKIP');
+              userData.current.phone = txt;
+            }}
             autoCorrect={false}
             style={styles.textInput}
-            keyboardType={'email-address'}
+            keyboardType={'phone-pad'}
           />
           <Text style={{ fontFamily: 'OpenSans', textAlign: 'center' }}>
             If there’s ever an issue with your account we’ll always try emailing
@@ -235,7 +310,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   );
 
   const whatsIncluded = (
-    <View style={{ width: `${100 / 7}%` }}>
+    <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 4 && <WhatIsIncluded />}
     </View>
   );
@@ -243,7 +318,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   const skillLevel = (
     <View
       style={{
-        width: `${100 / 7}%`,
+        width: `${100 / 8}%`,
         paddingTop: top,
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -252,39 +327,175 @@ export const SubscriptionOnboarding: React.FC = () => {
     >
       {activeIndex === 5 && (
         <>
-          <Text style={styles.skillTitleTxt}>
+          <Text style={styles.selectableTitleTxt}>
             What skill level would you consider yourself?
           </Text>
-          {utils.skillLevels.map((s, i) => (
+          {utils.onboardingLevels.map((l, i) => (
             <View
-              key={s.title}
+              key={l.title}
               style={{
-                width: isLandscape ? '20%' : '30%',
-                opacity: s.text === selectedLevel ? 1 : 0.5
+                width: '30%',
+                alignItems: 'center',
+                opacity: l.text === selectedLevel ? 1 : 0.5
               }}
             >
-              <TouchableOpacity onPress={() => setSelectedLevel(s.text)}>
-                <View style={styles.skillIconContainer}>
-                  {[...new Array(i + 1)].map((_, j) => (
-                    <View
-                      key={j}
-                      style={[styles.skillIcon, { height: `${(j + 1) * 20}%` }]}
-                    />
-                  ))}
-                </View>
-                <Text style={styles.skillTxt}>{s.title}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setPageSwitcherState('NEXT');
+                  setSelectedLevel(l.text);
+                }}
+                style={[
+                  styles.selectableContainer,
+                  { width: isLandscape ? '50%' : '100%' }
+                ]}
+              >
+                {[...new Array(i + 1)].map((_, j) => (
+                  <View
+                    key={j}
+                    style={[styles.skillIcon, { height: `${(j + 1) * 20}%` }]}
+                  />
+                ))}
               </TouchableOpacity>
+              <Text style={styles.selectableTxt}>{l.title}</Text>
             </View>
           ))}
-          <Text style={styles.selectedLevelTxt}>{selectedLevel}</Text>
+          <Text style={styles.selectableInfoTxt}>{selectedLevel}</Text>
         </>
       )}
     </View>
   );
 
   const interests = (
-    <View style={{ width: `${100 / 7}%` }}>{activeIndex === 6 && <></>}</View>
+    <View
+      style={{
+        width: `${100 / 8}%`,
+        paddingTop: top,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-evenly'
+      }}
+    >
+      {activeIndex === 6 && (
+        <>
+          <Text style={styles.selectableTitleTxt}>
+            What are you interested in learning or improving?
+          </Text>
+          {utils.onboardingTopics.map(t => (
+            <View
+              key={t.title}
+              style={{
+                width: '30%',
+                alignItems: 'center',
+                opacity: selectedTopics.includes(t.title) ? 1 : 0.5
+              }}
+            >
+              {t.image({
+                icon: { width: '60%', fill: utils.color },
+                container: {
+                  ...styles.selectableContainer,
+                  width: isLandscape ? '50%' : '100%'
+                },
+                onPress: () =>
+                  setSelectedTopics(prevTopics => {
+                    let newTopics = prevTopics.includes(t.title)
+                      ? prevTopics.filter(pt => pt !== t.title)
+                      : [...prevTopics, t.title];
+                    if (newTopics.length && pageSwitcherState === 'SKIP')
+                      setPageSwitcherState('NEXT');
+                    else if (!newTopics.length && pageSwitcherState === 'NEXT')
+                      setPageSwitcherState('SKIP');
+                    return newTopics;
+                  })
+              })}
+              <Text numberOfLines={1} style={styles.selectableTxt}>
+                {t.title}
+              </Text>
+            </View>
+          ))}
+          <Text style={styles.selectableInfoTxt}>
+            Select all topics that apply.
+          </Text>
+        </>
+      )}
+    </View>
   );
+
+  const methodView = (
+    <View style={{ width: `${100 / 8}%`, paddingTop: top }}>
+      {activeIndex === 6 && (
+        <>
+          <Text style={styles.selectableTitleTxt}>
+            Get started with the Drumeo Method!
+          </Text>
+          <ImageBackground
+            key={isLandscape.toString()}
+            resizeMode={'contain'}
+            source={{
+              uri: `https://cdn.musora.com/image/fetch/w_${scrollviewWidth.current},ar_1,fl_lossy,q_auto:good,c_fill,g_face/${method.current?.levels?.[0].instructor[0].head_shot_picture_url}`
+            }}
+            style={{
+              width: isLandscape ? '25%' : '70%',
+              aspectRatio: 1,
+              alignSelf: 'center',
+              alignItems: 'center',
+              justifyContent: 'flex-end'
+            }}
+            imageStyle={{ width: '100%', borderRadius: 10 }}
+          >
+            <Text style={styles.level1Txt}>LEVEL 1</Text>
+          </ImageBackground>
+          <Text style={styles.instructorNameTxt}>
+            {method.current?.levels?.[0].instructor[0].name}
+          </Text>
+          <Text style={styles.levelTitleTxt}>
+            {method.current?.levels?.[0].title}
+          </Text>
+          <Text style={styles.levelDescriptionTxt}>
+            {method.current?.levels?.[0].description}
+          </Text>
+        </>
+      )}
+    </View>
+  );
+
+  const autoList = (
+    <View style={{ width: `${100 / 8}%`, paddingTop: top }}>
+      {activeIndex === 7 && (
+        <>
+          <Text style={styles.selectableTitleTxt}>
+            We've added some lessons to your list!
+          </Text>
+          {autolist.current?.map(al => (
+            <View style={styles.autoListCardContainer} key={al.title}>
+              <ImageBackground
+                key={isLandscape.toString()}
+                resizeMode={'contain'}
+                source={{
+                  uri: `https://cdn.musora.com/image/fetch/w_${scrollviewWidth.current},fl_lossy,q_auto:good,c_fill,g_face/${al.thumbnail_url}`
+                }}
+                style={{ width: '20%', aspectRatio: 16 / 9 }}
+                imageStyle={{ width: '100%', borderRadius: 10 }}
+              />
+              <Text style={styles.autoListTitleTxt}>
+                {al.title}
+                {`\n`}
+                <Text style={{ fontWeight: '400' }}>{al.type}</Text>
+              </Text>
+            </View>
+          ))}
+        </>
+      )}
+    </View>
+  );
+
+  const showMethod =
+    selectedLevel !== utils.onboardingLevels[2].text &&
+    new Date() > new Date(method.current?.published_on || '');
+
+  const showAutoList =
+    selectedLevel === utils.onboardingLevels[2].text ||
+    !method.current?.published_on ||
+    new Date() < new Date(method.current?.published_on || '');
 
   return (
     <KeyboardAvoidingView
@@ -298,12 +509,13 @@ export const SubscriptionOnboarding: React.FC = () => {
       >
         <ScrollView
           ref={scrollview}
+          scrollEnabled={false}
           bounces={false}
           horizontal={true}
           pagingEnabled={true}
           showsHorizontalScrollIndicator={false}
           keyboardShouldPersistTaps={'handled'}
-          contentContainerStyle={{ width: '700%' }}
+          contentContainerStyle={{ width: '800%' }}
           onLayout={({ nativeEvent: { layout } }) =>
             scrollview.current?.scrollTo({
               x: activeIndex * (scrollviewWidth.current = layout.width)
@@ -316,35 +528,100 @@ export const SubscriptionOnboarding: React.FC = () => {
           {phone}
           {whatsIncluded}
           {skillLevel}
-          {/* {interests} */}
+          {showMethod ? methodView : interests}
+          {showAutoList && autoList}
         </ScrollView>
       </ScrollView>
-      <View style={styles.activeIndicatorContainer}>
-        <Animated.View
-          style={[
-            styles.indicator,
-            {
-              left: 0,
+      {!((activeIndex === 6 && showMethod) || activeIndex === 7) && (
+        <View style={styles.activeIndicatorContainer}>
+          <Animated.View
+            style={[
+              styles.indicator,
+              {
+                left: 0,
+                backgroundColor: utils.color,
+                position: 'absolute',
+                transform: [{ translateX: leftAnim }]
+              }
+            ]}
+          />
+          {[...new Array(7)].map((_, i) => (
+            <View key={i} style={styles.indicator} />
+          ))}
+        </View>
+      )}
+      {activeIndex === 6 && showMethod ? (
+        <>
+          <TouchableOpacity
+            onPress={() => dispatch(StackActions.replace('home'))}
+            style={[styles.nextTOpacity, { padding: 20 }]}
+          >
+            <Text style={styles.nextTxt}>I'LL FIND MY OWN LESSONS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => dispatch(StackActions.replace('method'))}
+            style={{
+              margin: bottom,
+              marginTop: 0,
               backgroundColor: utils.color,
-              position: 'absolute',
-              transform: [{ translateX: leftAnim }]
-            }
-          ]}
-        />
-        {[...new Array(7)].map((_, i) => (
-          <View key={i} style={styles.indicator} />
-        ))}
-      </View>
-      <TouchableOpacity
-        onPress={onNext}
-        style={[styles.nextTOpacity, { marginVertical: bottom }]}
-      >
-        <Text style={styles.nextTxt}>NEXT</Text>
-      </TouchableOpacity>
+              padding: 20,
+              alignItems: 'center',
+              borderRadius: 99
+            }}
+          >
+            <Text style={[styles.nextTxt, { color: 'white' }]}>
+              START THE DRUMEO METHOD
+            </Text>
+          </TouchableOpacity>
+        </>
+      ) : activeIndex === 7 ? (
+        <>
+          <TouchableOpacity
+            onPress={() => dispatch(StackActions.replace('home'))}
+            style={[styles.nextTOpacity, { padding: 20 }]}
+          >
+            <Text style={styles.nextTxt}>I'LL FIND MY OWN LESSONS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => dispatch(StackActions.replace('myList'))}
+            style={{
+              margin: bottom,
+              marginTop: 0,
+              backgroundColor: utils.color,
+              padding: 20,
+              alignItems: 'center',
+              borderRadius: 99
+            }}
+          >
+            <Text style={[styles.nextTxt, { color: 'white' }]}>
+              GO TO MY LIST
+            </Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <TouchableOpacity
+          onPress={pageSwitcherState === 'NEXT' ? onNext : onSkip}
+          style={[styles.nextTOpacity, { marginVertical: bottom }]}
+        >
+          <Text style={styles.nextTxt}>{pageSwitcherState}</Text>
+        </TouchableOpacity>
+      )}
       <ActionModal
         ref={warningRef}
         onAction={() => warningRef.current?.toggle()}
       />
+      {loading && (
+        <ActivityIndicator
+          color={'white'}
+          size={'large'}
+          style={{
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,.5)'
+          }}
+        />
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -413,7 +690,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5
   },
-  skillTitleTxt: {
+  selectableTitleTxt: {
     fontFamily: 'OpenSans',
     fontWeight: '700',
     fontSize: 30,
@@ -421,8 +698,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 10
   },
-  skillIconContainer: {
-    width: '100%',
+  selectableContainer: {
     aspectRatio: 1,
     borderWidth: 2,
     borderColor: utils.color,
@@ -439,18 +715,57 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginBottom: '20%'
   },
-  skillTxt: {
+  selectableTxt: {
     fontFamily: 'OpenSans',
     fontWeight: '700',
-    textAlign: 'center',
     padding: 10,
-    color: utils.color
+    color: utils.color,
+    fontSize: 12,
+    textAlign: 'center'
   },
-  selectedLevelTxt: {
+  selectableInfoTxt: {
     width: '100%',
     textAlign: 'center',
     fontFamily: 'OpenSans',
     fontSize: 20,
     padding: 10
+  },
+  level1Txt: {
+    color: 'white',
+    fontFamily: 'OpenSans',
+    fontWeight: '700',
+    fontSize: 25
+  },
+  instructorNameTxt: {
+    fontFamily: 'OpenSans',
+    fontWeight: '700',
+    color: utils.color,
+    padding: 10,
+    textAlign: 'center'
+  },
+  levelTitleTxt: {
+    fontFamily: 'OpenSans',
+    fontWeight: '700',
+    padding: 10,
+    textAlign: 'center'
+  },
+  levelDescriptionTxt: {
+    fontFamily: 'OpenSans',
+    padding: 10,
+    textAlign: 'center'
+  },
+  autoListCardContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: 'lightgrey',
+    padding: 10
+  },
+  autoListTitleTxt: {
+    fontFamily: 'OpenSans',
+    fontWeight: '700',
+    flex: 1,
+    paddingLeft: 10
   }
 });

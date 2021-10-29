@@ -156,7 +156,11 @@ export interface ContentService {
 export interface UserService {
   getUserDetails: ServiceFunction<User>;
   getNotifications: ServiceFunction<{ data: Notification[] }>;
-  updateUserDetails: (picture?: any, name?: string) => Promise<{}>;
+  updateUserDetails: ({}: {
+    picture?: any;
+    name?: string;
+    phone?: string;
+  }) => Promise<{}>;
   isNameUnique: (name: string) => Promise<{ unique: boolean }>;
   addToMyList: (id: number) => Promise<{}>;
   removeFromMyList: (id: number) => Promise<{}>;
@@ -195,7 +199,7 @@ export interface UserService {
 }
 
 export interface MethodService {
-  getMethod: (signal: AbortSignal) => Promise<Method>;
+  getMethod: (signal?: AbortSignal) => Promise<Method>;
   getFoundation: (signal: AbortSignal) => Promise<Foundation>;
   getLevel: (url: string, signal: AbortSignal) => Promise<Level>;
   getCourse: (
@@ -275,3 +279,5 @@ export interface CoachesService {
   getAll: ServiceFunction<CatalogueSection>;
   getContent: (id: number, signal: AbortSignal) => Promise<Coach>;
 }
+
+export type AutoList = { thumbnail_url: string; title: string; type: string }[];

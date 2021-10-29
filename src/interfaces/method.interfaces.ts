@@ -51,6 +51,7 @@ interface LearningPath {
   banner_background_image?: string;
   length_in_seconds?: string;
   next_lesson?: Card;
+  published_on?: string;
 }
 
 export interface Method extends LearningPath {

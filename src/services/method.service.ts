@@ -3,7 +3,7 @@ import { utils } from '../utils';
 import { call } from './auth.service';
 
 export const methodService: MethodService = {
-  getMethod: function (signal: AbortSignal) {
+  getMethod: function (signal) {
     return call({
       url: `/musora-api/learning-paths/${utils.brand}-method`,
       signal

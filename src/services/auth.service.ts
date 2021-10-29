@@ -6,7 +6,11 @@ import {
 } from 'react-native-keychain';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import type { Authenticate, Call } from '../interfaces/service.interfaces';
+import type {
+  Authenticate,
+  AutoList,
+  Call
+} from '../interfaces/service.interfaces';
 
 import { utils } from '../utils';
 
@@ -134,6 +138,17 @@ const restorePurchase: () => Promise<{
   });
 };
 
+const getAutoList: (
+  skill: string,
+  topics: string[]
+) => Promise<{ data: AutoList }> = (skill, topics) => {
+  return call({
+    url: '/musora-api/add-lessons',
+    method: 'PUT',
+    body: { skill, topics }
+  });
+};
+
 const handleLastAccessDate = async (
   edgeExpirationDate: string,
   isPackOnly: boolean
@@ -191,5 +206,6 @@ export {
   validatePurchase,
   saveCreds,
   getPurchases,
-  restorePurchase
+  restorePurchase,
+  getAutoList
 };

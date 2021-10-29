@@ -57,7 +57,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
       let response: { unique: boolean } = await userService.isNameUnique(name);
 
       if (response.unique) {
-        userService.updateUserDetails(null, name);
+        userService.updateUserDetails({ name });
         updateUser({ ...user, display_name: name });
         closeModal();
       } else {
@@ -72,7 +72,7 @@ export const ProfileSettings: React.FC<Props> = ({ closeModal }) => {
         croppedImage
       );
       if (res.data) {
-        userService.updateUserDetails(res.data?.[0]?.url);
+        userService.updateUserDetails({ picture: res.data?.[0]?.url });
         updateUser({ ...user, avatarUrl: res.data?.[0]?.url });
         closeModal();
       } else {

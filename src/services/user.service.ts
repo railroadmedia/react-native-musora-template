@@ -35,10 +35,11 @@ export const userService: UserService = {
       body: data
     });
   },
-  updateUserDetails: function (picture, name) {
+  updateUserDetails: function ({ picture, name, phone }) {
     let url = `/musora-api/profile/update?`;
     if (picture) url += `file=${picture}`;
     if (name) url += `display_name=${name}`;
+    if (phone) url += `phone_number=${phone}`;
     return call({ url, method: 'POST' });
   },
   isNameUnique: function (name) {
