@@ -41,10 +41,12 @@ import type { Method } from '../../interfaces/method.interfaces';
 import { utils } from '../../utils';
 
 import { camera, library, plus, x } from '../../images/svgs';
+import { UserContext } from '../../state/user/UserContext';
 
 export const SubscriptionOnboarding: React.FC = () => {
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
+  const { updateUser } = useContext(UserContext);
 
   let { bottom, top } = useSafeAreaInsets();
   if (!bottom) bottom = 20;
@@ -53,7 +55,6 @@ export const SubscriptionOnboarding: React.FC = () => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [picPickerVisible, setPicPickerVisible] = useState(false);
-  const [profilePicPath, setProfilePicPath] = useState('');
   const [selectedLevel, setSelectedLevel] = useState('');
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [pageSwitcherState, setPageSwitcherState] = useState('NEXT');
@@ -62,6 +63,7 @@ export const SubscriptionOnboarding: React.FC = () => {
   const leftAnim = useRef(new Animated.Value(0)).current;
   const scrollview = useRef<ScrollView>(null);
   const userData = useRef({ displayName: '', phone: '' });
+  const profilePic = useRef({ fileName: '', type: '', uri: '' });
   const scrollviewWidth = useRef(0);
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const method = useRef<Method>();
@@ -73,11 +75,17 @@ export const SubscriptionOnboarding: React.FC = () => {
       setLoading(false);
     });
     return () => {
-      // userService.updateAvatar()
-      userService.updateUserDetails({
-        name: userData.current.displayName,
-        phone: userData.current.phone
-      });
+      if (profilePic.current.uri)
+        userService
+          .updateAvatar(profilePic.current)
+          .then(res => updateUser({ avatarUrl: res?.data?.[0]?.url }));
+      if (userData.current.displayName || userData.current.phone) {
+        updateUser({ display_name: userData.current.displayName });
+        userService.updateUserDetails({
+          name: userData.current.displayName,
+          phone: userData.current.phone
+        });
+      }
     };
   }, []);
 
@@ -89,7 +97,6 @@ export const SubscriptionOnboarding: React.FC = () => {
     }).start();
 
   const handleProfilePic = (originFunction: 'openCamera' | 'openPicker') => {
-    setPicPickerVisible(false);
     if (!isConnected) return showNoConnectionAlert();
     ImagePicker[originFunction]({ mediaType: 'photo' })
       .then(res => {
@@ -103,17 +110,22 @@ export const SubscriptionOnboarding: React.FC = () => {
             .then(image => {
               if (image) {
                 setPageSwitcherState('NEXT');
-                setProfilePicPath(image.path);
+                profilePic.current = {
+                  fileName: image.path,
+                  uri: image.path,
+                  type: image.mime
+                };
               }
+              setPicPickerVisible(false);
             })
-            .catch(() => {});
+            .catch(() => setPicPickerVisible(false));
         else
           warningRef.current?.toggle(
             'Something went wrong',
             'Please try again.'
           );
       })
-      .catch(() => {});
+      .catch(() => setPicPickerVisible(false));
   };
 
   const switchPage = (page: number) => {
@@ -152,7 +164,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     switchPage(activeIndex - 1);
   };
 
-  const welcome = (
+  const welcomeView = (
     <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 0 && (
         <>
@@ -169,7 +181,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const displayName = (
+  const displayNameView = (
     <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 1 && (
         <>
@@ -200,7 +212,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const profilePic = (
+  const profilePicView = (
     <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 2 && (
         <>
@@ -211,9 +223,11 @@ export const SubscriptionOnboarding: React.FC = () => {
           />
           <Text style={styles.labelTxt}>Add a profile picture</Text>
           <ImageBackground
-            key={profilePicPath}
+            key={profilePic.current.uri}
             resizeMode={'contain'}
-            source={profilePicPath ? { uri: profilePicPath } : {}}
+            source={
+              profilePic.current.uri ? { uri: profilePic.current.uri } : {}
+            }
             style={{
               width: isLandscape ? '25%' : '50%',
               aspectRatio: 1,
@@ -225,7 +239,7 @@ export const SubscriptionOnboarding: React.FC = () => {
               icon: { width: '50%', fill: 'white' },
               container: {
                 ...styles.addProfilePicIconContainer,
-                opacity: profilePicPath ? 0 : 1
+                opacity: profilePic.current.uri ? 0 : 1
               },
               onPress: () => setPicPickerVisible(true)
             })}
@@ -274,7 +288,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const phone = (
+  const phoneView = (
     <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 3 && (
         <>
@@ -309,13 +323,13 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const whatsIncluded = (
+  const whatsIncludedView = (
     <View style={{ width: `${100 / 8}%` }}>
       {activeIndex === 4 && <WhatIsIncluded />}
     </View>
   );
 
-  const skillLevel = (
+  const skillLevelView = (
     <View
       style={{
         width: `${100 / 8}%`,
@@ -365,7 +379,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const interests = (
+  const interestsView = (
     <View
       style={{
         width: `${100 / 8}%`,
@@ -458,7 +472,7 @@ export const SubscriptionOnboarding: React.FC = () => {
     </View>
   );
 
-  const autoList = (
+  const autoListView = (
     <View style={{ width: `${100 / 8}%`, paddingTop: top }}>
       {activeIndex === 7 && (
         <>
@@ -522,14 +536,14 @@ export const SubscriptionOnboarding: React.FC = () => {
             })
           }
         >
-          {welcome}
-          {displayName}
-          {profilePic}
-          {phone}
-          {whatsIncluded}
-          {skillLevel}
-          {showMethod ? methodView : interests}
-          {showAutoList && autoList}
+          {welcomeView}
+          {displayNameView}
+          {profilePicView}
+          {phoneView}
+          {whatsIncludedView}
+          {skillLevelView}
+          {showMethod ? methodView : interestsView}
+          {showAutoList && autoListView}
         </ScrollView>
       </ScrollView>
       {!((activeIndex === 6 && showMethod) || activeIndex === 7) && (

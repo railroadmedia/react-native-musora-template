@@ -20,7 +20,7 @@ export const userService: UserService = {
     });
   },
   updateAvatar: async function (file) {
-    const data: FormData = new FormData();
+    const data = new FormData();
     if (file) {
       data.append('file', {
         name: file.fileName || 'avatar',
