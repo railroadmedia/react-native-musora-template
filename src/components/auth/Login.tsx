@@ -38,6 +38,7 @@ export const Login: React.FC = () => {
   const [visiblePswd, setVisiblePswd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [welcomeModalVisible, setWelcomeModalVisible] = useState(false);
+  const [getStartedVisible, setGetStartedVisible] = useState(false);
 
   const creds = useRef({ u: '', p: '' });
   const authData = useRef<AuthenticateResponse>();
@@ -46,6 +47,7 @@ export const Login: React.FC = () => {
   const scrollview = useRef<ScrollView>(null);
   const scrollviewWidth = useRef(0);
   const leftAnim = useRef(new Animated.Value(0)).current;
+  const activeIndex = useRef(0);
 
   const onLogin = () => {
     setLoading(true);
@@ -67,14 +69,13 @@ export const Login: React.FC = () => {
 
   const login = () =>
     authenticate(creds.current.u, creds.current.p)
-      .then(async auth => {
+      .then(auth => {
         authData.current = auth;
         if (auth?.token) {
-          if (canNavigateHome(auth)) {
-            navigate('home');
-          } else if (canNavigatePacks(auth)) {
-            navigate('packs');
-          } else if (auth?.isEdgeExpired)
+          setWelcomeModalVisible(true);
+          if (canNavigateHome(auth)) navigate('home');
+          else if (canNavigatePacks(auth)) navigate('packs');
+          else if (auth?.isEdgeExpired)
             navigate('subscriptions', { renew: true });
         } else warningRef.current?.toggle(auth.title, auth.message);
         setLoading(false);
@@ -98,9 +99,7 @@ export const Login: React.FC = () => {
       />
       {secured &&
         pswdVisible({
-          onPress: () => {
-            setVisiblePswd(prevVisiblePswd => !prevVisiblePswd);
-          },
+          onPress: () => setVisiblePswd(prevVisiblePswd => !prevVisiblePswd),
           icon: { fill: 'black', width: 20 },
           container: { justifyContent: 'center', paddingHorizontal: 15 }
         })}
@@ -108,7 +107,7 @@ export const Login: React.FC = () => {
   );
 
   const welcomeModalContent = (screens: { image: any; text: string }[]) => (
-    <View style={{ flex: 1, paddingBottom: bottom }}>
+    <View style={{ flex: 1 }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1 }}
@@ -120,13 +119,18 @@ export const Login: React.FC = () => {
           pagingEnabled={true}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ width: `${screens.length}00%` }}
-          onLayout={() => scrollview.current?.scrollTo({ x: 0 })}
-          onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
-            animateIndicator(
-              (contentOffset.x / scrollviewWidth.current) * 15,
-              200
-            )
+          onLayout={({ nativeEvent: { layout } }) =>
+            scrollview.current?.scrollTo({
+              x: activeIndex.current * (scrollviewWidth.current = layout.width)
+            })
           }
+          onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) => {
+            activeIndex.current = contentOffset.x / scrollviewWidth.current;
+            if (activeIndex.current === screens.length - 1)
+              setGetStartedVisible(true);
+            else if (getStartedVisible) setGetStartedVisible(false);
+            animateIndicator(activeIndex.current * 15, 200);
+          }}
         >
           {screens.map(s => (
             <View
@@ -143,12 +147,7 @@ export const Login: React.FC = () => {
           ))}
         </ScrollView>
       </ScrollView>
-      {/* {activei === screens.length - 1 && (
-        <TouchableOpacity style={styles.getStartedTOpacity}>
-          <Text style={styles.getStartedTxt}>GET STARTED</Text>
-        </TouchableOpacity>
-      )} */}
-      <View style={styles.indicatorContainer}>
+      <View style={[styles.indicatorContainer, { marginTop: bottom }]}>
         <Animated.View
           style={[
             styles.indicator,
@@ -164,6 +163,15 @@ export const Login: React.FC = () => {
           <View key={s.text} style={styles.indicator} />
         ))}
       </View>
+      <View style={{ opacity: getStartedVisible ? 1 : 0 }}>
+        <TouchableOpacity
+          disabled={!getStartedVisible}
+          onPress={() => setWelcomeModalVisible(false)}
+          style={[styles.getStartedTOpacity, { marginVertical: bottom }]}
+        >
+          <Text style={styles.getStartedTxt}>GET STARTED</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -172,7 +180,7 @@ export const Login: React.FC = () => {
       toValue,
       duration,
       useNativeDriver: true
-    }).start(() => {});
+    }).start();
 
   return (
     <KeyboardAvoidingView
@@ -236,9 +244,9 @@ export const Login: React.FC = () => {
       <Modal
         animationType={'fade'}
         supportedOrientations={['portrait', 'landscape']}
-        visible={welcomeModalVisible || true}
+        visible={welcomeModalVisible}
       >
-        {authData.current?.isEdge || true
+        {authData.current?.isEdge
           ? welcomeModalContent(utils.firstTimeLoginModal.edge)
           : welcomeModalContent(utils.firstTimeLoginModal.packOnly)}
       </Modal>
