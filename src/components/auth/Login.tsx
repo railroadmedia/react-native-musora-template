@@ -25,12 +25,14 @@ import { ActionModal } from '../../common_components/modals/ActionModal';
 import type { AuthenticateResponse } from '../../interfaces/service.interfaces';
 import { BackHeader } from '../../components/header/BackHeader';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
+import { OrientationContext } from '../../state/orientation/OrientationContext';
 
 export const Login: React.FC = () => {
   let { bottom } = useSafeAreaInsets();
   if (!bottom) bottom = 20;
 
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
+  const { isLandscape } = useContext(OrientationContext);
 
   const { navigate, dispatch } =
     useNavigation<StackNavigationProp<ParamListBase>>();
@@ -117,13 +119,14 @@ export const Login: React.FC = () => {
           contentContainerStyle={{ width: `${screens.length}00%` }}
           onLayout={({ nativeEvent: { layout } }) =>
             scrollview.current?.scrollTo({
-              x: activeIndex.current * (scrollviewWidth.current = layout.width)
+              x: activeIndex.current * (scrollviewWidth.current = layout.width),
+              animated: false
             })
           }
           onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
             animateIndicator(
               (activeIndex.current =
-                (contentOffset.x / scrollviewWidth.current) * 15),
+                contentOffset.x / scrollviewWidth.current) * 15,
               200
             )
           }
@@ -133,7 +136,12 @@ export const Login: React.FC = () => {
               <ImageBackground
                 resizeMode={'contain'}
                 source={s.image}
-                style={{ width: '100%', aspectRatio: 1 }}
+                imageStyle={{ width: '100%' }}
+                style={{
+                  width: isLandscape ? '25%' : '100%',
+                  aspectRatio: 1,
+                  alignSelf: 'center'
+                }}
               />
               <Text style={styles.welcomeModalTxt}>{s.text}</Text>
             </View>
