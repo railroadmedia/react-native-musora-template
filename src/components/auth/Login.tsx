@@ -10,8 +10,8 @@ import {
   KeyboardAvoidingView,
   StatusBar,
   Modal,
-  Image,
-  Animated
+  Animated,
+  ImageBackground
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authenticate, restorePurchase } from '../../services/auth.service';
@@ -107,10 +107,7 @@ export const Login: React.FC = () => {
 
   const welcomeModalContent = (screens: { image: any; text: string }[]) => (
     <View style={{ flex: 1 }}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1 }}
-      >
+      <ScrollView showsVerticalScrollIndicator={false}>
         <ScrollView
           ref={scrollview}
           bounces={false}
@@ -132,14 +129,11 @@ export const Login: React.FC = () => {
           }
         >
           {screens.map(s => (
-            <View
-              key={s.text}
-              style={{ flex: 1, justifyContent: 'space-evenly' }}
-            >
-              <Image
+            <View key={s.text} style={{ flex: 1 }}>
+              <ImageBackground
                 resizeMode={'contain'}
                 source={s.image}
-                style={{ width: '100%', height: '50%' }}
+                style={{ width: '100%', aspectRatio: 1 }}
               />
               <Text style={styles.welcomeModalTxt}>{s.text}</Text>
             </View>
