@@ -483,19 +483,19 @@ class Utils implements UtilsInterface {
           ],
           edge: [
             {
-              image: require('./images/welcome.png'),
+              image: require('./images/drumeo_method_onboarding.png'),
               text: `Welcome to the Drumeo app!\n\nWe’re so excited to make the Drumeo experience more easily accessible to our community.\n\nBefore you jump in, we wanted to highlight a few new features in the app.`
             },
             {
-              image: require('./images/welcome.png'),
+              image: require('./images/downloading.png'),
               text: `We support offline viewing!\n\nTap the download button on any lesson and the lesson materials needed to complete that lesson will be stored on your device in the “Downloads” section.\n\nNow you can use Drumeo wherever you go!`
             },
             {
-              image: require('./images/welcome.png'),
+              image: require('./images/syncing.png'),
               text: `Your lesson progress is synced between the Drumeo App and the Drumeo Website.\n\nFeel free to watch a lesson on your phone, then pick up where you left off later in the day when you’re at the kit beside your computer.`
             },
             {
-              image: require('./images/welcome.png'),
+              image: require('./images/app_in_progress.png'),
               text: `The Drumeo App was just released, so some of the lessons and features that you’re used to seeing on the website are still a work in progress.\n\nNot to worry though, they’ll be coming to the app over the next year.`
             }
           ]
