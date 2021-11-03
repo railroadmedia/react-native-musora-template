@@ -451,6 +451,57 @@ class Utils implements UtilsInterface {
         ];
     }
   }
+
+  get onboardingWelcomeMsg() {
+    switch (this.brand) {
+      case 'pianote':
+        return '';
+      case 'guitareo':
+        return '';
+      case 'singeo':
+        return '';
+      default:
+        return `Welcome to Drumeo!  You'll now be able to access step-by-step courses from the best drummers in the world, song breakdowns, drumless play-alongs, and every exclusive Drumeo show!\n\nLet’s get your account set up.`;
+    }
+  }
+
+  get firstTimeLoginModal() {
+    switch (this.brand) {
+      case 'pianote':
+        return { packOnly: [], edge: [] };
+      case 'guitareo':
+        return { packOnly: [], edge: [] };
+      case 'singeo':
+        return { packOnly: [], edge: [] };
+      default:
+        return {
+          packOnly: [
+            {
+              image: require('./images/welcome.png'),
+              text: `Thank you for downloading the Drumeo app!\n\nAs a Drumeo Pack owner you can access your Pack within the app and download your Pack resources.\n\nNow you can use your Drumeo Packs wherever you go!`
+            }
+          ],
+          edge: [
+            {
+              image: require('./images/welcome.png'),
+              text: `Welcome to the Drumeo app!\n\nWe’re so excited to make the Drumeo experience more easily accessible to our community.\n\nBefore you jump in, we wanted to highlight a few new features in the app.`
+            },
+            {
+              image: require('./images/welcome.png'),
+              text: `We support offline viewing!\n\nTap the download button on any lesson and the lesson materials needed to complete that lesson will be stored on your device in the “Downloads” section.\n\nNow you can use Drumeo wherever you go!`
+            },
+            {
+              image: require('./images/welcome.png'),
+              text: `Your lesson progress is synced between the Drumeo App and the Drumeo Website.\n\nFeel free to watch a lesson on your phone, then pick up where you left off later in the day when you’re at the kit beside your computer.`
+            },
+            {
+              image: require('./images/welcome.png'),
+              text: `The Drumeo App was just released, so some of the lessons and features that you’re used to seeing on the website are still a work in progress.\n\nNot to worry though, they’ll be coming to the app over the next year.`
+            }
+          ]
+        };
+    }
+  }
 }
 
 export let utils = new Utils();

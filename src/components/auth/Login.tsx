@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,9 +8,12 @@ import {
   View,
   ActivityIndicator,
   KeyboardAvoidingView,
-  StatusBar
+  StatusBar,
+  Modal,
+  Image,
+  Animated
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { authenticate, restorePurchase } from '../../services/auth.service';
 import { pswdVisible } from '../../images/svgs';
 
@@ -24,6 +27,9 @@ import { BackHeader } from '../../components/header/BackHeader';
 import { ConnectionContext } from '../../state/connection/ConnectionContext';
 
 export const Login: React.FC = () => {
+  let { bottom } = useSafeAreaInsets();
+  if (!bottom) bottom = 20;
+
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
 
   const { navigate, dispatch } =
@@ -31,10 +37,15 @@ export const Login: React.FC = () => {
 
   const [visiblePswd, setVisiblePswd] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [welcomeModalVisible, setWelcomeModalVisible] = useState(false);
 
   const creds = useRef({ u: '', p: '' });
+  const authData = useRef<AuthenticateResponse>();
   const userInputRef = useRef<TextInput>(null);
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
+  const scrollview = useRef<ScrollView>(null);
+  const scrollviewWidth = useRef(0);
+  const leftAnim = useRef(new Animated.Value(0)).current;
 
   const onLogin = () => {
     setLoading(true);
@@ -56,11 +67,14 @@ export const Login: React.FC = () => {
 
   const login = () =>
     authenticate(creds.current.u, creds.current.p)
-      .then(auth => {
+      .then(async auth => {
+        authData.current = auth;
         if (auth?.token) {
-          if (canNavigateHome(auth)) navigate('home');
-          else if (canNavigatePacks(auth)) navigate('packs');
-          else if (auth?.isEdgeExpired)
+          if (canNavigateHome(auth)) {
+            navigate('home');
+          } else if (canNavigatePacks(auth)) {
+            navigate('packs');
+          } else if (auth?.isEdgeExpired)
             navigate('subscriptions', { renew: true });
         } else warningRef.current?.toggle(auth.title, auth.message);
         setLoading(false);
@@ -93,6 +107,73 @@ export const Login: React.FC = () => {
     </View>
   );
 
+  const welcomeModalContent = (screens: { image: any; text: string }[]) => (
+    <View style={{ flex: 1, paddingBottom: bottom }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        <ScrollView
+          ref={scrollview}
+          bounces={false}
+          horizontal={true}
+          pagingEnabled={true}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ width: `${screens.length}00%` }}
+          onLayout={() => scrollview.current?.scrollTo({ x: 0 })}
+          onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
+            animateIndicator(
+              (contentOffset.x / scrollviewWidth.current) * 15,
+              200
+            )
+          }
+        >
+          {screens.map(s => (
+            <View
+              key={s.text}
+              style={{ flex: 1, justifyContent: 'space-evenly' }}
+            >
+              <Image
+                resizeMode={'contain'}
+                source={s.image}
+                style={{ width: '100%', height: '50%' }}
+              />
+              <Text style={styles.welcomeModalTxt}>{s.text}</Text>
+            </View>
+          ))}
+        </ScrollView>
+      </ScrollView>
+      {/* {activei === screens.length - 1 && (
+        <TouchableOpacity style={styles.getStartedTOpacity}>
+          <Text style={styles.getStartedTxt}>GET STARTED</Text>
+        </TouchableOpacity>
+      )} */}
+      <View style={styles.indicatorContainer}>
+        <Animated.View
+          style={[
+            styles.indicator,
+            {
+              left: 0,
+              backgroundColor: utils.color,
+              position: 'absolute',
+              transform: [{ translateX: leftAnim }]
+            }
+          ]}
+        />
+        {screens.map(s => (
+          <View key={s.text} style={styles.indicator} />
+        ))}
+      </View>
+    </View>
+  );
+
+  const animateIndicator = (toValue: number, duration = 0) =>
+    Animated.timing(leftAnim, {
+      toValue,
+      duration,
+      useNativeDriver: true
+    }).start(() => {});
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: utils.color }}
@@ -123,7 +204,7 @@ export const Login: React.FC = () => {
         </ScrollView>
       </View>
       {!loading && (
-        <SafeAreaView edges={['bottom', 'left', 'right']}>
+        <View style={{ paddingBottom: bottom }}>
           <TouchableOpacity style={styles.bottomLinkTOpacity}>
             <Text style={styles.bottomLinkTxt}>Forgot your password?</Text>
           </TouchableOpacity>
@@ -138,7 +219,7 @@ export const Login: React.FC = () => {
               Can't log in? Contact support
             </Text>
           </TouchableOpacity>
-        </SafeAreaView>
+        </View>
       )}
       {loading && (
         <ActivityIndicator
@@ -152,15 +233,21 @@ export const Login: React.FC = () => {
         ref={warningRef}
         onAction={() => warningRef.current?.toggle()}
       />
+      <Modal
+        animationType={'fade'}
+        supportedOrientations={['portrait', 'landscape']}
+        visible={welcomeModalVisible || true}
+      >
+        {authData.current?.isEdge || true
+          ? welcomeModalContent(utils.firstTimeLoginModal.edge)
+          : welcomeModalContent(utils.firstTimeLoginModal.packOnly)}
+      </Modal>
     </KeyboardAvoidingView>
   );
 };
+
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
+  container: { flexGrow: 1, alignItems: 'center', justifyContent: 'center' },
   loginBrandMsgTxt: {
     color: 'white',
     fontSize: 20,
@@ -173,10 +260,7 @@ const styles = StyleSheet.create({
     borderRadius: 99,
     flexDirection: 'row'
   },
-  textInput: {
-    padding: 15,
-    flex: 1
-  },
+  textInput: { padding: 15, flex: 1 },
   loginTOpacity: {
     padding: 15,
     paddingHorizontal: 50,
@@ -203,6 +287,38 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)'
+  },
+  welcomeModalTxt: {
+    fontSize: 20,
+    fontFamily: 'OpenSans',
+    textAlign: 'center',
+    margin: 10
+  },
+  getStartedTOpacity: {
+    padding: 10,
+    alignItems: 'center',
+    backgroundColor: utils.color,
+    borderRadius: 999,
+    alignSelf: 'center',
+    paddingHorizontal: 30
+  },
+  getStartedTxt: {
+    color: 'white',
+    fontFamily: 'RobotoCondensed-Regular',
+    fontWeight: '700'
+  },
+  indicatorContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignSelf: 'center'
+  },
+  indicator: {
+    width: 10,
+    height: 10,
+    borderWidth: 1,
+    borderColor: utils.color,
+    borderRadius: 99,
+    margin: 2.5
   }
 });
 const canNavigateHome = ({ isEdge, isEdgeExpired }: AuthenticateResponse) =>

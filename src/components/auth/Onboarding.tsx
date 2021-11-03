@@ -43,7 +43,7 @@ import { utils } from '../../utils';
 import { camera, library, plus, x } from '../../images/svgs';
 import { UserContext } from '../../state/user/UserContext';
 
-export const SubscriptionOnboarding: React.FC = () => {
+export const Onboarding: React.FC = () => {
   const { isConnected, showNoConnectionAlert } = useContext(ConnectionContext);
   const { isLandscape } = useContext(OrientationContext);
   const { updateUser } = useContext(UserContext);
@@ -173,9 +173,7 @@ export const SubscriptionOnboarding: React.FC = () => {
             source={require('../../images/welcome.png')}
             resizeMode={'contain'}
           />
-          <Text
-            style={styles.welcomeTxt}
-          >{`Welcome to Drumeo!  You'll now be able to access step-by-step courses from the best drummers in the world, song breakdowns, drumless play-alongs, and every exclusive Drumeo show!\n\nLet’s get your account set up.`}</Text>
+          <Text style={styles.welcomeTxt}>{utils.onboardingWelcomeMsg}</Text>
         </>
       )}
     </View>
@@ -205,7 +203,7 @@ export const SubscriptionOnboarding: React.FC = () => {
             style={styles.textInput}
           />
           <Text style={{ fontFamily: 'OpenSans', textAlign: 'center' }}>
-            This appears on your Drumeo profile and comments.
+            This appears on your {utils.brand} profile and comments.
           </Text>
         </>
       )}
@@ -245,7 +243,7 @@ export const SubscriptionOnboarding: React.FC = () => {
             })}
           </ImageBackground>
           <Text style={{ fontFamily: 'OpenSans', textAlign: 'center' }}>
-            This appears on your Drumeo profile and comments.
+            This appears on your {utils.brand} profile and comments.
           </Text>
           <Modal
             transparent={true}
@@ -439,7 +437,7 @@ export const SubscriptionOnboarding: React.FC = () => {
       {activeIndex === 6 && (
         <>
           <Text style={styles.selectableTitleTxt}>
-            Get started with the Drumeo Method!
+            Get started with the {utils.brand} Method!
           </Text>
           <ImageBackground
             key={isLandscape.toString()}

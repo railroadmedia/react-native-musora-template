@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback } from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import {
@@ -35,19 +35,14 @@ import { AskQuestion } from './components/forms/AskQuestion';
 import { SubmitCollabVideo } from './components/forms/SubmitCollabVideo';
 import { LikeList } from './common_components/lesson/LikeList';
 import { Replies } from './common_components/lesson/Replies';
-import type {
-  Comment,
-  Lesson,
-  LessonResponse
-} from './interfaces/lesson.interfaces';
+import type { Comment, LessonResponse } from './interfaces/lesson.interfaces';
 import { LessonPart } from './common_components/lesson/LessonPart';
 import { Login } from './components/auth/Login';
 import { LaunchScreen } from './components/auth/LaunchScreen';
 import { CoachOverview } from './components/coach/CoachOverview';
 import { Subscriptions } from './components/auth/Subscriptions';
 import { Foundation } from './components/method/Foundation';
-import { SubscriptionOnboarding } from './components/auth/SubscriptionOnboarding';
-import { LoginOnboarding } from './components/auth/LoginOnboarding';
+import { Onboarding } from './components/auth/Onboarding';
 const Forum = require('react-native-musora-forum');
 
 type Scenes =
@@ -158,11 +153,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
           >
             <Stack.Screen name='launch' component={LaunchScreen} />
             <Stack.Screen name='subscriptions' component={Subscriptions} />
-            <Stack.Screen
-              name='subscriptionOnboarding'
-              component={SubscriptionOnboarding}
-            />
-            <Stack.Screen name='loginOnboarding' component={LoginOnboarding} />
+            <Stack.Screen name='onboarding' component={Onboarding} />
             <Stack.Screen name='login' component={Login} />
             {catalogues.map(c => (
               <Stack.Screen name={c} key={c} component={Catalogue} />

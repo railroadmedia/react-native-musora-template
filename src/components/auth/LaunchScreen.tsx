@@ -148,7 +148,7 @@ export const LaunchScreen: React.FC = () => {
               nativeEvent: {
                 contentOffset: { x }
               }
-            }) => animateIndicator((x / utils.WIDTH) * 20, 200)}
+            }) => animateIndicator((x / utils.WIDTH) * 15, 200)}
           >
             {utils.launchScreens.map(s => (
               <View key={s.bold} style={{ width: utils.WIDTH }}>
