@@ -113,7 +113,7 @@ export const Router: React.FC<Props> = ({ catalogues, bottomNavVisibleOn }) => {
       'submitCollabVideo',
       'lessonPart',
       'forum',
-      'subscriptionOnboarding'
+      'onboarding'
     ];
     return titleExceptions.includes(route);
   }, []);

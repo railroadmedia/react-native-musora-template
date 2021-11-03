@@ -165,13 +165,18 @@ export const Onboarding: React.FC = () => {
   };
 
   const welcomeView = (
-    <View style={{ width: `${100 / 8}%` }}>
+    <View style={{ flex: 1 }}>
       {activeIndex === 0 && (
         <>
           <ImageBackground
-            style={{ flex: 1, width: '100%' }}
+            style={{
+              width: isLandscape ? '25%' : '100%',
+              aspectRatio: 1,
+              alignSelf: 'center'
+            }}
             source={require('../../images/welcome.png')}
             resizeMode={'contain'}
+            imageStyle={{ width: '100%' }}
           />
           <Text style={styles.welcomeTxt}>{utils.onboardingWelcomeMsg}</Text>
         </>
@@ -180,7 +185,7 @@ export const Onboarding: React.FC = () => {
   );
 
   const displayNameView = (
-    <View style={{ width: `${100 / 8}%` }}>
+    <View style={{ flex: 1 }}>
       {activeIndex === 1 && (
         <>
           <BackHeader
@@ -211,7 +216,7 @@ export const Onboarding: React.FC = () => {
   );
 
   const profilePicView = (
-    <View style={{ width: `${100 / 8}%` }}>
+    <View style={{ flex: 1 }}>
       {activeIndex === 2 && (
         <>
           <BackHeader
@@ -287,7 +292,7 @@ export const Onboarding: React.FC = () => {
   );
 
   const phoneView = (
-    <View style={{ width: `${100 / 8}%` }}>
+    <View style={{ flex: 1 }}>
       {activeIndex === 3 && (
         <>
           <BackHeader
@@ -322,15 +327,13 @@ export const Onboarding: React.FC = () => {
   );
 
   const whatsIncludedView = (
-    <View style={{ width: `${100 / 8}%` }}>
-      {activeIndex === 4 && <WhatIsIncluded />}
-    </View>
+    <View style={{ flex: 1 }}>{activeIndex === 4 && <WhatIsIncluded />}</View>
   );
 
   const skillLevelView = (
     <View
       style={{
-        width: `${100 / 8}%`,
+        flex: 1,
         paddingTop: top,
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -380,7 +383,7 @@ export const Onboarding: React.FC = () => {
   const interestsView = (
     <View
       style={{
-        width: `${100 / 8}%`,
+        flex: 1,
         paddingTop: top,
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -433,7 +436,7 @@ export const Onboarding: React.FC = () => {
   );
 
   const methodView = (
-    <View style={{ width: `${100 / 8}%`, paddingTop: top }}>
+    <View style={{ flex: 1, paddingTop: top }}>
       {activeIndex === 6 && (
         <>
           <Text style={styles.selectableTitleTxt}>
@@ -471,7 +474,7 @@ export const Onboarding: React.FC = () => {
   );
 
   const autoListView = (
-    <View style={{ width: `${100 / 8}%`, paddingTop: top }}>
+    <View style={{ flex: 1, paddingTop: top }}>
       {activeIndex === 7 && (
         <>
           <Text style={styles.selectableTitleTxt}>
@@ -530,7 +533,8 @@ export const Onboarding: React.FC = () => {
           contentContainerStyle={{ width: '800%' }}
           onLayout={({ nativeEvent: { layout } }) =>
             scrollview.current?.scrollTo({
-              x: activeIndex * (scrollviewWidth.current = layout.width)
+              x: activeIndex * (scrollviewWidth.current = layout.width),
+              animated: false
             })
           }
         >

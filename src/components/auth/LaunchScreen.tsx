@@ -37,6 +37,8 @@ export const LaunchScreen: React.FC = () => {
 
   const warningRef = useRef<React.ElementRef<typeof ActionModal>>(null);
   const scrollview = useRef<ScrollView>(null);
+  const activeIndex = useRef(0);
+  const scrollviewWidth = useRef(0);
 
   useEffect(() => {
     new Promise(res => RNIap.initConnection().then(res).catch(res)).then(
@@ -52,10 +54,6 @@ export const LaunchScreen: React.FC = () => {
       RNIap.endConnection();
     };
   }, []);
-
-  useEffect(() => {
-    scrollview.current?.scrollTo({ x: 0 });
-  }, [isLandscape]);
 
   const login = () =>
     authenticate()
@@ -143,15 +141,28 @@ export const LaunchScreen: React.FC = () => {
             bounces={false}
             horizontal={true}
             pagingEnabled={true}
+            contentContainerStyle={{
+              width: `${utils.launchScreens.length}00%`
+            }}
             showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={({
-              nativeEvent: {
-                contentOffset: { x }
-              }
-            }) => animateIndicator((x / utils.WIDTH) * 15, 200)}
+            onLayout={({ nativeEvent: { layout } }) =>
+              scrollview.current?.scrollTo({
+                x:
+                  activeIndex.current *
+                  (scrollviewWidth.current = layout.width),
+                animated: false
+              })
+            }
+            onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
+              animateIndicator(
+                (activeIndex.current =
+                  contentOffset.x / scrollviewWidth.current) * 15,
+                200
+              )
+            }
           >
             {utils.launchScreens.map(s => (
-              <View key={s.bold} style={{ width: utils.WIDTH }}>
+              <View key={s.bold} style={{ flex: 1 }}>
                 {!!s.jpg && (
                   <ImageBackground
                     source={s.jpg}
