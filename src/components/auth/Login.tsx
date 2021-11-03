@@ -38,7 +38,6 @@ export const Login: React.FC = () => {
   const [visiblePswd, setVisiblePswd] = useState(false);
   const [loading, setLoading] = useState(false);
   const [welcomeModalVisible, setWelcomeModalVisible] = useState(false);
-  const [getStartedVisible, setGetStartedVisible] = useState(false);
 
   const creds = useRef({ u: '', p: '' });
   const authData = useRef<AuthenticateResponse>();
@@ -124,13 +123,13 @@ export const Login: React.FC = () => {
               x: activeIndex.current * (scrollviewWidth.current = layout.width)
             })
           }
-          onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) => {
-            activeIndex.current = contentOffset.x / scrollviewWidth.current;
-            if (activeIndex.current === screens.length - 1)
-              setGetStartedVisible(true);
-            else if (getStartedVisible) setGetStartedVisible(false);
-            animateIndicator(activeIndex.current * 15, 200);
-          }}
+          onMomentumScrollEnd={({ nativeEvent: { contentOffset } }) =>
+            animateIndicator(
+              (activeIndex.current =
+                (contentOffset.x / scrollviewWidth.current) * 15),
+              200
+            )
+          }
         >
           {screens.map(s => (
             <View
@@ -147,31 +146,53 @@ export const Login: React.FC = () => {
           ))}
         </ScrollView>
       </ScrollView>
-      <View style={[styles.indicatorContainer, { marginTop: bottom }]}>
-        <Animated.View
-          style={[
-            styles.indicator,
-            {
-              left: 0,
-              backgroundColor: utils.color,
-              position: 'absolute',
-              transform: [{ translateX: leftAnim }]
-            }
-          ]}
-        />
-        {screens.map(s => (
-          <View key={s.text} style={styles.indicator} />
-        ))}
-      </View>
-      <View style={{ opacity: getStartedVisible ? 1 : 0 }}>
+      {screens.length > 1 && (
+        <View style={[styles.indicatorContainer, { marginTop: bottom }]}>
+          <Animated.View
+            style={[
+              styles.indicator,
+              {
+                left: 0,
+                backgroundColor: utils.color,
+                position: 'absolute',
+                transform: [{ translateX: leftAnim }]
+              }
+            ]}
+          />
+          {screens.map(s => (
+            <View key={s.text} style={styles.indicator} />
+          ))}
+        </View>
+      )}
+      <Animated.View
+        style={
+          screens.length > 1
+            ? {
+                transform: [
+                  {
+                    translateY: leftAnim.interpolate({
+                      inputRange: Array.from(
+                        { length: screens.length },
+                        (_, i) => i * 15
+                      ),
+                      outputRange: Array.from(
+                        { length: screens.length },
+                        (_, i) => (i ? 1000 : 0)
+                      ).reverse()
+                    })
+                  }
+                ]
+              }
+            : {}
+        }
+      >
         <TouchableOpacity
-          disabled={!getStartedVisible}
           onPress={() => setWelcomeModalVisible(false)}
           style={[styles.getStartedTOpacity, { marginVertical: bottom }]}
         >
           <Text style={styles.getStartedTxt}>GET STARTED</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     </View>
   );
 
